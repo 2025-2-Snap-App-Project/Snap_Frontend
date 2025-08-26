@@ -1,4 +1,5 @@
 package com.example.snapproject
+
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -27,7 +28,7 @@ object ApiRepository {
     suspend fun postAnalyze(
         deviceUuid: String,
         imageFiles: List<File>
-    ) : ApiResult<AnalyzeResponse> {
+    ): ApiResult<AnalyzeResponse> =
         apiSafeCall { // result -> 서버 요청한 뒤의 결과를 저장
             // MultiPart form-data의 Requestbody (디바이스 uuid, 스크립트 ID, 아이컨택 비율)
             val deviceUuidBody =
@@ -45,5 +46,4 @@ object ApiRepository {
                 imageParts
             )
         }
-    }
 }
