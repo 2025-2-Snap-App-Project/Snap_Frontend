@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/main_blue"
+        app:strokeColor="@color/main_blue">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32.89dp"
+                android:layout_marginTop="35.63dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="날짜 확인"
+                android:textColor="@color/main_white"
+                android:textSize="13.7sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32.89dp"
+                android:layout_marginTop="8.67dp"
+                android:fontFamily="@font/pretendard_black"
+                android:text="소비기한"
+                android:textColor="@color/main_white"
+                android:textSize="32.89sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32.89dp"
+                android:layout_marginTop="15.82dp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:text="날짜가 임박한 제품을\n카테고리별로 한눈에 확인해요"
+                android:textColor="@color/main_white"
+                android:textSize="17.82sp" />
+
+            <ImageView
+                android:layout_width="152.12dp"
+                android:layout_height="152.12dp"
+                android:layout_marginStart="121.97dp"
+                android:layout_marginTop="55.3dp"
+                android:layout_marginEnd="30.15dp"
+                android:layout_marginBottom="45.22dp"
+                app:srcCompat="@drawable/ic_date" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>
