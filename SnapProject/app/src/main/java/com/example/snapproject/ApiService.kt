@@ -1,5 +1,6 @@
 package com.example.snapproject
 
+import com.example.snapproject.model.AnalyzeResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
