@@ -1,13 +1,12 @@
 package com.example.snapproject
 
-
 import com.google.gson.annotations.SerializedName
 
 data class AnalyzeResponse(
     val `data`: Data,
     val message: String,
     val status: Int,
-    val success: Boolean
+    val success: Boolean,
 ) {
     data class Data(
         @SerializedName("expiration_date")
@@ -17,6 +16,6 @@ data class AnalyzeResponse(
         val itemId: String,
         @SerializedName("product_name")
         val productName: String,
-        val summary: List<String>
+        val summary: List<String>,
     )
 }

@@ -17,8 +17,6 @@ interface ApiService {
     @POST("analyze")
     suspend fun postAnalyzeRaw(
         @Part("device_id") deviceId: RequestBody,
-        @Part images: List<MultipartBody.Part>
+        @Part images: List<MultipartBody.Part>,
     ): Response<AnalyzeResponse>
-
 }
-
