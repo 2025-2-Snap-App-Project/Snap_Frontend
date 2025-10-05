@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.snapproject.Fragment.HomeFragment"
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.example.snapproject.Fragment.CameraFragment"
+        android:label="CameraFragment" >
+        <action
+            android:id="@+id/action_cameraFragment_to_loadingFragment"
+            app:destination="@id/loadingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loadingFragment"
+        android:name="com.example.snapproject.Fragment.LoadingFragment"
+        android:label="LoadingFragment" >
+        <action
+            android:id="@+id/action_loadingFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.snapproject.Fragment.ListFragment"
+        android:label="ListFragment" >
+        <action
+            android:id="@+id/action_listFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_deleteFragment2"
+            app:destination="@id/deleteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/deleteFragment"
+        android:name="com.example.snapproject.Fragment.DeleteFragment"
+        android:label="DeleteFragment" >
+        <action
+            android:id="@+id/action_deleteFragment_to_listFragment2"
+            app:destination="@id/listFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.snapproject.Fragment.DetailFragment"
+        android:label="DetailFragment" >
+        <action
+            android:id="@+id/action_detailFragment_to_storeResultFragment"
+            app:destination="@id/storeResultFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/storeRecordFragment"
+        android:name="com.example.snapproject.Fragment.StoreRecordFragment"
+        android:label="StoreRecordFragment" >
+        <action
+            android:id="@+id/action_storeRecordFragment_to_storeResultFragment"
+            app:destination="@id/storeResultFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/storeResultFragment"
+        android:name="com.example.snapproject.Fragment.StoreResultFragment"
+        android:label="StoreResultFragment" >
+        <action
+            android:id="@+id/action_storeResultFragment_to_storeRecordFragment"
+            app:destination="@id/storeRecordFragment" />
+    </fragment>
+</navigation>
