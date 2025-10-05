@@ -1,4 +1,4 @@
-package com.example.snapproject
+package com.example.snapproject.api
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
