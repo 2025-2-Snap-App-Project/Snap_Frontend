@@ -20,10 +20,6 @@ class HomeViewPagerAdapter(private val activity: FragmentActivity) :
         )
     }
 
-    fun getNum(position: Int): Int {
-        return fragments[position].num
-    }
-
     override fun getItemCount(): Int {
         return fragments.size
     }
