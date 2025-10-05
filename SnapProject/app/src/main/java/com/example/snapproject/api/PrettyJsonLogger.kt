@@ -1,4 +1,4 @@
-package com.example.snapproject
+package com.example.snapproject.api
 
 import android.util.Log.INFO
 import android.util.Log.WARN

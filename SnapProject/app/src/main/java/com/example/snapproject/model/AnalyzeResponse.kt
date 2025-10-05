@@ -1,4 +1,4 @@
-package com.example.snapproject
+package com.example.snapproject.model
 
 import com.google.gson.annotations.SerializedName
 

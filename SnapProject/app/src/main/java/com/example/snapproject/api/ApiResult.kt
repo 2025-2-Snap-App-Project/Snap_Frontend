@@ -1,4 +1,4 @@
-package com.example.snapproject
+package com.example.snapproject.api
 
 import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
