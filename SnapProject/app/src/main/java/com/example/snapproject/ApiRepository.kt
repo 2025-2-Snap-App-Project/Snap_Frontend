@@ -27,7 +27,7 @@ object ApiRepository {
     // 1. "발표 영상 업로드 및 분석 수행" 요청 -> POST + analyze 도메인
     suspend fun postAnalyze(
         deviceUuid: String,
-        imageFiles: List<File>
+        imageFiles: List<File>,
     ): ApiResult<AnalyzeResponse> =
         apiSafeCall { // result -> 서버 요청한 뒤의 결과를 저장
             // MultiPart form-data의 Requestbody (디바이스 uuid, 스크립트 ID, 아이컨택 비율)
@@ -35,15 +35,16 @@ object ApiRepository {
                 deviceUuid.toRequestBody("text/plain".toMediaType()) // 디바이스 uuid
 
             // 서버로 보내줘야 하는 데이터들 -> MultiPartBody, RequestBody로 변환
-            val imageParts = imageFiles.map { file ->
-                val reqFile = file.asRequestBody("image/*".toMediaType())
-                MultipartBody.Part.createFormData("images[]", file.name, reqFile)
-            }
+            val imageParts =
+                imageFiles.map { file ->
+                    val reqFile = file.asRequestBody("image/*".toMediaType())
+                    MultipartBody.Part.createFormData("images[]", file.name, reqFile)
+                }
 
             // ApiService 인터페이스에 선언된 함수 호출하여 POST 요청
             apiService.postAnalyzeRaw(
                 deviceUuidBody,
-                imageParts
+                imageParts,
             )
         }
 }
