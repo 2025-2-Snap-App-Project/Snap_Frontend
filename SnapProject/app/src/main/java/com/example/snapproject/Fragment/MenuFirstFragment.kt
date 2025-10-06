@@ -14,7 +14,7 @@ class MenuFirstFragment : Fragment() {
     private var _binding: FragmentMenuFirstBinding? = null
     private val binding get() = _binding!!
 
-    private var listener: OnChildButtonClickListener? = null
+    private var listener: OnChildButtonClickListener? = null // 버튼 클릭 리스너
 
     companion object {
         fun newInstance() = MenuFirstFragment()
@@ -25,13 +25,14 @@ class MenuFirstFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+        // 뷰 바인딩
         _binding = FragmentMenuFirstBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnChildButtonClickListener) {
+        if (context is OnChildButtonClickListener) { // MainActivity의 listener 연결
             listener = context
         }
     }
@@ -47,6 +48,7 @@ class MenuFirstFragment : Fragment() {
 
     private fun initView() =
         with(binding) {
+            // MainActivity의 listner 호출 (촬영하기 버튼 클릭 -> CameraFragment로 화면 전환)
             btnCamera.setOnClickListener {
                 listener?.onChildButtonClicked(R.id.action_homeFragment_to_cameraFragment)
             }

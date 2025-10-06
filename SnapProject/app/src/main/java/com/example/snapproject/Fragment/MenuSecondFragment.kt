@@ -14,7 +14,7 @@ class MenuSecondFragment : Fragment() {
     private var _binding: FragmentMenuSecondBinding? = null
     private val binding get() = _binding!!
 
-    private var listener: OnChildButtonClickListener? = null
+    private var listener: OnChildButtonClickListener? = null // 버튼 클릭 리스너
 
     companion object {
         fun newInstance() = MenuSecondFragment()
@@ -25,13 +25,14 @@ class MenuSecondFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+        // 뷰 바인딩
         _binding = FragmentMenuSecondBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnChildButtonClickListener) {
+        if (context is OnChildButtonClickListener) { // MainActivity의 listener 연결
             listener = context
         }
     }
@@ -47,6 +48,7 @@ class MenuSecondFragment : Fragment() {
 
     private fun initView() =
         with(binding) {
+            // MainActivity의 listner 호출 (소비기한 버튼 클릭 -> ListFragment로 화면 전환)
             btnDate.setOnClickListener {
                 listener?.onChildButtonClicked(R.id.action_homeFragment_to_listFragment)
             }
