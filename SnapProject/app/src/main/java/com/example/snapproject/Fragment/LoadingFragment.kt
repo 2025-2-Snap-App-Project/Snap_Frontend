@@ -41,8 +41,9 @@ class LoadingFragment : Fragment() {
         }
     }
 
-    private fun initView() = with(binding) {
-    }
+    private fun initView() =
+        with(binding) {
+        }
 
     override fun onDestroy() {
         super.onDestroy()
