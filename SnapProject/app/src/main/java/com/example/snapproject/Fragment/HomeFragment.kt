@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.example.snapproject.HomeViewPagerAdapter
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentHomeBinding
@@ -22,7 +21,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val viewPagerAdapter by lazy { HomeViewPagerAdapter(requireActivity() as FragmentActivity) }
+    private lateinit var viewPagerAdapter: HomeViewPagerAdapter
 
     companion object {
         fun newInstance() = HomeFragment()
@@ -42,6 +41,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        viewPagerAdapter = HomeViewPagerAdapter(this)
 
         initView()
     }
