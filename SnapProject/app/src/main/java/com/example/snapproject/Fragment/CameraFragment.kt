@@ -55,8 +55,7 @@ class CameraFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (!hasPermissions(mContext)) { // 사용자가 앱 설정에서도 권한 허용을 해주지 않은 경우
                 Toast.makeText(mContext, "카메라 권한을 허용해야 앱 사용이 가능합니다.", Toast.LENGTH_SHORT).show()
-
-                // 홈 화면으로 이동하는 로직 추가하기
+                findNavController().popBackStack() // 홈 화면 이동
             }
         }
 
@@ -95,8 +94,7 @@ class CameraFragment : Fragment() {
                     settingPermissionLauncher.launch(intent)
                 } else { // 사용자가 한 번만 거부한 경우
                     Toast.makeText(mContext, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-
-                    // 홈 화면으로 이동하는 로직 추가하기
+                    findNavController().popBackStack() // 홈 화면 이동
                 }
             }
         }
