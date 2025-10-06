@@ -35,6 +35,7 @@ class HomeFragment : Fragment() {
 
     private fun initView() = with(binding) {
         viewPagerMenu.adapter = viewPagerAdapter
+        viewPagerIndicator.attachTo(viewPagerMenu)
     }
 
     override fun onDestroy() {
