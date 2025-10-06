@@ -127,6 +127,14 @@ class CameraFragment : Fragment() {
         initView()
     }
 
+    // 시스템 설정에서 권한 허용해 준 뒤, 다시 돌아왔을 때 카메라 세팅 필요
+    override fun onResume() {
+        super.onResume()
+        if (hasPermissions(mContext)) {
+            setUpCamera()
+        }
+    }
+
     private fun initView() = with(binding) {
         // 2개의 권한이 모두 허용된 상태가 아니라면 -> 권한 요청 Dialog 띄우기
         if (!hasPermissions(mContext)) {
