@@ -55,25 +55,24 @@ class CameraFragment : Fragment() {
             ) == PackageManager.PERMISSION_GRANTED
         }
 
-    // 사용자가 다시 묻지 않음을 선택한 경우 -> shouldShowRequestPermissionRationale이 false 반환 -> noAskAgain이 true가 됨.
-    private val noAskAgain =
-        PERMISSIONS_REQUIRED.any { permission ->
-            ContextCompat.checkSelfPermission(
-                mContext,
-                permission,
-            ) == PackageManager.PERMISSION_DENIED &&
-                    !ActivityCompat.shouldShowRequestPermissionRationale(
-                        mActivity,
-                        permission,
-                    )
-        }
-
     // Permission 콜백 등록 (권한 요청 다이얼로그에서의 사용자 이벤트 처리)
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val allGranted =
                 permissions.all { it.value } // allGranted : 권한 요청 다이얼로그 창에서 모두 허용했는지 (true/false)
             if (!allGranted) { // 하나라도 거부한 경우
+                // 사용자가 다시 묻지 않음을 선택한 경우 -> shouldShowRequestPermissionRationale이 false 반환 -> noAskAgain이 true가 됨.
+                val noAskAgain =
+                    PERMISSIONS_REQUIRED.any { permission ->
+                        ContextCompat.checkSelfPermission(
+                            mContext,
+                            permission,
+                        ) == PackageManager.PERMISSION_DENIED &&
+                                !ActivityCompat.shouldShowRequestPermissionRationale(
+                                    mActivity,
+                                    permission,
+                                )
+                    }
                 if (noAskAgain) { // 사용자가 다시 묻지 않음을 선택한 경우 -> 앱 설정 화면으로 이동
                     Toast.makeText(mContext, "앱 설정에서 카메라 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
                     val intent =
