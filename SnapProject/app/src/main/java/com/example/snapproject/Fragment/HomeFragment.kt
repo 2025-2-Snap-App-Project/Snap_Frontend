@@ -22,7 +22,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val viewPagerAdapter by lazy { HomeViewPagerAdapter(requireActivity() as FragmentActivity) }
+    private lateinit var viewPagerAdapter: HomeViewPagerAdapter
 
     companion object {
         fun newInstance() = HomeFragment()
@@ -42,6 +42,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        viewPagerAdapter = HomeViewPagerAdapter(this)
 
         initView()
     }
