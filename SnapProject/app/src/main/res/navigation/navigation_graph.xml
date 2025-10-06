@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.snapproject.Fragment.HomeFragment"
-        android:label="HomeFragment" >
+        android:label="HomeFragment">
         <action
             android:id="@+id/action_homeFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
@@ -19,7 +19,7 @@
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.example.snapproject.Fragment.CameraFragment"
-        android:label="CameraFragment" >
+        android:label="CameraFragment">
         <action
             android:id="@+id/action_cameraFragment_to_loadingFragment"
             app:destination="@id/loadingFragment" />
@@ -27,15 +27,18 @@
     <fragment
         android:id="@+id/loadingFragment"
         android:name="com.example.snapproject.Fragment.LoadingFragment"
-        android:label="LoadingFragment" >
+        android:label="LoadingFragment">
         <action
             android:id="@+id/action_loadingFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_loadingFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/listFragment"
         android:name="com.example.snapproject.Fragment.ListFragment"
-        android:label="ListFragment" >
+        android:label="ListFragment">
         <action
             android:id="@+id/action_listFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
@@ -46,7 +49,7 @@
     <fragment
         android:id="@+id/deleteFragment"
         android:name="com.example.snapproject.Fragment.DeleteFragment"
-        android:label="DeleteFragment" >
+        android:label="DeleteFragment">
         <action
             android:id="@+id/action_deleteFragment_to_listFragment2"
             app:destination="@id/listFragment" />
@@ -54,7 +57,7 @@
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.snapproject.Fragment.DetailFragment"
-        android:label="DetailFragment" >
+        android:label="DetailFragment">
         <action
             android:id="@+id/action_detailFragment_to_storeResultFragment"
             app:destination="@id/storeResultFragment" />
@@ -62,7 +65,7 @@
     <fragment
         android:id="@+id/storeRecordFragment"
         android:name="com.example.snapproject.Fragment.StoreRecordFragment"
-        android:label="StoreRecordFragment" >
+        android:label="StoreRecordFragment">
         <action
             android:id="@+id/action_storeRecordFragment_to_storeResultFragment"
             app:destination="@id/storeResultFragment" />
@@ -70,7 +73,7 @@
     <fragment
         android:id="@+id/storeResultFragment"
         android:name="com.example.snapproject.Fragment.StoreResultFragment"
-        android:label="StoreResultFragment" >
+        android:label="StoreResultFragment">
         <action
             android:id="@+id/action_storeResultFragment_to_storeRecordFragment"
             app:destination="@id/storeRecordFragment" />
