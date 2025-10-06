@@ -7,6 +7,7 @@
     tools:context=".Fragment.CameraFragment">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnComplete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -44,6 +45,7 @@
             app:strokeColor="@android:color/transparent" />
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnCapture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
