@@ -1,21 +1,28 @@
 package com.example.snapproject.Fragment
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Camera
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
+import com.google.common.util.concurrent.ListenableFuture
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -23,6 +30,11 @@ class CameraFragment : Fragment() {
 
     private lateinit var mContext: Context
     private lateinit var mActivity: MainActivity
+
+    private var cameraProvider: ProcessCameraProvider? = null // 카메라 프로바이더
+    private var camera: Camera? = null // 카메라 객체
+    private lateinit var preview: Preview // 카메라 미리보기 preview
+    private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,8 +131,60 @@ class CameraFragment : Fragment() {
         // 2개의 권한이 모두 허용된 상태가 아니라면 -> 권한 요청 Dialog 띄우기
         if (!hasPermissions(mContext)) {
             requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
+        } else {
+            setUpCamera()
         }
 
+    }
+
+    // 카메라 설정하는 함수
+    private fun setUpCamera() {
+        val cameraProviderFuture =
+            ProcessCameraProvider.getInstance(mContext)
+        cameraProviderFuture.addListener(
+            {
+                // CameraProvider
+                cameraProvider = cameraProviderFuture.get()
+
+                // 카메라 리소스(Preview, ImageAnalysis 등) 설정 및 바인딩
+                bindCameraUseCases()
+            },
+            ContextCompat.getMainExecutor(mContext),
+        )
+    }
+
+    // UseCase(Preview) 설정 및 바인딩
+    private fun bindCameraUseCases() {
+        // CameraProvider
+        val cameraProvider =
+            cameraProvider
+                ?: throw IllegalStateException("Camera initialization failed.")
+
+        // 후면 카메라로 설정
+        val cameraSelector =
+            CameraSelector.Builder().requireLensFacing(cameraFacing).build()
+
+        // 카메라 Preview 설정
+        preview = Preview.Builder()
+                .build()
+                .also {
+                    it.surfaceProvider = binding.previewCamera.surfaceProvider
+            }
+
+        // 기존에 연결되어 있던 use-cases 우선 해제(unbind)
+        cameraProvider.unbindAll()
+
+        try {
+            // 카메라와 연결할 수명 주기 자동 생성
+            // bindToLifeCycle을 통해 사용자 기기와 카메라 Provider는 동일한 생명 주기를 갖게 됨.
+            cameraProvider.bindToLifecycle(
+                this,
+                cameraSelector,
+                preview,
+            )
+        } catch (exc: Exception) {
+            Log.e("CameraFragment", "Use case binding failed", exc)
+        }
     }
 
     override fun onDestroy() {
