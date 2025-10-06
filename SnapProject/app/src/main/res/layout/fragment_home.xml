@@ -83,7 +83,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="17dp"
         android:fontFamily="@font/pretendard_bold"
-        android:text="오픈소스 라이선스"
+        android:text="@string/home_open_source_license"
         android:textColor="@color/dark_gray_2"
         android:textSize="13sp" />
 
