@@ -20,7 +20,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.snapproject.MainActivity
+import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.google.common.util.concurrent.ListenableFuture
 
@@ -125,6 +127,11 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
+
+        // 버튼 클릭 이벤트 처리 코드를 여기에 추가해야(initView 함수 안이 X) onResume된 후에도 해당 코드가 정상 작동함.
+        binding.btnComplete.setOnClickListener {
+            findNavController().navigate(R.id.action_cameraFragment_to_loadingFragment)
+        }
     }
 
     // 시스템 설정에서 권한 허용해 준 뒤, 다시 돌아왔을 때 카메라 세팅 필요
