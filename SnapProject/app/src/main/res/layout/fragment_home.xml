@@ -18,10 +18,12 @@
         android:textSize="32sp" />
 
     <TextView
+        android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="47dp"
         android:layout_marginTop="53dp"
+        android:bufferType="spannable"
         android:fontFamily="@font/pretendard_bold"
         android:text="안녕하세요, 사용자님!"
         android:textSize="16sp" />
