@@ -8,12 +8,16 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.example.snapproject.HomeViewPagerAdapter
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentHomeBinding
 import androidx.core.graphics.toColorInt
+import androidx.core.text.set
+import androidx.core.text.toSpannable
+import com.example.snapproject.LinearGradientSpan
 
 class HomeFragment : Fragment() {
     private var _binding : FragmentHomeBinding? = null
@@ -40,6 +44,15 @@ class HomeFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
+        // 앱 이름 텍스트뷰에 Gradient 적용
+        val text = "SNAP"
+        val mainBlue = ContextCompat.getColor(requireContext(), R.color.main_blue)
+        val subBlueOne = ContextCompat.getColor(requireContext(), R.color.sub_blue_2)
+        val subBlueTwo = ContextCompat.getColor(requireContext(), R.color.sub_blue_2)
+        val spannable = text.toSpannable()
+        spannable[0..text.length] = LinearGradientSpan(text, text, mainBlue, subBlueOne, subBlueTwo)
+        tvAppName.text = spannable
+
         // 텍스트뷰에서 "사용자" 부분만 컬러 변경하기
         val tvData: String = tvWelcome.text.toString()
         val tvBuilder = SpannableStringBuilder(tvData)
