@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/main_blue"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:strokeColor="@color/main_blue">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32.89dp"
+                android:layout_marginTop="35.63dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="사진 촬영"
+                android:textColor="@color/main_white"
+                android:textSize="13.7sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32.89dp"
+                android:layout_marginTop="8.67dp"
+                android:fontFamily="@font/pretendard_black"
+                android:text="촬영하기"
+                android:textColor="@color/main_white"
+                android:textSize="32.89sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32.89dp"
+                android:layout_marginTop="15.82dp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:text="알레르기 성분, 소비기한 등\n식품 상세 정보를 알려드릴게요"
+                android:textColor="@color/main_white"
+                android:textSize="17.82sp" />
+
+            <ImageView
+                android:layout_width="152.12dp"
+                android:layout_height="152.12dp"
+                android:layout_marginStart="121.97dp"
+                android:layout_marginTop="55.3dp"
+                android:layout_marginEnd="30.15dp"
+                android:layout_marginBottom="45.22dp"
+                app:srcCompat="@drawable/ic_camera" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

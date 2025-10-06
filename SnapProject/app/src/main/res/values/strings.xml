@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SnapProject</string>
+    <string name="home_open_source_license"><u>오픈소스 라이선스</u></string>
 </resources>

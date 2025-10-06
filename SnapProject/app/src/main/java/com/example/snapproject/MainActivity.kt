@@ -5,16 +5,29 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.snapproject.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
     private lateinit var mainBinding: ActivityMainBinding
+    private lateinit var navController: NavController
+
+    // 자식 프래그먼트의 버튼 클릭 리스너 구현
+    override fun onChildButtonClicked(destinationId: Int) {
+        // 자식 프래그먼트로부터 전달받은 이벤트 수행 (화면 전환)
+        findNavController(R.id.nav_host_fragment).navigate(destinationId)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // 뷰 바인딩
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
+
+        setUpJetpackNavigation() // 화면 전환 컨트롤러 -> 프래그먼트 전환
 
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -22,5 +35,11 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+
+    // Navigation Controller (화면 전환 컨트롤러)를 통해 프래그먼트 전환 수행
+    private fun setUpJetpackNavigation() {
+        val host = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = host.navController
     }
 }

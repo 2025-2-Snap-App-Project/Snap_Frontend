@@ -1,56 +1,102 @@
 package com.example.snapproject.Fragment
 
+import android.graphics.LinearGradient
+import android.graphics.Shader
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import com.example.snapproject.HomeViewPagerAdapter
 import com.example.snapproject.R
+import com.example.snapproject.databinding.FragmentHomeBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private val viewPagerAdapter by lazy { HomeViewPagerAdapter(requireActivity() as FragmentActivity) }
+
+    companion object {
+        fun newInstance() = HomeFragment()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(
-            param1: String,
-            param2: String,
-        ) = HomeFragment().apply {
-            arguments =
-                Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initView()
+    }
+
+    // LinearGradient를 적용하는 별도의 확장 메소드 정의
+    private fun TextView.setTextColorAsLinearGradient(colors: IntArray) {
+        if (colors.isEmpty()) {
+            return
         }
+
+        setTextColor(colors[0])
+        this.paint.shader =
+            LinearGradient(
+                0f,
+                0f,
+                paint.measureText(this.text.toString()),
+                -this.textSize,
+                colors,
+                null,
+                Shader.TileMode.CLAMP,
+            )
+    }
+
+    private fun initView() =
+        with(binding) {
+            // 앱 이름 텍스트뷰에 Gradient 적용
+            val text = "SNAP"
+            val mainBlue = ContextCompat.getColor(requireContext(), R.color.main_blue)
+            val subBlueOne = ContextCompat.getColor(requireContext(), R.color.sub_blue_2)
+            val subBlueTwo = ContextCompat.getColor(requireContext(), R.color.sub_blue_2)
+
+            val colorArray = IntArray(3) { 0 }
+            colorArray[0] = mainBlue
+            colorArray[1] = subBlueOne
+            colorArray[2] = subBlueTwo
+
+            tvAppName.setTextColorAsLinearGradient(colorArray) // 미리 설정한 ColorArray로 Gradient 적용
+
+            // 텍스트뷰에서 "사용자" 부분만 컬러 변경하기
+            val tvData: String = tvWelcome.text.toString()
+            val tvBuilder = SpannableStringBuilder(tvData)
+            val colorBlueSpan =
+                ForegroundColorSpan(
+                    "#2276FF".toColorInt(),
+                )
+            tvBuilder.setSpan(colorBlueSpan, 7, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            tvWelcome.text = tvBuilder
+
+            // ViewPager2 어댑터 연결 + Indicator 붙이기
+            viewPagerMenu.adapter = viewPagerAdapter
+            viewPagerIndicator.attachTo(viewPagerMenu)
+        }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
