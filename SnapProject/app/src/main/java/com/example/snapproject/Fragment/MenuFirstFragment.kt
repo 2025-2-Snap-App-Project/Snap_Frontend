@@ -8,16 +8,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.snapproject.OnChildButtonClickListener
 import com.example.snapproject.R
-import com.example.snapproject.databinding.FragmentSecondMenuBinding
+import com.example.snapproject.databinding.FragmentMenuFirstBinding
 
-class SecondMenuFragment : Fragment() {
-    private var _binding: FragmentSecondMenuBinding? = null
+class MenuFirstFragment : Fragment() {
+    private var _binding: FragmentMenuFirstBinding? = null
     private val binding get() = _binding!!
 
     private var listener: OnChildButtonClickListener? = null
 
     companion object {
-        fun newInstance() = SecondMenuFragment()
+        fun newInstance() = MenuFirstFragment()
     }
 
     override fun onCreateView(
@@ -25,7 +25,7 @@ class SecondMenuFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentSecondMenuBinding.inflate(inflater, container, false)
+        _binding = FragmentMenuFirstBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -47,8 +47,8 @@ class SecondMenuFragment : Fragment() {
 
     private fun initView() =
         with(binding) {
-            btnDate.setOnClickListener {
-                listener?.onChildButtonClicked(R.id.action_homeFragment_to_listFragment)
+            btnCamera.setOnClickListener {
+                listener?.onChildButtonClicked(R.id.action_homeFragment_to_cameraFragment)
             }
         }
 

@@ -3,8 +3,8 @@ package com.example.snapproject
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.snapproject.Fragment.FirstMenuFragment
-import com.example.snapproject.Fragment.SecondMenuFragment
+import com.example.snapproject.Fragment.MenuFirstFragment
+import com.example.snapproject.Fragment.MenuSecondFragment
 import com.example.snapproject.model.HomeMenuTab
 
 class HomeViewPagerAdapter(private val activity: FragmentActivity) :
@@ -13,10 +13,10 @@ class HomeViewPagerAdapter(private val activity: FragmentActivity) :
 
     init {
         fragments.add(
-            HomeMenuTab(FirstMenuFragment.newInstance(), 0),
+            HomeMenuTab(MenuFirstFragment.newInstance(), 0),
         )
         fragments.add(
-            HomeMenuTab(SecondMenuFragment.newInstance(), 1),
+            HomeMenuTab(MenuSecondFragment.newInstance(), 1),
         )
     }
 
