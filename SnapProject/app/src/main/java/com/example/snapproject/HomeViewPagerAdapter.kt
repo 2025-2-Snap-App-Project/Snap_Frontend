@@ -13,10 +13,10 @@ class HomeViewPagerAdapter(private val activity: FragmentActivity) :
 
     init {
         fragments.add(
-            HomeMenuTab(FirstMenuFragment.newInstance(), 0)
+            HomeMenuTab(FirstMenuFragment.newInstance(), 0),
         )
         fragments.add(
-            HomeMenuTab(SecondMenuFragment.newInstance(), 1)
+            HomeMenuTab(SecondMenuFragment.newInstance(), 1),
         )
     }
 

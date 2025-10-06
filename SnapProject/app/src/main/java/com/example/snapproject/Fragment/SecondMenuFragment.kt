@@ -11,7 +11,7 @@ import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentSecondMenuBinding
 
 class SecondMenuFragment : Fragment() {
-    private var _binding : FragmentSecondMenuBinding? = null
+    private var _binding: FragmentSecondMenuBinding? = null
     private val binding get() = _binding!!
 
     private var listener: OnChildButtonClickListener? = null
@@ -21,8 +21,9 @@ class SecondMenuFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentSecondMenuBinding.inflate(inflater, container, false)
         return binding.root
@@ -35,17 +36,21 @@ class SecondMenuFragment : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
     }
 
-    private fun initView() = with(binding) {
-        btnDate.setOnClickListener {
-            listener?.onChildButtonClicked(R.id.action_homeFragment_to_listFragment)
+    private fun initView() =
+        with(binding) {
+            btnDate.setOnClickListener {
+                listener?.onChildButtonClicked(R.id.action_homeFragment_to_listFragment)
+            }
         }
-    }
 
     override fun onDestroy() {
         super.onDestroy()
