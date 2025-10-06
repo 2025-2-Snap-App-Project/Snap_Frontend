@@ -1,6 +1,5 @@
 package com.example.snapproject.Fragment
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -24,7 +23,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentCameraBinding
-import com.google.common.util.concurrent.ListenableFuture
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -81,10 +79,10 @@ class CameraFragment : Fragment() {
                             requireContext(),
                             permission,
                         ) == PackageManager.PERMISSION_DENIED &&
-                                !ActivityCompat.shouldShowRequestPermissionRationale(
-                                    mActivity,
-                                    permission,
-                                )
+                            !ActivityCompat.shouldShowRequestPermissionRationale(
+                                mActivity,
+                                permission,
+                            )
                     }
                 if (noAskAgain) { // 사용자가 다시 묻지 않음을 선택한 경우 -> 앱 설정 화면으로 이동
                     Toast.makeText(mContext, "앱 설정에서 카메라 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
@@ -98,8 +96,6 @@ class CameraFragment : Fragment() {
                 }
             }
         }
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -140,15 +136,15 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun initView() = with(binding) {
-        // 2개의 권한이 모두 허용된 상태가 아니라면 -> 권한 요청 Dialog 띄우기
-        if (!hasPermissions(mContext)) {
-            requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
-        } else {
-            setUpCamera()
+    private fun initView() =
+        with(binding) {
+            // 2개의 권한이 모두 허용된 상태가 아니라면 -> 권한 요청 Dialog 띄우기
+            if (!hasPermissions(mContext)) {
+                requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
+            } else {
+                setUpCamera()
+            }
         }
-
-    }
 
     // 카메라 설정하는 함수
     private fun setUpCamera() {
@@ -178,11 +174,12 @@ class CameraFragment : Fragment() {
             CameraSelector.Builder().requireLensFacing(cameraFacing).build()
 
         // 카메라 Preview 설정
-        preview = Preview.Builder()
+        preview =
+            Preview.Builder()
                 .build()
                 .also {
                     it.surfaceProvider = binding.previewCamera.surfaceProvider
-            }
+                }
 
         // 기존에 연결되어 있던 use-cases 우선 해제(unbind)
         cameraProvider.unbindAll()

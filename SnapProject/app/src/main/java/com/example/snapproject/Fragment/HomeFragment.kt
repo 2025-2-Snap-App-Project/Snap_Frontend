@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.example.snapproject.HomeViewPagerAdapter
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentHomeBinding
