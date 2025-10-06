@@ -10,10 +10,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.snapproject.databinding.ActivityMainBinding
 
-interface OnChildButtonClickListener {
-    fun onChildButtonClicked(destinationId: Int)
-}
-
 class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var navController: NavController
