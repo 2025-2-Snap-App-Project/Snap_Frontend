@@ -65,7 +65,7 @@ class CameraFragment : Fragment() {
                 val noAskAgain =
                     PERMISSIONS_REQUIRED.any { permission ->
                         ContextCompat.checkSelfPermission(
-                            mContext,
+                            requireContext(),
                             permission,
                         ) == PackageManager.PERMISSION_DENIED &&
                                 !ActivityCompat.shouldShowRequestPermissionRationale(
