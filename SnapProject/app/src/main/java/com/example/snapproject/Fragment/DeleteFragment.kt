@@ -10,12 +10,27 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.ListRecyclerViewAdapter
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentDeleteBinding
+import com.example.snapproject.model.ListItemData
 
 class DeleteFragment : Fragment() {
     private var _binding: FragmentDeleteBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var recyclerViewAdapter: ListRecyclerViewAdapter // RecyclerView 어댑터
+
+    // 리스트에 넣을 더미 데이터 생성 -> ArrayList에 담기
+    private val dataOne = ListItemData("1", "제품명1", "2021.11.20", false, null)
+    private val dataTwo = ListItemData("2", "제품명2", "2022.11.20", true, null)
+    private val dataThree = ListItemData("3", "제품명3", "2023.11.20", true, null)
+    private val dataFour = ListItemData("4", "제품명4", "2024.11.20", false, null)
+    private val dataFive = ListItemData("5", "제품명5", "2025.11.20", false, null)
+    private val dataSix = ListItemData("6", "제품명6", "2026.11.20", true, null)
+    private val dataSeven = ListItemData("7", "제품명7", "2027.11.20", false, null)
+    private val dataEight = ListItemData("8", "제품명8", "2028.11.20", false, null)
+    private val dataNine = ListItemData("9", "제품명9", "2029.11.20", true, null)
+    private val dateTen = ListItemData("10", "제품명10", "2030.11.20", true, null)
+    private val dataArray: ArrayList<ListItemData> =
+        arrayListOf(dataOne, dataTwo, dataThree, dataFour, dataFive, dataSix, dataSeven, dataEight, dataNine, dateTen)
 
     companion object {
         fun newInstance() = DeleteFragment()
