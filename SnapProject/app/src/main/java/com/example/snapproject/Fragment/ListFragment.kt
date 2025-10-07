@@ -77,6 +77,19 @@ class ListFragment : Fragment() {
                     }
                 },
             )
+
+            // 아이템 내부의 별(isFavorite) 클릭 리스너 연결
+            recyclerViewAdapter.setStarClickListener(
+                object : ListRecyclerViewAdapter.OnItemClickInterface {
+                    override fun onItemClick(
+                        v: View,
+                        itemId: String,
+                        position: Int,
+                    ) {
+                        Toast.makeText(context, "${itemId}번 별 클릭", Toast.LENGTH_SHORT).show()
+                    }
+                },
+            )
         }
 
     override fun onDestroy() {

@@ -14,6 +14,7 @@ class ListRecyclerViewAdapter(
     private val mContext: Context,
 ) : RecyclerView.Adapter<ListRecyclerViewAdapter.ViewHolder>() {
     private var listener: OnItemClickInterface? = null // 아이템 클릭 리스너
+    private var starListener: OnItemClickInterface? = null // 아이템 내부의 별(isFavorite) 클릭 리스너
 
     // 아이템 클릭 인터페이스
     interface OnItemClickInterface {
@@ -27,6 +28,11 @@ class ListRecyclerViewAdapter(
     // 아이템 클릭 리스너
     fun setItemClickListener(listener: OnItemClickInterface) {
         this.listener = listener
+    }
+
+    //  // 아이템 내부의 별(isFavorite) 클릭 리스너
+    fun setStarClickListener(listener: OnItemClickInterface) {
+        this.starListener = listener
     }
 
     // DiffUtil 콜백 선언 (두 개의 리스트 간 차이 계산)
@@ -68,6 +74,13 @@ class ListRecyclerViewAdapter(
             binding.btnItem.setOnClickListener {
                 listener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
             }
+
+            // Item 내부의 별(isFavorite) 클릭 리스너 등록
+            binding.btnIsFavorite.setOnClickListener {
+                starListener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
+            }
+
+
         }
     }
 
