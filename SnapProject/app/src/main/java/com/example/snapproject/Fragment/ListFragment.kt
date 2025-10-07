@@ -10,12 +10,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.ListRecyclerViewAdapter
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentListBinding
+import com.example.snapproject.model.ListItemData
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var recyclerViewAdapter : ListRecyclerViewAdapter // RecyclerView 어댑터
+
+    // 리스트에 넣을 더미 데이터 생성 -> ArrayList에 담기
+    private val dataOne = ListItemData("1", "제품명1", "20201120", false)
+    private val dataTwo = ListItemData("2", "제품명2", "20211120", false)
+    private val dataThree = ListItemData("3", "제품명3", "20221120", false)
+    private val dataFour = ListItemData("4", "제품명4", "20231120", false)
+    private val dataArray: ArrayList<ListItemData> = arrayListOf(dataOne, dataTwo, dataThree, dataFour)
 
     companion object {
         fun newInstance() = ListFragment()
