@@ -91,18 +91,18 @@
                 app:layout_scrollFlags="scroll" />
         </com.google.android.material.appbar.AppBarLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingStart="24dp"
-                android:paddingTop="21dp"
-                android:paddingEnd="24dp"
-                android:paddingBottom="60dp"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingStart="24dp"
+            android:paddingTop="21dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="60dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            </androidx.recyclerview.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnDelete"

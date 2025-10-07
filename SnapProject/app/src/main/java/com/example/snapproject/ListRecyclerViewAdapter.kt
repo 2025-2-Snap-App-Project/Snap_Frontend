@@ -84,8 +84,6 @@ class ListRecyclerViewAdapter(
             binding.checkboxStar.setOnClickListener {
                 starListener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
             }
-
-
         }
     }
 

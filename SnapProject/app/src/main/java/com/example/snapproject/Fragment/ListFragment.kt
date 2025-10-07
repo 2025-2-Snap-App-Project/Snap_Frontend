@@ -17,7 +17,7 @@ class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var recyclerViewAdapter : ListRecyclerViewAdapter // RecyclerView 어댑터
+    private lateinit var recyclerViewAdapter: ListRecyclerViewAdapter // RecyclerView 어댑터
 
     // 리스트에 넣을 더미 데이터 생성 -> ArrayList에 담기
     private val dataOne = ListItemData("1", "제품명1", "2021.11.20", false)
@@ -30,7 +30,8 @@ class ListFragment : Fragment() {
     private val dataEight = ListItemData("8", "제품명8", "2028.11.20", false)
     private val dataNine = ListItemData("9", "제품명9", "2029.11.20", true)
     private val dateTen = ListItemData("10", "제품명10", "2030.11.20", true)
-    private val dataArray: ArrayList<ListItemData> = arrayListOf(dataOne, dataTwo, dataThree, dataFour, dataFive, dataSix, dataSeven, dataEight, dataNine, dateTen)
+    private val dataArray: ArrayList<ListItemData> =
+        arrayListOf(dataOne, dataTwo, dataThree, dataFour, dataFive, dataSix, dataSeven, dataEight, dataNine, dateTen)
 
     companion object {
         fun newInstance() = ListFragment()
