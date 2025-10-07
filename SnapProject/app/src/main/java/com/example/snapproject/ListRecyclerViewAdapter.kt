@@ -52,7 +52,7 @@ class ListRecyclerViewAdapter(
         }
 
     // 리스트가 많으면 백그라운드에서 실행하는 게 좋음 -> AsyncListDiffer은 자동으로 백그라운드에서 실행됨
-    private val differ = AsyncListDiffer(this, differCallback)
+    val differ = AsyncListDiffer(this, differCallback)
 
     // ViewHolder 클래스
     inner class ViewHolder(private val binding: ItemListProductBinding) :
