@@ -51,11 +51,11 @@
             app:cardBackgroundColor="@android:color/transparent"
             app:strokeColor="@android:color/transparent">
 
-            <ImageView
+            <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_star_unfilled" />
+                android:button="@drawable/bg_star"/>
         </com.google.android.material.card.MaterialCardView>
     </FrameLayout>
 
