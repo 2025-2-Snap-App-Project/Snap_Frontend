@@ -21,8 +21,8 @@ class ListFragment : Fragment() {
 
     // 리스트에 넣을 더미 데이터 생성 -> ArrayList에 담기
     private val dataOne = ListItemData("1", "제품명1", "2020.11.20", false)
-    private val dataTwo = ListItemData("2", "제품명2", "2021.11.20", false)
-    private val dataThree = ListItemData("3", "제품명3", "2022.11.20", false)
+    private val dataTwo = ListItemData("2", "제품명2", "2021.11.20", true)
+    private val dataThree = ListItemData("3", "제품명3", "2022.11.20", true)
     private val dataFour = ListItemData("4", "제품명4", "2023.11.20", false)
     private val dataArray: ArrayList<ListItemData> = arrayListOf(dataOne, dataTwo, dataThree, dataFour)
 
