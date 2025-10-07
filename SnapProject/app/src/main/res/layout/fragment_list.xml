@@ -80,16 +80,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="21dp"
         android:layout_height="0dp"
         android:layout_weight="1">
-
-        <LinearLayout
-            android:id="@+id/itemContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview"
@@ -97,9 +89,11 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:paddingStart="24dp"
-                android:paddingEnd="24dp" />
+                android:paddingTop="21dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="60dp" >
 
-        </LinearLayout>
+            </androidx.recyclerview.widget.RecyclerView>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnDelete"
