@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,6 +63,20 @@ class ListFragment : Fragment() {
             recyclerview.adapter = recyclerViewAdapter
 
             addListItemData(dataArray) // 소비기한 리스트 Item에 데이터 추가 (ArrayList에 담아둔 더미 데이터)
+
+            // 아이템 클릭 리스너 연결 (아이템 클릭 시, 상세 설명 화면으로 이동)
+            recyclerViewAdapter.setItemClickListener(
+                object : ListRecyclerViewAdapter.OnItemClickInterface {
+                    override fun onItemClick(
+                        v: View,
+                        itemId: String,
+                        position: Int,
+                    ) {
+                        Toast.makeText(context, "클릭한 아이템 ID : $itemId", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_listFragment_to_detailFragment)
+                    }
+                },
+            )
         }
 
     override fun onDestroy() {
