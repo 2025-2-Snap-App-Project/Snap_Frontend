@@ -2,6 +2,7 @@ package com.example.snapproject
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -12,6 +13,21 @@ import com.example.snapproject.model.ListItemData
 class DeleteRecyclerViewAdapter(
     private val mContext: Context,
 ) : RecyclerView.Adapter<DeleteRecyclerViewAdapter.ViewHolder>() {
+    private var checkBoxListener: OnItemClickInterface? = null // 아이템 내부의 체크 박스 클릭 리스너
+
+    // 아이템 클릭 인터페이스
+    interface OnItemClickInterface {
+        fun onItemClick(
+            v: View,
+            itemId: String,
+            position: Int,
+        )
+    }
+
+    // 아이템 내부의 체크 박스 클릭 리스너
+    fun setCheckBoxClickListener(listener: OnItemClickInterface) {
+        this.checkBoxListener = listener
+    }
 
     // DiffUtil 콜백 선언 (두 개의 리스트 간 차이 계산)
     private val differCallback =
@@ -53,6 +69,10 @@ class DeleteRecyclerViewAdapter(
                 }
             }
 
+            // 삭제 리스트 Item 내부의 체크 박스 클릭 리스너 등록
+            binding.checkboxDelete.setOnClickListener {
+                checkBoxListener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
+            }
         }
     }
 
