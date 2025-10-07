@@ -67,21 +67,29 @@
 
     </com.google.android.material.tabs.TabLayout>
 
-    <TextView
-        android:id="@+id/tvItemNum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="45dp"
-        android:layout_marginTop="37dp"
-        android:fontFamily="@font/pretendard_bold"
-        android:text="소비기한이 많이 남은\n제품이 N개입니다."
-        android:textColor="@color/dark_gray"
-        android:textSize="15sp" />
-
-    <FrameLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@android:color/transparent">
+
+            <TextView
+                android:id="@+id/tvItemNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="37dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="소비기한이 많이 남은\n제품이 N개입니다."
+                android:textColor="@color/dark_gray"
+                android:textSize="15sp"
+                app:layout_scrollFlags="scroll" />
+        </com.google.android.material.appbar.AppBarLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview"
@@ -91,7 +99,8 @@
                 android:paddingStart="24dp"
                 android:paddingTop="21dp"
                 android:paddingEnd="24dp"
-                android:paddingBottom="60dp" >
+                android:paddingBottom="60dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             </androidx.recyclerview.widget.RecyclerView>
 
@@ -111,6 +120,6 @@
                 android:layout_gravity="center"
                 app:srcCompat="@drawable/ic_trash" />
         </com.google.android.material.card.MaterialCardView>
-    </FrameLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </LinearLayout>
