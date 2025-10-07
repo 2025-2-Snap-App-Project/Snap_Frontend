@@ -45,10 +45,10 @@
 
         <CheckBox
             android:id="@+id/checkboxStar"
+            style="@style/list_star_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:button="@drawable/bg_star" />
+            android:layout_gravity="end|center_vertical" />
     </FrameLayout>
 
 
