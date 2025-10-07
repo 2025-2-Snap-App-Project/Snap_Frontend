@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.snapproject.DeleteRecyclerViewAdapter
 import com.example.snapproject.ListRecyclerViewAdapter
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentDeleteBinding
@@ -16,7 +17,7 @@ class DeleteFragment : Fragment() {
     private var _binding: FragmentDeleteBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var recyclerViewAdapter: ListRecyclerViewAdapter // RecyclerView 어댑터
+    private lateinit var recyclerViewAdapter: DeleteRecyclerViewAdapter // RecyclerView 어댑터
 
     // 리스트에 넣을 더미 데이터 생성 -> ArrayList에 담기
     private val dataOne = ListItemData("1", "제품명1", "2021.11.20", false, false)
@@ -51,7 +52,7 @@ class DeleteFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerViewAdapter = ListRecyclerViewAdapter(requireContext()) // RecyclerView 어댑터 생성
+        recyclerViewAdapter = DeleteRecyclerViewAdapter(requireContext()) // RecyclerView 어댑터 생성
         initView()
 
         binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 소비기한 리스트 화면으로 이동
