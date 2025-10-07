@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -70,6 +71,19 @@ class DeleteFragment : Fragment() {
             recyclerview.adapter = recyclerViewAdapter
 
             addListItemData(dataArray) // 리스트 Item에 데이터 추가 (ArrayList에 담아둔 더미 데이터)
+
+            // 아이템 내부의 체크박스 클릭 리스너 연결
+            recyclerViewAdapter.setCheckBoxClickListener(
+                object : DeleteRecyclerViewAdapter.OnItemClickInterface {
+                    override fun onItemClick(
+                        v: View,
+                        itemId: String,
+                        position: Int,
+                    ) {
+                        Toast.makeText(context, "${itemId}번 아이템의 체크 박스 클릭", Toast.LENGTH_SHORT).show()
+                    }
+                },
+            )
         }
 
     override fun onDestroy() {
