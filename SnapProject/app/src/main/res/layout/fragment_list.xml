@@ -51,19 +51,16 @@
         app:tabTextColor="@color/light_gray_1">
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tabItemGone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="날짜 지남" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tabItemHurry"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="기한 임박" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tabItemFree"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="기한 여유" />
