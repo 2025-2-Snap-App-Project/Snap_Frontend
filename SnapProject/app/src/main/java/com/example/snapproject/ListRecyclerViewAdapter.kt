@@ -2,6 +2,7 @@ package com.example.snapproject
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -12,7 +13,21 @@ import com.example.snapproject.model.ListItemData
 class ListRecyclerViewAdapter(
     private val mContext: Context,
 ) : RecyclerView.Adapter<ListRecyclerViewAdapter.ViewHolder>() {
+    private var listener: OnItemClickInterface? = null // 아이템 클릭 리스너
 
+    // 아이템 클릭 인터페이스
+    interface OnItemClickInterface {
+        fun onItemClick(
+            v: View,
+            sessionId: String,
+            position: Int,
+        )
+    }
+
+    // 아이템 클릭 리스너
+    fun setItemClickListener(listener: OnItemClickInterface) {
+        this.listener = listener
+    }
 
     // DiffUtil 콜백 선언 (두 개의 리스트 간 차이 계산)
     private val differCallback =
@@ -47,6 +62,11 @@ class ListRecyclerViewAdapter(
             binding.apply {
                 tvProductName.text = listItemData.productName
                 tvExpirationDate.text = listItemData.expirationDate
+            }
+
+            // 소비기한 리스트 Item 클릭 리스너 등록
+            binding.btnItem.setOnClickListener {
+                listener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
             }
         }
     }
