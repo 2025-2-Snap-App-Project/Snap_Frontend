@@ -43,20 +43,12 @@
                 android:textSize="13sp" />
         </LinearLayout>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnIsFavorite"
+        <CheckBox
+            android:id="@+id/checkboxStar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            app:cardBackgroundColor="@android:color/transparent"
-            app:strokeColor="@android:color/transparent">
-
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:button="@drawable/bg_star"/>
-        </com.google.android.material.card.MaterialCardView>
+            android:button="@drawable/bg_star" />
     </FrameLayout>
 
 
