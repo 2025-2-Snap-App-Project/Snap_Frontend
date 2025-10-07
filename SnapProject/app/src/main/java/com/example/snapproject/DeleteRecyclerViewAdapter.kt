@@ -13,7 +13,7 @@ import com.example.snapproject.model.ListItemData
 class DeleteRecyclerViewAdapter(
     private val mContext: Context,
 ) : RecyclerView.Adapter<DeleteRecyclerViewAdapter.ViewHolder>() {
-    private var checkBoxListener: OnItemClickInterface? = null // 아이템 내부의 체크 박스 클릭 리스너
+    private var listener: OnItemClickInterface? = null // 삭제 리스트의 아이템 클릭 리스너
 
     // 아이템 클릭 인터페이스
     interface OnItemClickInterface {
@@ -24,9 +24,9 @@ class DeleteRecyclerViewAdapter(
         )
     }
 
-    // 아이템 내부의 체크 박스 클릭 리스너
-    fun setCheckBoxClickListener(listener: OnItemClickInterface) {
-        this.checkBoxListener = listener
+    // 삭제 리스트의 아이템 클릭 리스너
+    fun setOnClickListener(listener: OnItemClickInterface) {
+        this.listener = listener
     }
 
     // DiffUtil 콜백 선언 (두 개의 리스트 간 차이 계산)
@@ -69,9 +69,13 @@ class DeleteRecyclerViewAdapter(
                 }
             }
 
-            // 삭제 리스트 Item 내부의 체크 박스 클릭 리스너 등록
-            binding.checkboxDelete.setOnClickListener {
-                checkBoxListener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
+            // 삭제 리스트의 Item 클릭 리스너 등록
+            binding.btnItem.setOnClickListener {
+                listener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
+
+                // 체크 박스의 isChecked(체크 여부) 속성 변경 (true는 false로, false는 true로)
+                val isChecked = binding.checkboxDelete.isChecked
+                binding.checkboxDelete.isChecked = !isChecked
             }
         }
     }

@@ -72,15 +72,15 @@ class DeleteFragment : Fragment() {
 
             addListItemData(dataArray) // 리스트 Item에 데이터 추가 (ArrayList에 담아둔 더미 데이터)
 
-            // 아이템 내부의 체크박스 클릭 리스너 연결
-            recyclerViewAdapter.setCheckBoxClickListener(
+            // 삭제 리스트의 아이템 클릭 리스너 연결
+            recyclerViewAdapter.setOnClickListener(
                 object : DeleteRecyclerViewAdapter.OnItemClickInterface {
                     override fun onItemClick(
                         v: View,
                         itemId: String,
                         position: Int,
                     ) {
-                        Toast.makeText(context, "${itemId}번 아이템의 체크 박스 클릭", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "${itemId}번 아이템 클릭 (삭제 목적)", Toast.LENGTH_SHORT).show()
                     }
                 },
             )
