@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.ListRecyclerViewAdapter
+import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentDeleteBinding
 
 class DeleteFragment : Fragment() {
@@ -36,6 +38,13 @@ class DeleteFragment : Fragment() {
 
         recyclerViewAdapter = ListRecyclerViewAdapter(requireContext()) // RecyclerView 어댑터 생성
         initView()
+
+        binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 소비기한 리스트 화면으로 이동
+            findNavController().popBackStack()
+        }
+        binding.btnDelete.setOnClickListener { // 삭제하기 버튼 클릭 -> 리스트에서 Item 삭제 로직 추가 필요
+            findNavController().popBackStack() // 소비기한 리스트 화면으로 이동
+        }
     }
 
     private fun initView() =
