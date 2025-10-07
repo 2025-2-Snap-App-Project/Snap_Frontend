@@ -114,7 +114,7 @@ class ListFragment : Fragment() {
                     i.productName,
                     i.expirationDate,
                     i.isFavorite,
-                    i.isDeleteChecked
+                    i.isDeleteChecked,
                 ),
             )
         }

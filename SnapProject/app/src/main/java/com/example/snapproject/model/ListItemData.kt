@@ -5,5 +5,5 @@ data class ListItemData(
     val productName: String,
     val expirationDate: String,
     var isFavorite: Boolean,
-    var isDeleteChecked: Boolean
+    var isDeleteChecked: Boolean,
 )
