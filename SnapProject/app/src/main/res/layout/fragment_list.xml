@@ -1,11 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/main_white"
+    android:orientation="vertical"
     tools:context=".Fragment.CameraFragment">
-    <TextView
-        android:layout_width="wrap_content"
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:contentPadding="30dp"
+            app:strokeColor="@android:color/transparent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_back" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/pretendard_black"
+            android:gravity="center"
+            android:text="소비기한 확인"
+            android:textColor="@color/dark_gray"
+            android:textSize="20sp" />
+    </FrameLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutCategory"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="리스트 프래그먼트"/>
-</FrameLayout>
+        android:background="@color/main_white"
+        app:tabIndicatorColor="@color/dark_gray"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorHeight="2dp"
+        app:tabRippleColor="@android:color/transparent"
+        app:tabSelectedTextColor="@color/dark_gray"
+        app:tabTextAppearance="@style/list_tab_text"
+        app:tabTextColor="@color/light_gray_1">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="날짜 지남" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="기한 임박" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="기한 여유" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@android:color/transparent">
+
+            <TextView
+                android:id="@+id/tvItemNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="37dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="소비기한이 많이 남은\n제품이 N개입니다."
+                android:textColor="@color/dark_gray"
+                android:textSize="15sp"
+                app:layout_scrollFlags="scroll" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingStart="24dp"
+            android:paddingTop="21dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="60dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnDelete"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="15dp"
+            app:cardBackgroundColor="@color/main_blue"
+            app:cardCornerRadius="100dp"
+            app:strokeColor="@android:color/transparent">
+
+            <ImageView
+                android:layout_width="30.15dp"
+                android:layout_height="30.15dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/ic_trash" />
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</LinearLayout>
