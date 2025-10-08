@@ -64,10 +64,27 @@ class DetailFragment : Fragment() {
             // xml의 recyclerview와 앞서 만든 RecyclerView 어댑터 연결
             recyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             recyclerview.adapter = recyclerViewAdapter
+
+            addListItemData(dataArray) // 제품 상세 설명 Item에 데이터 추가 (ArrayList에 담아둔 더미 데이터)
         }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    // 리사이클러뷰 Item에 데이터 추가 -> UI 업데이트
+    private fun addListItemData(data: ArrayList<DetailItemData>) {
+        val itemList = ArrayList<DetailItemData>(data.size)
+        for (i in data) { // [입력으로 들어온 data <-> 리사이클러뷰 item data class] 매핑
+            itemList.add(
+                DetailItemData(
+                    i.itemId,
+                    i.detail
+                ),
+            )
+        }
+        // 모든 Item이 추가된 Item 리스트를 UI에 반영
+        recyclerViewAdapter.differ.submitList(itemList)
     }
 }
