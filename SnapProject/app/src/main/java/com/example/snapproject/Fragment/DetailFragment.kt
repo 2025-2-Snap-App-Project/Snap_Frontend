@@ -45,13 +45,23 @@ class DetailFragment : Fragment() {
         val itemName = String.format(resources.getString(R.string.detail_item_name),"초코파이")
         val itemDate = String.format(resources.getString(R.string.detail_item_date),"2025.07.22")
         val itemStorage = String.format(resources.getString(R.string.detail_item_storage),"냉장고 두 번째 칸")
+        val itemSummary = arrayListOf(
+            "이 제품은 **닭가슴살**을 주재료로 한 가공식품입니다. 전반적으로 단백질이 풍부하지만, **몇 가지 주의할 점**이 있습니다. ",
+            "1. **대두(콩)**과 **밀**은 대표적인 알레르기 유발 성분입니다.",
+            "2. **혼합제제(폴리인산나트륨, 피로인산나트륨)**는 가공식품에서 보존성과 조직감을 높이기 위한 첨가물로, 과도한 섭취 시 신장 건강에 영향을 줄 수 있습니다.",
+            "3. **L-글루타민산나트륨(MSG)**는 감칠맛을 내는 조미료로, 일반적으로 안전하지만, 일부 민감한 사람에게는 두통 등을 유발할 수 있습니다."
+        )
 
+        // 제품명, 소비기한, 보관 장소 아이템 -> 더미 데이터 ArrayList에 담기
         val dataArrayList: ArrayList<DetailItemData> = arrayListOf(
             DetailItemData("DETAIL_NAME", DetailNameViewObject(itemName)),
             DetailItemData("DETAIL_DATE", DetailDateViewObject(itemDate)),
-            DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage)),
-            DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject("이 제품은 **닭가슴살**을 주재료로 한 가공식품입니다. 전반적으로 단백질이 풍부하지만, **몇 가지 주의할 점**이 있습니다. 1. **대두(콩)**과 **밀**은 대표적인 알레르기 유발 성분입니다. 해당 알레르기가 있는 분은 섭취를 피하세요. 2. **혼합제제(폴리인산나트륨, 피로인산나트륨)**는 가공식품에서 보존성과 조직감을 높이기 위한 첨가물로, 과도한 섭취 시 신장 건강에 영향을 줄 수 있습니다. 3. **L-글루타민산나트륨(MSG)**는 감칠맛을 내는 조미료로, 일반적으로 안전하지만, 일부 민감한 사람에게는 두통 등을 유발할 수 있습니다.")),
+            DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage))
         )
+
+        for (summary in itemSummary) { // itemSummary의 element를 하나씩 더미 데이터 ArrayList에 추가
+            dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
+        }
 
         recyclerViewAdapter = DetailRecyclerViewAdapter(dataArrayList) // RecyclerView 어댑터 생성
 
