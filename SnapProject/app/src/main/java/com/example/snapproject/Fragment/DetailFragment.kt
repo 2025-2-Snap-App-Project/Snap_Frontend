@@ -80,7 +80,8 @@ class DetailFragment : Fragment() {
             findNavController().popBackStack()
         }
         binding.btnStore.setOnClickListener { // 보관하기 버튼 클릭 -> 보관하기(녹음) 화면으로 이동
-            findNavController().navigate(R.id.action_detailFragment_to_storeRecordFragment)
+            val action = DetailFragmentDirections.actionDetailFragmentToStoreRecordFragment(prevPage = prevPage) // 어떤 화면에서 넘어온 건지 args로 전달
+            findNavController().navigate(action)
         }
     }
 
