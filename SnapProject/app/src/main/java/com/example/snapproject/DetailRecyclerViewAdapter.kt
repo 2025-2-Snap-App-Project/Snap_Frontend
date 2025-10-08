@@ -6,7 +6,7 @@ import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.viewholder.DetailViewHolder
 
 class DetailRecyclerViewAdapter(
-    private val dataSet: Array<DetailItemData>
+    private val dataSet: ArrayList<DetailItemData>
 ) : RecyclerView.Adapter<DetailViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailViewHolder {
