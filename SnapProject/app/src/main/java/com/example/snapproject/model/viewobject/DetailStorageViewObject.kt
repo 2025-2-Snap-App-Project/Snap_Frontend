@@ -1,5 +1,5 @@
 package com.example.snapproject.model.viewobject
 
-data class DetailStorageViewObject (
+data class DetailStorageViewObject(
     val storage: String,
 ) : DetailViewObject()

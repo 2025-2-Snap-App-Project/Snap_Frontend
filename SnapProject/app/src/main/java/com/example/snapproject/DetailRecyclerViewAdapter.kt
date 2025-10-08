@@ -6,14 +6,19 @@ import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.viewholder.DetailViewHolder
 
 class DetailRecyclerViewAdapter(
-    private val dataSet: ArrayList<DetailItemData>
+    private val dataSet: ArrayList<DetailItemData>,
 ) : RecyclerView.Adapter<DetailViewHolder>() {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): DetailViewHolder {
         return DetailViewHolderFactory.createViewHolder(parent, viewType)
     }
 
-    override fun onBindViewHolder(holder: DetailViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: DetailViewHolder,
+        position: Int,
+    ) {
         holder.bind(dataSet[position])
     }
 

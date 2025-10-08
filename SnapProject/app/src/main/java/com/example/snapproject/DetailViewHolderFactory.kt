@@ -14,8 +14,11 @@ import com.example.snapproject.viewholder.StorageViewHolder
 import com.example.snapproject.viewholder.SummaryViewHolder
 
 object DetailViewHolderFactory {
-    fun createViewHolder(parent: ViewGroup, viewType: Int): DetailViewHolder{
-        return when(viewType) {
+    fun createViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): DetailViewHolder  {
+        return when (viewType) {
             ViewType.DETAIL_NAME.ordinal -> NameViewHolder(getViewBinding(parent, ItemDetailNameBinding::inflate))
             ViewType.DETAIL_DATE.ordinal -> DateViewHolder(getViewBinding(parent, ItemDetailDateBinding::inflate))
             ViewType.DETAIL_STORAGE.ordinal -> StorageViewHolder(getViewBinding(parent, ItemDetailStorageBinding::inflate))
@@ -26,9 +29,8 @@ object DetailViewHolderFactory {
 
     private fun <T : ViewBinding> getViewBinding(
         parent: ViewGroup,
-        inflate: (LayoutInflater, ViewGroup, Boolean) -> T
+        inflate: (LayoutInflater, ViewGroup, Boolean) -> T,
     ): T {
         return inflate(LayoutInflater.from(parent.context), parent, false)
     }
-
 }

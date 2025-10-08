@@ -10,7 +10,10 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.toColorInt
 
 // TextView의 ** 사이에 텍스트 스타일(컬러, 폰트)를 적용하는 함수
-fun applyStyleBetweenAsterisks(tv: TextView, context: Context) {
+fun applyStyleBetweenAsterisks(
+    tv: TextView,
+    context: Context,
+) {
     val tvData: String = tv.text.toString()
     val tvBuilder = SpannableStringBuilder(tvData)
 
@@ -21,8 +24,8 @@ fun applyStyleBetweenAsterisks(tv: TextView, context: Context) {
     val textColor = "#2276FF".toColorInt()
 
     while (start != -1 && end != -1) {
-        tvBuilder.setSpan(CustomTypefaceSpan(textFont), start+2, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        tvBuilder.setSpan(ForegroundColorSpan(textColor), start+2, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        tvBuilder.setSpan(CustomTypefaceSpan(textFont), start + 2, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        tvBuilder.setSpan(ForegroundColorSpan(textColor), start + 2, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         tvBuilder.replace(end, end + 2, "")
         tvBuilder.replace(start, start + 2, "")

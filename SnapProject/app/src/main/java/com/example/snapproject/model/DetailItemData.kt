@@ -4,5 +4,5 @@ import com.example.snapproject.model.viewobject.DetailViewObject
 
 data class DetailItemData(
     val viewType: String,
-    val detailViewObject: DetailViewObject
+    val detailViewObject: DetailViewObject,
 )
