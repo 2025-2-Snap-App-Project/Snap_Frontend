@@ -73,6 +73,10 @@
         <action
             android:id="@+id/action_storeRecordFragment_to_storeResultFragment"
             app:destination="@id/storeResultFragment" />
+        <argument
+            android:name="prevPage"
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/storeResultFragment"
@@ -81,5 +85,9 @@
         <action
             android:id="@+id/action_storeResultFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
+        <argument
+            android:name="prevPage"
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
 </navigation>
