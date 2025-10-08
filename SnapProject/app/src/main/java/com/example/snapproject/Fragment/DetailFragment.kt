@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.snapproject.DetailRecyclerViewAdapter
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
@@ -14,6 +16,8 @@ import com.example.snapproject.model.ListItemData
 class DetailFragment : Fragment() {
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var recyclerViewAdapter: DetailRecyclerViewAdapter // RecyclerView 어댑터
 
     private val dataName = DetailItemData(0, "제품명은 **초코파이**입니다.")
     private val dataDate = DetailItemData(1, "소비기한은 **2025.07.22** 까지입니다.")
@@ -43,6 +47,8 @@ class DetailFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        recyclerViewAdapter = DetailRecyclerViewAdapter(requireContext()) // RecyclerView 어댑터 생성
+
         initView()
 
         binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 소비기한 리스트 화면으로 이동
@@ -55,6 +61,9 @@ class DetailFragment : Fragment() {
 
     private fun initView() =
         with(binding) {
+            // xml의 recyclerview와 앞서 만든 RecyclerView 어댑터 연결
+            recyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            recyclerview.adapter = recyclerViewAdapter
         }
 
     override fun onDestroy() {
