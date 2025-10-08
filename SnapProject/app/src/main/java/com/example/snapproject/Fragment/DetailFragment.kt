@@ -44,7 +44,7 @@ class DetailFragment : Fragment() {
 
         val itemName = String.format(resources.getString(R.string.detail_item_name),"초코파이")
         val itemDate = String.format(resources.getString(R.string.detail_item_date),"2025.07.22")
-        val itemStorage = String.format(resources.getString(R.string.detail_item_storage),"냉장고 두 번째 칸")
+//        val itemStorage = String.format(resources.getString(R.string.detail_item_storage),"냉장고 두 번째 칸")
         val itemSummary = arrayListOf(
             "이 제품은 **닭가슴살**을 주재료로 한 가공식품입니다. 전반적으로 단백질이 풍부하지만, **몇 가지 주의할 점**이 있습니다. ",
             "1. **대두(콩)**과 **밀**은 대표적인 알레르기 유발 성분입니다.",
@@ -56,7 +56,7 @@ class DetailFragment : Fragment() {
         val dataArrayList: ArrayList<DetailItemData> = arrayListOf(
             DetailItemData("DETAIL_NAME", DetailNameViewObject(itemName)),
             DetailItemData("DETAIL_DATE", DetailDateViewObject(itemDate)),
-            DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage))
+//            DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage))
         )
 
         for (summary in itemSummary) { // itemSummary의 element를 하나씩 더미 데이터 ArrayList에 추가

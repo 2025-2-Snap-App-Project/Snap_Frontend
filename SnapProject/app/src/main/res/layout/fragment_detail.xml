@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="보관 장소 수정"
+                android:text="제품 보관하기"
                 android:textColor="@color/main_white"
                 android:textSize="14sp" />
         </com.google.android.material.card.MaterialCardView>
