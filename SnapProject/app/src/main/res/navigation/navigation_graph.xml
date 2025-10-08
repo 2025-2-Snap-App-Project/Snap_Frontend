@@ -58,6 +58,10 @@
         android:id="@+id/detailFragment"
         android:name="com.example.snapproject.Fragment.DetailFragment"
         android:label="DetailFragment">
+        <argument
+            android:name="prevPage"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_detailFragment_to_storeRecordFragment"
             app:destination="@id/storeRecordFragment" />
