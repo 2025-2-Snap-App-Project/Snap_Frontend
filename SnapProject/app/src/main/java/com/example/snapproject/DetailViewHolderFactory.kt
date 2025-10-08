@@ -19,6 +19,7 @@ object DetailViewHolderFactory {
             ViewType.DETAIL_NAME.ordinal -> NameViewHolder(getViewBinding(parent, ItemDetailNameBinding::inflate))
             ViewType.DETAIL_DATE.ordinal -> DateViewHolder(getViewBinding(parent, ItemDetailDateBinding::inflate))
             ViewType.DETAIL_STORAGE.ordinal -> StorageViewHoler(getViewBinding(parent, ItemDetailStorageBinding::inflate))
+            ViewType.DETAIL_SUMMARY.ordinal -> SummaryViewHoler(getViewBinding(parent, ItemDetailSummaryBinding::inflate))
             else -> SummaryViewHoler(getViewBinding(parent, ItemDetailSummaryBinding::inflate))
         }
     }
