@@ -5,7 +5,7 @@ import com.example.snapproject.applyStyleBetweenAsterisks
 import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.model.viewobject.DetailStorageViewObject
 
-class StorageViewHoler (
+class StorageViewHolder (
     private val binding: ItemDetailStorageBinding
 ) : DetailViewHolder(binding) {
     override fun bind(item: DetailItemData) {

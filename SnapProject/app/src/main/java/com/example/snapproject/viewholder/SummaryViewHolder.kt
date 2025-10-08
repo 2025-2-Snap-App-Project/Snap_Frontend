@@ -5,7 +5,7 @@ import com.example.snapproject.applyStyleBetweenAsterisks
 import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.model.viewobject.DetailSummaryViewObject
 
-class SummaryViewHoler(
+class SummaryViewHolder(
     private val binding: ItemDetailSummaryBinding
 ) : DetailViewHolder(binding) {
     override fun bind(item: DetailItemData) {

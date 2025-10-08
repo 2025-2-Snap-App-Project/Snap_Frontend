@@ -10,17 +10,17 @@ import com.example.snapproject.databinding.ItemDetailSummaryBinding
 import com.example.snapproject.viewholder.DateViewHolder
 import com.example.snapproject.viewholder.DetailViewHolder
 import com.example.snapproject.viewholder.NameViewHolder
-import com.example.snapproject.viewholder.StorageViewHoler
-import com.example.snapproject.viewholder.SummaryViewHoler
+import com.example.snapproject.viewholder.StorageViewHolder
+import com.example.snapproject.viewholder.SummaryViewHolder
 
 object DetailViewHolderFactory {
     fun createViewHolder(parent: ViewGroup, viewType: Int): DetailViewHolder{
         return when(viewType) {
             ViewType.DETAIL_NAME.ordinal -> NameViewHolder(getViewBinding(parent, ItemDetailNameBinding::inflate))
             ViewType.DETAIL_DATE.ordinal -> DateViewHolder(getViewBinding(parent, ItemDetailDateBinding::inflate))
-            ViewType.DETAIL_STORAGE.ordinal -> StorageViewHoler(getViewBinding(parent, ItemDetailStorageBinding::inflate))
-            ViewType.DETAIL_SUMMARY.ordinal -> SummaryViewHoler(getViewBinding(parent, ItemDetailSummaryBinding::inflate))
-            else -> SummaryViewHoler(getViewBinding(parent, ItemDetailSummaryBinding::inflate))
+            ViewType.DETAIL_STORAGE.ordinal -> StorageViewHolder(getViewBinding(parent, ItemDetailStorageBinding::inflate))
+            ViewType.DETAIL_SUMMARY.ordinal -> SummaryViewHolder(getViewBinding(parent, ItemDetailSummaryBinding::inflate))
+            else -> SummaryViewHolder(getViewBinding(parent, ItemDetailSummaryBinding::inflate))
         }
     }
 
