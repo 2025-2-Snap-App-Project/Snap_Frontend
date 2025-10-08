@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">SnapProject</string>
     <string name="home_open_source_license"><u>오픈소스 라이선스</u></string>
+    <string name="detail_more_info"><u>더 자세한 정보 확인</u></string>
     <string name="appbar_scrolling_view_behavior" translatable="false">
         com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior
     </string>
