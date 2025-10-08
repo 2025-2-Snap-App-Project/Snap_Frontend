@@ -25,7 +25,7 @@ class DetailFragment : Fragment() {
         arrayListOf(dataName, dataDate, dataStore, dataSummary)
 
     companion object {
-        fun newInstance() = ListFragment()
+        fun newInstance() = DetailFragment()
     }
 
     override fun onCreateView(
