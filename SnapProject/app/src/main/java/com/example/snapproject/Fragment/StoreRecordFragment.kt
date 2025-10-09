@@ -38,6 +38,9 @@ class StoreRecordFragment : Fragment() {
         binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 제품 상세 설명 화면으로 이동
             findNavController().popBackStack()
         }
+        binding.btnNext.setOnClickListener { // 다음으로 버튼 클릭 -> DB의 테이블 Update 로직 추가 필요
+            findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
+        }
     }
 
     private fun initView() =
