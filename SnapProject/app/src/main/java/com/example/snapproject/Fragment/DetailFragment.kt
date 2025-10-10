@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.DetailRecyclerViewAdapter
+import com.example.snapproject.DetailIngredientsDialog
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
@@ -85,6 +87,13 @@ class DetailFragment : Fragment() {
         binding.btnStore.setOnClickListener { // 보관하기 버튼 클릭 -> 보관하기(녹음) 화면으로 이동
             val action = DetailFragmentDirections.actionDetailFragmentToStoreRecordFragment(prevPage = prevPage) // 어떤 화면에서 넘어온 건지 args로 전달
             findNavController().navigate(action)
+        }
+
+        binding.btnMoreInfo.setOnClickListener {
+            // 원재료명 다이얼로그 show
+            val dialog = DetailIngredientsDialog() // DetailIngredientsDialog 인스턴스화
+            dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
+            dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
         }
     }
 
