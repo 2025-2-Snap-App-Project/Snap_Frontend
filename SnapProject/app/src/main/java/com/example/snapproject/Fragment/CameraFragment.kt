@@ -42,7 +42,7 @@ class CameraFragment : Fragment() {
     private lateinit var preview: Preview // 카메라 미리보기 preview
     private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
     private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
-    private var uriArrayList : ArrayList<Uri> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
+    private var uriArrayList : ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -237,7 +237,7 @@ class CameraFragment : Fragment() {
                 // 이미지 캡쳐 및 저장 성공
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     Toast.makeText(context, "촬영 성공", Toast.LENGTH_SHORT).show()
-                    outputFileResults.savedUri?.let { uriArrayList.add(it) } // 이미지 저장 경로를 ArrayList에 추가
+                    outputFileResults.savedUri?.let { uriArrayList.add(it.toString()) } // 이미지 저장 경로를 ArrayList에 추가
 
                     Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인
                 }
