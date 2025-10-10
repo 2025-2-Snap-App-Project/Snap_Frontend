@@ -28,6 +28,11 @@
         android:id="@+id/loadingFragment"
         android:name="com.example.snapproject.Fragment.LoadingFragment"
         android:label="LoadingFragment">
+        <argument
+            android:name="uriArrLst"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
         <action
             android:id="@+id/action_loadingFragment_to_detailFragment"
             app:destination="@id/detailFragment" />

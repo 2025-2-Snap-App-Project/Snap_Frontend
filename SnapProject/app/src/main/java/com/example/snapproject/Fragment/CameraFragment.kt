@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
@@ -21,8 +23,10 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.MainActivity
-import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentCameraBinding
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -35,6 +39,8 @@ class CameraFragment : Fragment() {
     private var camera: Camera? = null // 카메라 객체
     private lateinit var preview: Preview // 카메라 미리보기 preview
     private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
+    private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
+    private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,7 +130,12 @@ class CameraFragment : Fragment() {
 
         // 버튼 클릭 이벤트 처리 코드를 여기에 추가해야(initView 함수 안이 X) onResume된 후에도 해당 코드가 정상 작동함.
         binding.btnComplete.setOnClickListener {
-            findNavController().navigate(R.id.action_cameraFragment_to_loadingFragment)
+            val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+            findNavController().navigate(action)
+        }
+
+        binding.btnCapture.setOnClickListener { // 하단의 원형 버튼 클릭 시
+            takePhoto() // 사진 촬영 및 이미지 파일 저장
         }
     }
 
@@ -181,6 +192,9 @@ class CameraFragment : Fragment() {
                     it.surfaceProvider = binding.previewCamera.surfaceProvider
                 }
 
+        // 이미지 캡쳐 Builder 객체 생성
+        imageCapture = ImageCapture.Builder().build()
+
         // 기존에 연결되어 있던 use-cases 우선 해제(unbind)
         cameraProvider.unbindAll()
 
@@ -191,10 +205,42 @@ class CameraFragment : Fragment() {
                 this,
                 cameraSelector,
                 preview,
+                imageCapture,
             )
         } catch (exc: Exception) {
             Log.e("CameraFragment", "Use case binding failed", exc)
         }
+    }
+
+    // 카메라 캡쳐 및 이미지 파일 Cache 디렉터리에 저장
+    private fun takePhoto() {
+        val mImageCapture = imageCapture ?: return
+
+        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
+        val imgFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
+
+        // 캡쳐 이미지 -> 이미지 파일 변경 시, 사용할 옵션 설정 (저장 위치 등)
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(imgFile).build()
+
+        // 사진 촬영
+        mImageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(requireContext()),
+            object : ImageCapture.OnImageSavedCallback {
+                // 이미지 캡쳐 및 저장 실패
+                override fun onError(exc: ImageCaptureException) {
+                    Log.d("CameraFragment", "촬영 실패 : ${exc.message}", exc)
+                }
+
+                // 이미지 캡쳐 및 저장 성공
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    Toast.makeText(context, "촬영 성공", Toast.LENGTH_SHORT).show()
+                    outputFileResults.savedUri?.let { uriArrayList.add(it.toString()) } // 이미지 저장 경로를 ArrayList에 추가
+
+                    Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인
+                }
+            },
+        )
     }
 
     override fun onDestroy() {
