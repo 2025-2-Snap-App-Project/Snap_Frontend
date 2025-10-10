@@ -19,7 +19,7 @@ import com.example.snapproject.model.viewobject.DetailNameViewObject
 import com.example.snapproject.model.viewobject.DetailStorageViewObject
 import com.example.snapproject.model.viewobject.DetailSummaryViewObject
 
-class DetailFragment : Fragment() {
+class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDialogListener {
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
 
@@ -107,5 +107,10 @@ class DetailFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    // Dialog 내부의 "닫기" 버튼 클릭 시
+    override fun onDialogEditClick(dialog: DialogFragment) { // dialog 사라짐
+        dialog.dismiss()
     }
 }
