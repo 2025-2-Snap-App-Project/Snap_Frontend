@@ -54,6 +54,8 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                 "2. **혼합제제(폴리인산나트륨, 피로인산나트륨)**는 가공식품에서 보존성과 조직감을 높이기 위한 첨가물로, 과도한 섭취 시 신장 건강에 영향을 줄 수 있습니다.",
                 "3. **L-글루타민산나트륨(MSG)**는 감칠맛을 내는 조미료로, 일반적으로 안전하지만, 일부 민감한 사람에게는 두통 등을 유발할 수 있습니다.",
             )
+        val txtIngredients =
+            "밀가루(밀:미국산,호주산), 마시멜로(물엿, 설탕, 젤라틴), 식물성유지(팜유), 설탕, 전란액, 코코아분말, 정제소금, 합성착향료(바닐린), 탄산수소나트륨(팽창제), 밀가루(밀:미국산,호주산), 마시멜로(물엿, 설탕, 젤라틴), 식물성유지(팜유), 설탕, 전란액, 코코아분말, 정제소금, 합성착향료(바닐린), 탄산수소나트륨(팽창제), 밀가루(밀:미국산,호주산), 마시멜로(물엿, 설탕, 젤라틴), 식물성유지(팜유), 설탕, 전란액, 코코아분말, 정제소금, 합성착향료(바닐린), 탄산수소나트륨(팽창제)"
 
         // 제품명, 소비기한, 보관 장소 아이템 -> 더미 데이터 ArrayList에 담기
         val dataArrayList: ArrayList<DetailItemData> =
@@ -91,7 +93,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
         binding.btnMoreInfo.setOnClickListener {
             // 원재료명 다이얼로그 show
-            val dialog = DetailIngredientsDialog() // DetailIngredientsDialog 인스턴스화
+            val dialog = DetailIngredientsDialog(txtIngredients) // DetailIngredientsDialog 인스턴스화 (원재료명도 같이 입력으로 넣어줌)
             dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
             dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
         }
