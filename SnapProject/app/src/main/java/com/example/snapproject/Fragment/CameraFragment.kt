@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
@@ -35,6 +36,7 @@ class CameraFragment : Fragment() {
     private var camera: Camera? = null // 카메라 객체
     private lateinit var preview: Preview // 카메라 미리보기 preview
     private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
+    private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -181,6 +183,9 @@ class CameraFragment : Fragment() {
                     it.surfaceProvider = binding.previewCamera.surfaceProvider
                 }
 
+        // 이미지 캡쳐 Builder 객체 생성
+        imageCapture = ImageCapture.Builder().build()
+
         // 기존에 연결되어 있던 use-cases 우선 해제(unbind)
         cameraProvider.unbindAll()
 
@@ -191,6 +196,7 @@ class CameraFragment : Fragment() {
                 this,
                 cameraSelector,
                 preview,
+                imageCapture
             )
         } catch (exc: Exception) {
             Log.e("CameraFragment", "Use case binding failed", exc)
