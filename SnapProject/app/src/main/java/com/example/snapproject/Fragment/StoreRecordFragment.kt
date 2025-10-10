@@ -1,12 +1,16 @@
 package com.example.snapproject.Fragment
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
+import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -28,6 +32,10 @@ class StoreRecordFragment : Fragment() {
     // Context, Activity 변수
     private lateinit var mContext: Context
     private lateinit var mActivity: MainActivity
+
+    // SpeechRecognizer 관련 변수
+    private lateinit var recogIntent: Intent
+    private lateinit var mRecognizer: SpeechRecognizer
 
     companion object {
         fun newInstance() = StoreRecordFragment()
@@ -103,6 +111,7 @@ class StoreRecordFragment : Fragment() {
         mActivity = context as MainActivity
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -120,6 +129,63 @@ class StoreRecordFragment : Fragment() {
         }
         binding.btnNext.setOnClickListener { // 다음으로 버튼 클릭 -> DB의 테이블 Update 로직 추가 필요
             findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
+        }
+
+        // 음성 녹음 터치 이벤트 - 버튼을 누르기 시작했을 때, 버튼을 눌렀다가 떼었을 때
+        binding.btnRecord.setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> { // 버튼을 누르기 시작했을 때 -> Speech-To-Text 시작
+                    // RecognizerIntent 생성
+                    recogIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                    recogIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, mContext.packageName)
+                    recogIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+
+                    // Speech-To-Text 시작
+                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(mContext)
+                    mRecognizer.setRecognitionListener(listener)
+                    mRecognizer.startListening(recogIntent)
+                }
+                MotionEvent.ACTION_UP -> { // 버튼을 눌렀다가 떼었을 때 -> Speech-To-Text 종료
+                    listener.onEndOfSpeech()
+                }
+            }
+            true
+        }
+    }
+
+    // SpeechRecognizer 관련 리스너 설정
+    private val listener: RecognitionListener = object : RecognitionListener {
+        override fun onReadyForSpeech(params: Bundle?) {
+        }
+
+        // 음성 녹음 시작 시
+        override fun onBeginningOfSpeech() {
+            binding.tvStore.text = "듣고 있습니다..."
+        }
+
+        override fun onRmsChanged(rmsdB: Float) {
+        }
+
+        override fun onBufferReceived(buffer: ByteArray?) {
+        }
+
+        override fun onEndOfSpeech() {
+        }
+
+        override fun onError(error: Int) {
+        }
+
+        // 음성 인식 종료
+        override fun onResults(results: Bundle) {
+            val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+            for (i in matches!!.indices) binding.tvStore.text = matches[i] // TextView에 음성 인식 결과 반영
+
+        }
+
+        override fun onPartialResults(partialResults: Bundle?) {
+        }
+
+        override fun onEvent(eventType: Int, params: Bundle?) {
         }
     }
 
