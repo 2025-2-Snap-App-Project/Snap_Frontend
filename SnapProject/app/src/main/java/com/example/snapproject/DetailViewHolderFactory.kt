@@ -17,7 +17,7 @@ object DetailViewHolderFactory {
     fun createViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): DetailViewHolder  {
+    ): DetailViewHolder {
         return when (viewType) {
             ViewType.DETAIL_NAME.ordinal -> NameViewHolder(getViewBinding(parent, ItemDetailNameBinding::inflate))
             ViewType.DETAIL_DATE.ordinal -> DateViewHolder(getViewBinding(parent, ItemDetailDateBinding::inflate))
