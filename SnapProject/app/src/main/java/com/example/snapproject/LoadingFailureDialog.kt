@@ -1,7 +1,5 @@
 package com.example.snapproject
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Insets
@@ -21,6 +19,26 @@ class LoadingFailureDialog : DialogFragment() {
     private var _binding: DialogLoadingFailureBinding? = null
     private val binding get() = _binding!!
 
+    // LoadingFragment에 Event를 전달하기 위한 Listener
+    private lateinit var listener: LoadingFailureDialogListener
+
+    // Linstener 인터페이스
+    interface LoadingFailureDialogListener {
+        fun onDialogRetryClick(dialog: DialogFragment)
+        fun onDialogCancelClick(dialog: DialogFragment)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try { // LoadingFragment에 event 전달
+            listener = targetFragment as LoadingFailureDialogListener
+        } catch (e: ClassCastException) { // LoadingFragment에 인터페이스가 구현되지 않은 경우 예외 처리
+            throw ClassCastException(
+                (context.toString() + "must implement NoticeDialogListener")
+            )
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,10 +56,10 @@ class LoadingFailureDialog : DialogFragment() {
 
         with(binding) {
             btnCancel.setOnClickListener { // 취소 버튼 클릭
-                dialog?.dismiss()
+                listener.onDialogCancelClick(this@LoadingFailureDialog)
             }
             btnRetry.setOnClickListener { // 재시도 버튼 클릭
-                dialog?.dismiss()
+                listener.onDialogRetryClick(this@LoadingFailureDialog)
             }
         }
     }
