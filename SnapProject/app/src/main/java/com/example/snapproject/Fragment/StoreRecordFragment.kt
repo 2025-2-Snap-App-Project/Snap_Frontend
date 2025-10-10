@@ -180,6 +180,11 @@ class StoreRecordFragment : Fragment() {
             val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
             for (i in matches!!.indices) binding.tvStore.text = matches[i] // TextView에 음성 인식 결과 반영
 
+            // 버튼 2개 레이아웃 숨겨진 상태라면 -> 다시 화면에 나타나게 하기
+            if (binding.btnLayout.visibility != View.VISIBLE) {
+                binding.btnLayout.visibility = View.VISIBLE
+            }
+
         }
 
         override fun onPartialResults(partialResults: Bundle?) {
