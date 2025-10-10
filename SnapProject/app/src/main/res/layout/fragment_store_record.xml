@@ -64,7 +64,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="100dp"
             android:fontFamily="@font/pretendard_bold"
-            android:text="음성 인식 중..."
+            android:text="상단의 마이크를\n누르고 말씀해주세요."
+            android:gravity="center"
             android:textColor="@color/main_blue"
             android:textSize="32sp" />
 
