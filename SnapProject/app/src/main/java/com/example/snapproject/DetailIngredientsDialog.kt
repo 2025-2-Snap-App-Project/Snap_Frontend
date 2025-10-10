@@ -56,7 +56,7 @@ class DetailIngredientsDialog(txtIngredients: String) : DialogFragment() {
         dialog?.setCanceledOnTouchOutside(false) // Dialog 바깥쪽 눌러도 취소 불가
 
         with(binding) {
-            tvIngredients.text = ingredients // 입력으로 받은 ingredients(원재료명)으로 TextView의 내용 교체
+            tvIngredients.text = ingredients.replace(" ", "\u00A0") // 입력으로 받은 ingredients(원재료명)으로 TextView의 내용 교체, Word Wrap 제거
 
             btnExit.setOnClickListener { // 닫기 버튼 클릭
                 listener.onDialogEditClick(this@DetailIngredientsDialog)
