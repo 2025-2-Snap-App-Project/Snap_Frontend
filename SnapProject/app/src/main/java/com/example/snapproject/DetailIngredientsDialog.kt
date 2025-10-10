@@ -15,9 +15,11 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import com.example.snapproject.databinding.DialogDetailIngredientsBinding
 
-class DetailIngredientsDialog : DialogFragment() {
+class DetailIngredientsDialog(txtIngredients: String) : DialogFragment() {
     private var _binding: DialogDetailIngredientsBinding? = null
     private val binding get() = _binding!!
+
+    private val ingredients = txtIngredients // 원재료명
 
     // 부모 프래그먼트에 Event를 전달하기 위한 Listener
     private lateinit var listener: DetailIngredientsDialogListener
@@ -54,6 +56,8 @@ class DetailIngredientsDialog : DialogFragment() {
         dialog?.setCanceledOnTouchOutside(false) // Dialog 바깥쪽 눌러도 취소 불가
 
         with(binding) {
+            tvIngredients.text = ingredients // 입력으로 받은 ingredients(원재료명)으로 TextView의 내용 교체
+
             btnExit.setOnClickListener { // 닫기 버튼 클릭
                 listener.onDialogEditClick(this@DetailIngredientsDialog)
             }
