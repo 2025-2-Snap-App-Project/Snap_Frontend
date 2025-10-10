@@ -31,11 +31,13 @@ class DetailIngredientsDialog(txtIngredients: String) : DialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        try { // LoadingFragment에 event 전달
+        try {
+            // LoadingFragment에 event 전달
             listener = targetFragment as DetailIngredientsDialogListener
-        } catch (e: ClassCastException) { // 부모 프래그먼트에 인터페이스가 구현되지 않은 경우 예외 처리
+        } catch (e: ClassCastException) {
+            // 부모 프래그먼트에 인터페이스가 구현되지 않은 경우 예외 처리
             throw ClassCastException(
-                (context.toString() + "must implement NoticeDialogListener")
+                (context.toString() + "must implement NoticeDialogListener"),
             )
         }
     }
@@ -43,13 +45,16 @@ class DetailIngredientsDialog(txtIngredients: String) : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = DialogDetailIngredientsBinding.inflate(inflater, container, false)
         return (binding.root)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable()) // Dialog 배경의 Radius 값 반영을 위해 추가한 코드
@@ -88,16 +93,17 @@ class DetailIngredientsDialog(txtIngredients: String) : DialogFragment() {
             val windowInsets = currentWindowMetrics.windowInsets
             var insets: Insets = windowInsets.getInsets(WindowInsets.Type.navigationBars())
             windowInsets.displayCutout?.run {
-                insets = Insets.max(
-                    insets,
-                    Insets.of(safeInsetLeft, safeInsetTop, safeInsetRight, safeInsetBottom)
-                )
+                insets =
+                    Insets.max(
+                        insets,
+                        Insets.of(safeInsetLeft, safeInsetTop, safeInsetRight, safeInsetBottom),
+                    )
             }
             val insetWidth = insets.right + insets.left
             val insetsHeight = insets.top + insets.bottom
             Point(
                 currentWindowMetrics.bounds.width() - insetWidth,
-                currentWindowMetrics.bounds.height() - insetsHeight
+                currentWindowMetrics.bounds.height() - insetsHeight,
             )
         } else {
             Point().apply {

@@ -1,22 +1,15 @@
 package com.example.snapproject.Fragment
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.viewbinding.ViewBinding
-import com.example.snapproject.R
-import com.example.snapproject.databinding.DialogLoadingFailureBinding
-import com.example.snapproject.databinding.FragmentLoadingBinding
-import androidx.core.graphics.drawable.toDrawable
-import androidx.fragment.app.DialogFragment
 import com.example.snapproject.LoadingFailureDialog
-
+import com.example.snapproject.R
+import com.example.snapproject.databinding.FragmentLoadingBinding
 
 class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogListener {
     private var _binding: FragmentLoadingBinding? = null
