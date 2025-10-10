@@ -132,7 +132,8 @@ class CameraFragment : Fragment() {
 
         // 버튼 클릭 이벤트 처리 코드를 여기에 추가해야(initView 함수 안이 X) onResume된 후에도 해당 코드가 정상 작동함.
         binding.btnComplete.setOnClickListener {
-            findNavController().navigate(R.id.action_cameraFragment_to_loadingFragment)
+            val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+            findNavController().navigate(action)
         }
 
         binding.btnCapture.setOnClickListener { // 하단의 원형 버튼 클릭 시
