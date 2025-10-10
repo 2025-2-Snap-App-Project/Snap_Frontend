@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Camera
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -24,7 +23,6 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.MainActivity
-import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentCameraBinding
 import java.io.File
 import java.text.SimpleDateFormat
@@ -42,7 +40,7 @@ class CameraFragment : Fragment() {
     private lateinit var preview: Preview // 카메라 미리보기 preview
     private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
     private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
-    private var uriArrayList : ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
+    private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -207,7 +205,7 @@ class CameraFragment : Fragment() {
                 this,
                 cameraSelector,
                 preview,
-                imageCapture
+                imageCapture,
             )
         } catch (exc: Exception) {
             Log.e("CameraFragment", "Use case binding failed", exc)
@@ -229,7 +227,6 @@ class CameraFragment : Fragment() {
             outputOptions,
             ContextCompat.getMainExecutor(requireContext()),
             object : ImageCapture.OnImageSavedCallback {
-
                 // 이미지 캡쳐 및 저장 실패
                 override fun onError(exc: ImageCaptureException) {
                     Log.d("CameraFragment", "촬영 실패 : ${exc.message}", exc)
@@ -242,10 +239,8 @@ class CameraFragment : Fragment() {
 
                     Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인
                 }
-
-            }
+            },
         )
-
     }
 
     override fun onDestroy() {
