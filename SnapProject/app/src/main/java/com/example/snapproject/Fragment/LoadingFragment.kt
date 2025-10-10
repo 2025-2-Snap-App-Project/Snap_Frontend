@@ -14,10 +14,11 @@ import com.example.snapproject.R
 import com.example.snapproject.databinding.DialogLoadingFailureBinding
 import com.example.snapproject.databinding.FragmentLoadingBinding
 import androidx.core.graphics.drawable.toDrawable
+import androidx.fragment.app.DialogFragment
 import com.example.snapproject.LoadingFailureDialog
 
 
-class LoadingFragment : Fragment() {
+class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogListener {
     private var _binding: FragmentLoadingBinding? = null
     private val binding get() = _binding!!
 
@@ -42,7 +43,9 @@ class LoadingFragment : Fragment() {
         initView()
 
         // 분석 실패 다이얼로그 show
-        LoadingFailureDialog().show(parentFragmentManager, "LoadingFailureDialog")
+        val dialog = LoadingFailureDialog() // LoadingFailureDialog 인스턴스화
+        dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
+        dialog.show(parentFragmentManager, "LoadingFailureDialog") // dialog 최종 show
 
         binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 촬영하기(카메라) 화면으로 이동
             findNavController().popBackStack()
@@ -59,5 +62,16 @@ class LoadingFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    // Dialog 내부의 "재시도" 버튼 클릭 시
+    override fun onDialogRetryClick(dialog: DialogFragment) { // dialog 사라짐
+        dialog.dismiss()
+    }
+
+    // Dialog 내부의 "취소" 버튼 클릭 시
+    override fun onDialogCancelClick(dialog: DialogFragment) { // dialog 사라짐, CameraFragment로 이동
+        dialog.dismiss()
+        findNavController().popBackStack()
     }
 }
