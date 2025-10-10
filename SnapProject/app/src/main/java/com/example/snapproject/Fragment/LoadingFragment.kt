@@ -1,12 +1,15 @@
 package com.example.snapproject.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.snapproject.LoadingFailureDialog
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentLoadingBinding
@@ -34,6 +37,16 @@ class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogLis
     ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+
+        // Safe Args로 받은 데이터 가져오기
+        val args: LoadingFragmentArgs by navArgs()
+        val uriArrLst = args.uriArrLst
+
+        if (uriArrLst != null) {
+            for (strUri in uriArrLst) {
+                Log.d("LoadingFragment", "전달 받은 이미지 경로 : ${strUri.toUri()}") // Uri로 타입 변환 후, 경로 확인
+            }
+        }
 
         // 분석 실패 다이얼로그 show
         val dialog = LoadingFailureDialog() // LoadingFailureDialog 인스턴스화
