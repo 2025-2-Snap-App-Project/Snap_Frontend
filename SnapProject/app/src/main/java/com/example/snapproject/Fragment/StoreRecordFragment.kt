@@ -130,6 +130,23 @@ class StoreRecordFragment : Fragment() {
             findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
         }
 
+        binding.btnKeyBoard.setOnClickListener { // "키보드로 입력" 버튼 클릭
+            binding.edtTxtStore.isEnabled = true // EditText 수정 가능
+            binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
+            binding.edtTxtStore.hint = "보관 장소를\n입력해주세요."
+            mActivity.showSoftInput(binding.edtTxtStore) // MainActivity의 키보드 보여주는 함수 호출
+        }
+
+        // 키보드 바깥쪽 레이아웃 클릭 이벤트
+        binding.parentLayout.setOnTouchListener { _, _ ->
+            mActivity.hideKeyboard(binding.edtTxtStore) // 키보드 숨기기
+            if (binding.edtTxtStore.text.isEmpty()) { // 사용자가 아무것도 입력하지 않은 경우
+                binding.edtTxtStore.hint = "마이크를 누른\n상태에서 말해주세요."
+            }
+            binding.edtTxtStore.isEnabled = false // EditText 수정 및 클릭 불가
+            false
+        }
+
         // 음성 녹음 터치 이벤트 - 버튼을 누르기 시작했을 때, 버튼을 눌렀다가 떼었을 때
         binding.btnRecord.setOnTouchListener { _, event ->
             when (event.actionMasked) {
@@ -157,12 +174,12 @@ class StoreRecordFragment : Fragment() {
         object : RecognitionListener {
             // 말하기 준비 되었을 때 (위의 터치 리스너 ACTION_DOWN - 버튼을 누르기 시작한 이후에 동작)
             override fun onReadyForSpeech(params: Bundle?) {
-                binding.tvStore.text = "이제 말해주세요"
+                binding.edtTxtStore.hint = "이제 말해주세요"
             }
 
             // 음성 녹음 시작 시
             override fun onBeginningOfSpeech() {
-                binding.tvStore.text = "듣고 있습니다..."
+                binding.edtTxtStore.hint = "듣고 있습니다..."
             }
 
             override fun onRmsChanged(rmsdB: Float) {
@@ -177,13 +194,13 @@ class StoreRecordFragment : Fragment() {
 
             // 에러 발생 시
             override fun onError(error: Int) {
-                binding.tvStore.text = "음성 인식 오류.\n다시 시도해주세요."
+                binding.edtTxtStore.hint = "음성 인식 오류.\n다시 시도해주세요."
             }
 
             // 음성 인식 종료
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                for (i in matches!!.indices) binding.tvStore.text = '"' + matches[i] + '"' // TextView에 음성 인식 결과 반영
+                for (i in matches!!.indices) binding.edtTxtStore.setText('"' + matches[i] + '"') // TextView에 음성 인식 결과 반영
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
@@ -202,6 +219,7 @@ class StoreRecordFragment : Fragment() {
             if (!hasPermissions(mContext)) {
                 requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
             }
+            edtTxtStore.isEnabled = false // EditText 수정 및 클릭 불가
         }
 
     override fun onDestroy() {

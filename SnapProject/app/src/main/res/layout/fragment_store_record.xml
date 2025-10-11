@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_white"
@@ -57,23 +58,24 @@
                 app:srcCompat="@drawable/ic_record" />
         </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tvStore"
+        <EditText
+            android:id="@+id/edtTxtStore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="100dp"
+            android:background="@android:color/transparent"
             android:fontFamily="@font/pretendard_bold"
             android:gravity="center"
-            android:text="마이크를 누른\n상태에서 말해주세요."
+            android:hint="마이크를 누른\n상태에서 말해주세요."
             android:textColor="@color/main_blue"
+            android:textColorHint="@color/main_blue"
             android:textSize="28sp" />
 
     </LinearLayout>
 
 
     <LinearLayout
-        android:id="@+id/btnLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -103,7 +105,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnRetry"
+            android:id="@+id/btnKeyBoard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="31dp"
@@ -119,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="다시 입력하기"
+                android:text="키보드로 입력"
                 android:textColor="@color/main_blue"
                 android:textSize="14sp" />
         </com.google.android.material.card.MaterialCardView>
