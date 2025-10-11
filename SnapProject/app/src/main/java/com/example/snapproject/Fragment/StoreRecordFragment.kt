@@ -21,7 +21,6 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.snapproject.Fragment.CameraFragment.Companion
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentStoreRecordBinding
 
@@ -76,10 +75,10 @@ class StoreRecordFragment : Fragment() {
                             requireContext(),
                             permission,
                         ) == PackageManager.PERMISSION_DENIED &&
-                                !ActivityCompat.shouldShowRequestPermissionRationale(
-                                    mActivity,
-                                    permission,
-                                )
+                            !ActivityCompat.shouldShowRequestPermissionRationale(
+                                mActivity,
+                                permission,
+                            )
                     }
                 if (noAskAgain) { // 사용자가 다시 묻지 않음을 선택한 경우 -> 앱 설정 화면으로 이동
                     Toast.makeText(mContext, "앱 설정에서 오디오 녹음 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
@@ -154,42 +153,46 @@ class StoreRecordFragment : Fragment() {
     }
 
     // SpeechRecognizer 관련 리스너 설정
-    private val listener: RecognitionListener = object : RecognitionListener {
-        override fun onReadyForSpeech(params: Bundle?) {
-        }
+    private val listener: RecognitionListener =
+        object : RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) {
+            }
 
-        // 음성 녹음 시작 시
-        override fun onBeginningOfSpeech() {
-            binding.tvStore.text = "듣고 있습니다..."
-        }
+            // 음성 녹음 시작 시
+            override fun onBeginningOfSpeech() {
+                binding.tvStore.text = "듣고 있습니다..."
+            }
 
-        override fun onRmsChanged(rmsdB: Float) {
-        }
+            override fun onRmsChanged(rmsdB: Float) {
+            }
 
-        override fun onBufferReceived(buffer: ByteArray?) {
-        }
+            override fun onBufferReceived(buffer: ByteArray?) {
+            }
 
-        // 말하기를 끝냈을 때
-        override fun onEndOfSpeech() {
-        }
+            // 말하기를 끝냈을 때
+            override fun onEndOfSpeech() {
+            }
 
-        // 에러 발생 시
-        override fun onError(error: Int) {
-            binding.tvStore.text = "음성 인식 오류.\n다시 시도해주세요."
-        }
+            // 에러 발생 시
+            override fun onError(error: Int) {
+                binding.tvStore.text = "음성 인식 오류.\n다시 시도해주세요."
+            }
 
-        // 음성 인식 종료
-        override fun onResults(results: Bundle) {
-            val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-            for (i in matches!!.indices) binding.tvStore.text = '"'+matches[i]+'"' // TextView에 음성 인식 결과 반영
-        }
+            // 음성 인식 종료
+            override fun onResults(results: Bundle) {
+                val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                for (i in matches!!.indices) binding.tvStore.text = '"' + matches[i] + '"' // TextView에 음성 인식 결과 반영
+            }
 
-        override fun onPartialResults(partialResults: Bundle?) {
-        }
+            override fun onPartialResults(partialResults: Bundle?) {
+            }
 
-        override fun onEvent(eventType: Int, params: Bundle?) {
+            override fun onEvent(
+                eventType: Int,
+                params: Bundle?,
+            ) {
+            }
         }
-    }
 
     private fun initView() =
         with(binding) {
