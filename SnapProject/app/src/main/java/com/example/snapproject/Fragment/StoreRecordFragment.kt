@@ -155,7 +155,9 @@ class StoreRecordFragment : Fragment() {
     // SpeechRecognizer 관련 리스너 설정
     private val listener: RecognitionListener =
         object : RecognitionListener {
+            // 말하기 준비 되었을 때 (위의 터치 리스너 ACTION_DOWN - 버튼을 누르기 시작한 이후에 동작)
             override fun onReadyForSpeech(params: Bundle?) {
+                binding.tvStore.text = "이제 말해주세요"
             }
 
             // 음성 녹음 시작 시
