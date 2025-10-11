@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:contentDescription="@string/talkback_home_menu_second"
     android:gravity="center_horizontal"
     android:importantForAccessibility="yes"
     android:orientation="vertical">
@@ -12,6 +11,7 @@
         android:id="@+id/btnDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/talkback_home_menu_second"
         app:cardBackgroundColor="@color/main_blue"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
