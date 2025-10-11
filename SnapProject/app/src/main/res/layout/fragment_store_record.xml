@@ -105,7 +105,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnRetry"
+            android:id="@+id/btnKeyBoard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="31dp"
@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="다시 입력하기"
+                android:text="키보드로 입력"
                 android:textColor="@color/main_blue"
                 android:textSize="14sp" />
         </com.google.android.material.card.MaterialCardView>

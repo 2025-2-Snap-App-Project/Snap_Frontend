@@ -130,6 +130,11 @@ class StoreRecordFragment : Fragment() {
             findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
         }
 
+        binding.btnKeyBoard.setOnClickListener { // "키보드로 입력" 버튼 클릭
+            binding.edtTxtStore.hint = "보관 장소를\n입력해주세요."
+            mActivity.showSoftInput(binding.edtTxtStore) // MainActivity의 키보드 보여주는 함수 호출
+        }
+
         // 음성 녹음 터치 이벤트 - 버튼을 누르기 시작했을 때, 버튼을 눌렀다가 떼었을 때
         binding.btnRecord.setOnTouchListener { _, event ->
             when (event.actionMasked) {
