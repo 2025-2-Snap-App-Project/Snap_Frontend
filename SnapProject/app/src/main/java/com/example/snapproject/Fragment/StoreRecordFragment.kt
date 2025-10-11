@@ -148,6 +148,7 @@ class StoreRecordFragment : Fragment() {
         binding.btnRecord.setOnTouchListener { _, event ->
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> { // 버튼을 누르기 시작했을 때 -> Speech-To-Text 시작
+                    binding.edtTxtStore.hint = "" // "키보드 입력 시도 -> 음성 인식 시도"하는 경우를 고려해서 추가한 코드
                     binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
 
                     // RecognizerIntent 생성
