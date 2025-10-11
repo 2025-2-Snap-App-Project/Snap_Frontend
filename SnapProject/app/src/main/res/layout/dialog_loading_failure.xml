@@ -15,6 +15,13 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="26dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,12 +40,12 @@
             android:text="이미지 분석에 실패했습니다."
             android:textColor="@color/dark_gray"
             android:textSize="15sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="39.35dp"
             android:layout_marginStart="27dp"
-            android:layout_marginTop="26dp"
             android:layout_marginEnd="27dp"
             android:layout_marginBottom="28.65dp"
             android:gravity="center"
