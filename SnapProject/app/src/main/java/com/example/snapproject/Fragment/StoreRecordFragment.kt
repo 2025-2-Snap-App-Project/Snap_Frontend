@@ -157,12 +157,12 @@ class StoreRecordFragment : Fragment() {
         object : RecognitionListener {
             // 말하기 준비 되었을 때 (위의 터치 리스너 ACTION_DOWN - 버튼을 누르기 시작한 이후에 동작)
             override fun onReadyForSpeech(params: Bundle?) {
-                binding.tvStore.text = "이제 말해주세요"
+                binding.edtTxtStore.hint = "이제 말해주세요"
             }
 
             // 음성 녹음 시작 시
             override fun onBeginningOfSpeech() {
-                binding.tvStore.text = "듣고 있습니다..."
+                binding.edtTxtStore.hint = "듣고 있습니다..."
             }
 
             override fun onRmsChanged(rmsdB: Float) {
@@ -177,13 +177,13 @@ class StoreRecordFragment : Fragment() {
 
             // 에러 발생 시
             override fun onError(error: Int) {
-                binding.tvStore.text = "음성 인식 오류.\n다시 시도해주세요."
+                binding.edtTxtStore.hint = "음성 인식 오류.\n다시 시도해주세요."
             }
 
             // 음성 인식 종료
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                for (i in matches!!.indices) binding.tvStore.text = '"' + matches[i] + '"' // TextView에 음성 인식 결과 반영
+                for (i in matches!!.indices) binding.edtTxtStore.setText('"' + matches[i] + '"') // TextView에 음성 인식 결과 반영
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
