@@ -145,27 +145,19 @@ class StoreRecordFragment : Fragment() {
         }
 
         // 음성 녹음 터치 이벤트 - 버튼을 누르기 시작했을 때, 버튼을 눌렀다가 떼었을 때
-        binding.btnRecord.setOnTouchListener { _, event ->
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> { // 버튼을 누르기 시작했을 때 -> Speech-To-Text 시작
-                    binding.edtTxtStore.hint = "" // "키보드 입력 시도 -> 음성 인식 시도"하는 경우를 고려해서 추가한 코드
-                    binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
+        binding.btnRecord.setOnClickListener {
+            binding.edtTxtStore.hint = "" // "키보드 입력 시도 -> 음성 인식 시도"하는 경우를 고려해서 추가한 코드
+            binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
 
-                    // RecognizerIntent 생성
-                    recogIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                    recogIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, mContext.packageName)
-                    recogIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+            // RecognizerIntent 생성
+            recogIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            recogIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, mContext.packageName)
+            recogIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
 
-                    // Speech-To-Text 시작
-                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(mContext)
-                    mRecognizer.setRecognitionListener(listener)
-                    mRecognizer.startListening(recogIntent)
-                }
-                MotionEvent.ACTION_UP -> { // 버튼을 눌렀다가 떼었을 때 -> Speech-To-Text 종료
-                    listener.onEndOfSpeech()
-                }
-            }
-            true
+            // Speech-To-Text 시작
+            mRecognizer = SpeechRecognizer.createSpeechRecognizer(mContext)
+            mRecognizer.setRecognitionListener(listener)
+            mRecognizer.startListening(recogIntent)
         }
     }
 
