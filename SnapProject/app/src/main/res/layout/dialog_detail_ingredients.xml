@@ -46,6 +46,7 @@
             android:layout_marginTop="25dp"
             android:layout_marginEnd="58dp"
             android:layout_marginBottom="32dp"
+            android:contentDescription="팝업창 닫기 버튼"
             app:cardBackgroundColor="@color/main_blue"
             app:cardCornerRadius="5.66dp"
             app:strokeColor="@android:color/transparent">

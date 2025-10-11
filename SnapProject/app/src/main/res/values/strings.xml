@@ -12,4 +12,5 @@
     <string name="talkback_home_menu_first">사진 촬영하기. 알레르기 성분, 소비기한 등 식품 상세 정보를 확인해요</string>
     <string name="talkback_home_menu_second">소비기한 날짜 확인. 날짜가 임박한 제품을 카테고리별로 확인해요</string>
     <string name="talkback_loading_description">이미지 분석 중. 잠시만 기다려주세요</string>
+    <string name="talkback_loading_failure">이미지 분석에 실패했습니다. 다시 시도하시겠습니까?</string>
 </resources>
