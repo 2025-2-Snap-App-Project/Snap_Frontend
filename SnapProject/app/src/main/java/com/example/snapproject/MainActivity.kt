@@ -57,6 +57,6 @@ class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
     fun hideKeyboard(view: View) {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-         if (currentFocus is EditText) currentFocus?.clearFocus() // 현재 Focus된 게 EditText라면, Focus 제거하기
+        if (currentFocus is EditText) currentFocus?.clearFocus() // 현재 Focus된 게 EditText라면, Focus 제거하기
     }
 }
