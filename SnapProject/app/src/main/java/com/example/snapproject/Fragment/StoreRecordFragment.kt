@@ -131,6 +131,7 @@ class StoreRecordFragment : Fragment() {
         }
 
         binding.btnKeyBoard.setOnClickListener { // "키보드로 입력" 버튼 클릭
+            binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
             binding.edtTxtStore.hint = "보관 장소를\n입력해주세요."
             mActivity.showSoftInput(binding.edtTxtStore) // MainActivity의 키보드 보여주는 함수 호출
         }
