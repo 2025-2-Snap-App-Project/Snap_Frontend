@@ -182,12 +182,6 @@ class StoreRecordFragment : Fragment() {
         override fun onResults(results: Bundle) {
             val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
             for (i in matches!!.indices) binding.tvStore.text = '"'+matches[i]+'"' // TextView에 음성 인식 결과 반영
-
-            // 버튼 2개 레이아웃 숨겨진 상태라면 -> 다시 화면에 나타나게 하기
-            if (binding.btnLayout.visibility != View.VISIBLE) {
-                binding.btnLayout.visibility = View.VISIBLE
-            }
-
         }
 
         override fun onPartialResults(partialResults: Bundle?) {
@@ -197,20 +191,11 @@ class StoreRecordFragment : Fragment() {
         }
     }
 
-    // 시스템 설정에서 권한 허용해 준 뒤, 다시 돌아왔을 때 오디오 녹음 세팅 필요
-    override fun onResume() {
-        super.onResume()
-        if (hasPermissions(mContext)) {
-        }
-    }
-
     private fun initView() =
         with(binding) {
             // 필요한 권한이 모두 허용된 상태가 아니라면 -> 권한 요청 Dialog 띄우기
             if (!hasPermissions(mContext)) {
                 requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
-            } else {
-
             }
         }
 
