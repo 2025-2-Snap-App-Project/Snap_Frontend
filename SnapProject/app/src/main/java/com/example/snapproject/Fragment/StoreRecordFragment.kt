@@ -181,7 +181,6 @@ class StoreRecordFragment : Fragment() {
 
             // 음성 녹음 시작 시
             override fun onBeginningOfSpeech() {
-                binding.edtTxtStore.hint = "듣고 있습니다..."
             }
 
             override fun onRmsChanged(rmsdB: Float) {
