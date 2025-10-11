@@ -58,19 +58,22 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
+            android:id="@+id/tvStore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="100dp"
             android:fontFamily="@font/pretendard_bold"
-            android:text="음성 인식 중..."
+            android:gravity="center"
+            android:text="마이크를 누른\n상태에서 말해주세요."
             android:textColor="@color/main_blue"
-            android:textSize="32sp" />
+            android:textSize="28sp" />
 
     </LinearLayout>
 
 
     <LinearLayout
+        android:id="@+id/btnLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -90,7 +93,6 @@
             app:strokeColor="@color/main_blue">
 
             <TextView
-                android:id="@+id/tvStore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
