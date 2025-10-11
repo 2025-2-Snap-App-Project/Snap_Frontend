@@ -151,6 +151,8 @@ class StoreRecordFragment : Fragment() {
         binding.btnRecord.setOnTouchListener { _, event ->
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> { // 버튼을 누르기 시작했을 때 -> Speech-To-Text 시작
+                    binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
+
                     // RecognizerIntent 생성
                     recogIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
                     recogIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, mContext.packageName)
