@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -144,6 +145,11 @@ class CameraFragment : Fragment() {
         super.onResume()
         if (hasPermissions(mContext)) {
             setUpCamera()
+        }
+
+        binding.btnCapture.post { // Talkback 초기 focus를 카메라 촬영 버튼으로 설정
+            binding.btnCapture.requestFocus()
+            binding.btnCapture.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED)
         }
     }
 
