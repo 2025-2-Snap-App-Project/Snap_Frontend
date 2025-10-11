@@ -3,6 +3,7 @@ package com.example.snapproject
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
     // 키보드 숨기는 함수 (키보드 바깥쪽 터치했을 때)
     fun hideKeyboard(view: View) {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+         if (currentFocus is EditText) currentFocus?.clearFocus() // 현재 Focus된 게 EditText라면, Focus 제거하기
     }
 }
