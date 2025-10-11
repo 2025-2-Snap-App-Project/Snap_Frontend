@@ -136,6 +136,14 @@ class StoreRecordFragment : Fragment() {
             mActivity.showSoftInput(binding.edtTxtStore) // MainActivity의 키보드 보여주는 함수 호출
         }
 
+        // 키보드 바깥쪽 레이아웃 클릭 이벤트
+        binding.parentLayout.setOnTouchListener { _, _ ->
+            mActivity.hideKeyboard(binding.edtTxtStore) // 키보드 숨기기
+            if (binding.edtTxtStore.text.isEmpty()) // 사용자가 아무것도 입력하지 않은 경우
+                binding.edtTxtStore.hint = "마이크를 누른\n상태에서 말해주세요."
+            false
+        }
+
         // 음성 녹음 터치 이벤트 - 버튼을 누르기 시작했을 때, 버튼을 눌렀다가 떼었을 때
         binding.btnRecord.setOnTouchListener { _, event ->
             when (event.actionMasked) {
