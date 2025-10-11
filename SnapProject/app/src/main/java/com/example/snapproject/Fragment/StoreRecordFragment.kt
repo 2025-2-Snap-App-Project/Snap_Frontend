@@ -171,18 +171,17 @@ class StoreRecordFragment : Fragment() {
 
         // 말하기를 끝냈을 때
         override fun onEndOfSpeech() {
-            binding.tvStore.text = "음성을 텍스트로 변환 중..."
         }
 
         // 에러 발생 시
         override fun onError(error: Int) {
-            binding.tvStore.text = "음성 인식 오류 발생. 다시 시도해주세요."
+            binding.tvStore.text = "음성 인식 오류.\n다시 시도해주세요."
         }
 
         // 음성 인식 종료
         override fun onResults(results: Bundle) {
             val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-            for (i in matches!!.indices) binding.tvStore.text = matches[i] // TextView에 음성 인식 결과 반영
+            for (i in matches!!.indices) binding.tvStore.text = '"'+matches[i]+'"' // TextView에 음성 인식 결과 반영
 
             // 버튼 2개 레이아웃 숨겨진 상태라면 -> 다시 화면에 나타나게 하기
             if (binding.btnLayout.visibility != View.VISIBLE) {
