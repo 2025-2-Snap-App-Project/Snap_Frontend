@@ -169,10 +169,14 @@ class StoreRecordFragment : Fragment() {
         override fun onBufferReceived(buffer: ByteArray?) {
         }
 
+        // 말하기를 끝냈을 때
         override fun onEndOfSpeech() {
+            binding.tvStore.text = "음성을 텍스트로 변환 중..."
         }
 
+        // 에러 발생 시
         override fun onError(error: Int) {
+            binding.tvStore.text = "음성 인식 오류 발생. 다시 시도해주세요."
         }
 
         // 음성 인식 종료
