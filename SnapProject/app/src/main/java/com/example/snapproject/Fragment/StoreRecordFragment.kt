@@ -131,6 +131,7 @@ class StoreRecordFragment : Fragment() {
         }
 
         binding.btnKeyBoard.setOnClickListener { // "키보드로 입력" 버튼 클릭
+            binding.edtTxtStore.isEnabled = true // EditText 수정 가능
             binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
             binding.edtTxtStore.hint = "보관 장소를\n입력해주세요."
             mActivity.showSoftInput(binding.edtTxtStore) // MainActivity의 키보드 보여주는 함수 호출
@@ -141,6 +142,7 @@ class StoreRecordFragment : Fragment() {
             mActivity.hideKeyboard(binding.edtTxtStore) // 키보드 숨기기
             if (binding.edtTxtStore.text.isEmpty()) // 사용자가 아무것도 입력하지 않은 경우
                 binding.edtTxtStore.hint = "마이크를 누른\n상태에서 말해주세요."
+            binding.edtTxtStore.isEnabled = false // EditText 수정 및 클릭 불가
             false
         }
 
@@ -216,6 +218,7 @@ class StoreRecordFragment : Fragment() {
             if (!hasPermissions(mContext)) {
                 requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
             }
+            edtTxtStore.isEnabled = false // EditText 수정 및 클릭 불가
         }
 
     override fun onDestroy() {
