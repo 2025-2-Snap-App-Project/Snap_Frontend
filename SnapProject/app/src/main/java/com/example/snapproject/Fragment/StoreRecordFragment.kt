@@ -138,7 +138,7 @@ class StoreRecordFragment : Fragment() {
         }
 
         // 키보드 바깥쪽 레이아웃 클릭 이벤트
-        binding.parentLayout.setOnTouchListener { _, _ ->
+        binding.storeLayout.setOnTouchListener { _, _ ->
             mActivity.hideKeyboard(binding.edtTxtStore) // 키보드 숨기기
             binding.edtTxtStore.isEnabled = false // EditText 수정 및 클릭 불가
             false
