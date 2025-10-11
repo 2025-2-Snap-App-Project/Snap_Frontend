@@ -64,10 +64,10 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="100dp"
             android:fontFamily="@font/pretendard_bold"
-            android:text="상단의 마이크를\n누르고 말씀해주세요."
+            android:text="마이크를 누른\n상태에서 말해주세요."
             android:gravity="center"
             android:textColor="@color/main_blue"
-            android:textSize="32sp" />
+            android:textSize="28sp" />
 
     </LinearLayout>
 
@@ -79,7 +79,6 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="33dp"
         android:gravity="center_horizontal"
-        android:visibility="invisible"
         android:orientation="vertical">
 
         <com.google.android.material.card.MaterialCardView
