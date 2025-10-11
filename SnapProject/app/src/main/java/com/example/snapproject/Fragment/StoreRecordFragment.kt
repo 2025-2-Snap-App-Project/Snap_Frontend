@@ -140,9 +140,6 @@ class StoreRecordFragment : Fragment() {
         // 키보드 바깥쪽 레이아웃 클릭 이벤트
         binding.parentLayout.setOnTouchListener { _, _ ->
             mActivity.hideKeyboard(binding.edtTxtStore) // 키보드 숨기기
-            if (binding.edtTxtStore.text.isEmpty()) { // 사용자가 아무것도 입력하지 않은 경우
-                binding.edtTxtStore.hint = "마이크를 누른\n상태에서 말해주세요."
-            }
             binding.edtTxtStore.isEnabled = false // EditText 수정 및 클릭 불가
             false
         }
@@ -151,6 +148,9 @@ class StoreRecordFragment : Fragment() {
         binding.btnRecord.setOnTouchListener { _, event ->
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> { // 버튼을 누르기 시작했을 때 -> Speech-To-Text 시작
+                    binding.edtTxtStore.hint = "" // "키보드 입력 시도 -> 음성 인식 시도"하는 경우를 고려해서 추가한 코드
+                    binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
+
                     // RecognizerIntent 생성
                     recogIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
                     recogIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, mContext.packageName)
@@ -179,7 +179,6 @@ class StoreRecordFragment : Fragment() {
 
             // 음성 녹음 시작 시
             override fun onBeginningOfSpeech() {
-                binding.edtTxtStore.hint = "듣고 있습니다..."
             }
 
             override fun onRmsChanged(rmsdB: Float) {
