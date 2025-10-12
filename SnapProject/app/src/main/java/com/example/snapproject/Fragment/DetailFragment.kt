@@ -34,7 +34,9 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
     override fun onResume() {
         super.onResume()
-        MainActivity.tts.readText("제품 상세 설명 화면입니다.")
+        view?.post { // view가 생성된 후 실행
+            binding.detailLayout.announceForAccessibility("제품 상세 설명 화면입니다.")
+        }
     }
 
     override fun onCreateView(

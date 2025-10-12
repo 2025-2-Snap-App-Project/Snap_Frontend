@@ -41,7 +41,9 @@ class ListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        MainActivity.tts.readText("소비기한별로 제품 리스트를 확인할 수 있습니다. 원하는 제품을 눌러 상세 정보를 확인해보세요.")
+        view?.post { // view가 생성된 후 실행
+            binding.listLayout.announceForAccessibility("소비기한별로 제품 리스트를 확인할 수 있습니다. 원하는 제품을 눌러 상세 정보를 확인해보세요.")
+        }
     }
 
     override fun onCreateView(

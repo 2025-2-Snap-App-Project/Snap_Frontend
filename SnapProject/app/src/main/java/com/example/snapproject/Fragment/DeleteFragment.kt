@@ -40,7 +40,9 @@ class DeleteFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        MainActivity.tts.readText("삭제하고 싶은 제품을 클릭하여 선택한 뒤, 하단의 삭제하기 버튼을 눌러주세요.")
+        view?.post { // view가 생성된 후 실행
+            binding.deleteLayout.announceForAccessibility("삭제하고 싶은 제품을 클릭하여 선택한 뒤, 하단의 삭제하기 버튼을 눌러주세요.")
+        }
     }
 
     override fun onCreateView(

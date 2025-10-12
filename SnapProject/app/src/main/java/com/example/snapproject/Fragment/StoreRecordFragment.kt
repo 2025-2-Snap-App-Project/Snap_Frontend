@@ -97,7 +97,9 @@ class StoreRecordFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        MainActivity.tts.readText("화면 중앙의 음성 녹음 버튼을 눌러, 제품 보관 장소를 음성으로 입력해주세요.")
+        view?.post { // view가 생성된 후 실행
+            binding.storeLayout.announceForAccessibility("화면 중앙의 음성 녹음 버튼을 눌러, 제품 보관 장소를 음성으로 입력해주세요.")
+        }
     }
 
     override fun onCreateView(

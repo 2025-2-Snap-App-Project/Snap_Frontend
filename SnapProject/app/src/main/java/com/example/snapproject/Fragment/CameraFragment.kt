@@ -145,8 +145,10 @@ class CameraFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (hasPermissions(mContext)) {
-            MainActivity.tts.readText("하단의 사진 촬영 버튼을 눌러 여러 장의 사진을 촬영하고, 상단의 촬영 완료 버튼을 누르세요.")
-            setUpCamera()
+            view?.post { // view가 생성된 후 실행
+                binding.cameraLayout.announceForAccessibility("하단의 사진 촬영 버튼을 눌러 여러 장의 사진을 촬영하고, 상단의 촬영 완료 버튼을 누르세요.") // 일회성 발화
+                setUpCamera() // Camera 세팅
+            }
         }
     }
 

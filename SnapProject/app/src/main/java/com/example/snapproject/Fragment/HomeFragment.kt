@@ -33,7 +33,9 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        MainActivity.tts.readText("두 손가락으로 화면을 좌우로 스와이프하여 두 가지 메뉴를 번갈아 확인해보세요")
+        view?.post { // view가 생성된 후 실행
+            binding.homeLayout.announceForAccessibility("두 손가락으로 화면을 좌우로 스와이프하여 두 가지 메뉴를 번갈아 확인해보세요")
+        }
     }
 
     override fun onCreateView(

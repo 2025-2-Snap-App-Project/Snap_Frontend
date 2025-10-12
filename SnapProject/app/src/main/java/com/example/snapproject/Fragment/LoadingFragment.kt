@@ -26,7 +26,9 @@ class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogLis
 
     override fun onResume() {
         super.onResume()
-        MainActivity.tts.readText("이미지 분석 진행 중입니다. 잠시만 기다려주세요.")
+        view?.post { // view가 생성된 후 실행
+            binding.loadingLayout.announceForAccessibility("이미지 분석 진행 중입니다. 잠시만 기다려주세요.")
+        }
     }
 
     override fun onCreateView(
