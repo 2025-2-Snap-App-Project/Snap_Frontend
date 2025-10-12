@@ -43,12 +43,10 @@ class DeleteFragment : Fragment() {
         view?.post { // view가 생성된 후 실행
             binding.deleteLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
 
-            binding.deleteLayout.announceForAccessibility("삭제하고 싶은 제품을 클릭하여 선택한 뒤, 하단의 삭제하기 버튼을 눌러주세요.")
-
-            // 다시 TalkBack focus 복원
-            binding.deleteLayout.postDelayed({
-                binding.deleteLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-            }, 10000) // 딜레이를 발화 길이에 맞춰 조절
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("삭제하고 싶은 제품을 클릭하여 선택한 뒤, 하단의 삭제하기 버튼을 눌러주세요.") {
+                binding.deleteLayout.post { binding.deleteLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
         }
     }
 

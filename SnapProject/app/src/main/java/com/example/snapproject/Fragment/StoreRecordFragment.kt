@@ -100,12 +100,10 @@ class StoreRecordFragment : Fragment() {
         view?.post { // view가 생성된 후 실행
             binding.storeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
 
-            binding.storeLayout.announceForAccessibility("화면 중앙의 음성 녹음 버튼을 눌러, 제품 보관 장소를 음성으로 입력해주세요.")
-
-            // 다시 TalkBack focus 복원
-            binding.storeLayout.postDelayed({
-                binding.storeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-            }, 10000) // 딜레이를 발화 길이에 맞춰 조절
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("화면 중앙의 음성 녹음 버튼을 눌러, 제품 보관 장소를 음성으로 입력해주세요.") {
+                binding.storeLayout.post { binding.storeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
         }
     }
 

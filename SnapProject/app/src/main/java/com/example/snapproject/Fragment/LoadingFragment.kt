@@ -29,12 +29,10 @@ class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogLis
         view?.post { // view가 생성된 후 실행
             binding.loadingLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
 
-            binding.loadingLayout.announceForAccessibility("이미지 분석 진행 중입니다. 잠시만 기다려주세요.")
-
-            // 다시 TalkBack focus 복원
-            binding.loadingLayout.postDelayed({
-                binding.loadingLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-            }, 10000) // 딜레이를 발화 길이에 맞춰 조절
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("이미지 분석 진행 중입니다. 잠시만 기다려주세요.") {
+                binding.loadingLayout.post { binding.loadingLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
         }
     }
 

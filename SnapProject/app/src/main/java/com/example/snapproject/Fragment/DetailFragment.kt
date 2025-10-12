@@ -37,12 +37,10 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         view?.post { // view가 생성된 후 실행
             binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
 
-            binding.detailLayout.announceForAccessibility("제품 상세 설명 화면입니다.")
-
-            // 다시 TalkBack focus 복원
-            binding.detailLayout.postDelayed({
-                binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-            }, 10000) // 딜레이를 발화 길이에 맞춰 조절
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("제품 상세 설명 화면입니다.") {
+                binding.detailLayout.post { binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
         }
     }
 

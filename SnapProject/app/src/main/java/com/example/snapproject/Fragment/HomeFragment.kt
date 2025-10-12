@@ -36,12 +36,10 @@ class HomeFragment : Fragment() {
         view?.post { // view가 생성된 후 실행
             binding.homeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
 
-            binding.homeLayout.announceForAccessibility("두 손가락으로 화면을 좌우로 스와이프하여 두 가지 메뉴를 번갈아 확인해보세요")
-
-            // 다시 TalkBack focus 복원
-            binding.homeLayout.postDelayed({
-                binding.homeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-            }, 10000) // 딜레이를 발화 길이에 맞춰 조절
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("두 손가락으로 화면을 좌우로 스와이프하여 두 가지 메뉴를 번갈아 확인해보세요") {
+                binding.homeLayout.post { binding.homeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
         }
     }
 
