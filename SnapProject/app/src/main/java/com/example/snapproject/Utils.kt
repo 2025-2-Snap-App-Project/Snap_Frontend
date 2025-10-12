@@ -1,6 +1,8 @@
 package com.example.snapproject
 
 import android.content.Context
+import android.graphics.LinearGradient
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -34,4 +36,23 @@ fun applyStyleBetweenAsterisks(
         end = tvBuilder.indexOf("**", start + 2)
     }
     tv.text = tvBuilder
+}
+
+// LinearGradient를 적용하는 별도의 확장 메소드 정의
+fun TextView.setTextColorAsLinearGradient(colors: IntArray) {
+    if (colors.isEmpty()) {
+        return
+    }
+
+    setTextColor(colors[0])
+    this.paint.shader =
+        LinearGradient(
+            0f,
+            0f,
+            paint.measureText(this.text.toString()),
+            -this.textSize,
+            colors,
+            null,
+            Shader.TileMode.CLAMP,
+        )
 }

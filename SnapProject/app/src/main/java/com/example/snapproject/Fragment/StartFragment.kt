@@ -1,30 +1,23 @@
 package com.example.snapproject.Fragment
 
-import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
-import com.example.snapproject.HomeViewPagerAdapter
+import androidx.navigation.fragment.findNavController
 import com.example.snapproject.R
-import com.example.snapproject.databinding.FragmentHomeBinding
+import com.example.snapproject.SnapApplication
+import com.example.snapproject.databinding.FragmentStartBinding
 import com.example.snapproject.setTextColorAsLinearGradient
 
-class HomeFragment : Fragment() {
-    private var _binding: FragmentHomeBinding? = null
+class StartFragment : Fragment() {
+    private var _binding: FragmentStartBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewPagerAdapter: HomeViewPagerAdapter
-
     companion object {
-        fun newInstance() = HomeFragment()
+        fun newInstance() = LoadingFragment()
     }
 
     override fun onCreateView(
@@ -32,7 +25,11 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        // SharedPreference에 시작하기 버튼이 클릭된 적이 있다고 기록되어 있다면 -> 시작하기 화면을 보여주지 않고, 바로 홈 화면으로 이동
+        val btnStartClicked = SnapApplication.prefs.getBoolean("btn_start_clicked", false)
+        if (btnStartClicked) findNavController().navigate(R.id.action_startFragment_to_homeFragment)
+
+        _binding = FragmentStartBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -41,12 +38,11 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        viewPagerAdapter = HomeViewPagerAdapter(this)
-
         initView()
 
-        binding.btnTalkBack.setOnClickListener { // TalkBack 설정 버튼 클릭 시
-            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) // "시스템 설정 - 접근성"으로 이동
+        binding.btnStart.setOnClickListener { // "시작하기" 버튼 클릭 -> 홈 화면으로 이동
+            SnapApplication.prefs.setBoolean("btn_start_clicked", true) // "시작하기" 버튼이 클릭되었다고 SharedPreference에 기록
+            findNavController().navigate(R.id.action_startFragment_to_homeFragment)
         }
     }
 
@@ -64,20 +60,6 @@ class HomeFragment : Fragment() {
             colorArray[2] = subBlueTwo
 
             tvAppName.setTextColorAsLinearGradient(colorArray) // 미리 설정한 ColorArray로 Gradient 적용
-
-            // 텍스트뷰에서 "사용자" 부분만 컬러 변경하기
-            val tvData: String = tvWelcome.text.toString()
-            val tvBuilder = SpannableStringBuilder(tvData)
-            val colorBlueSpan =
-                ForegroundColorSpan(
-                    "#2276FF".toColorInt(),
-                )
-            tvBuilder.setSpan(colorBlueSpan, 7, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            tvWelcome.text = tvBuilder
-
-            // ViewPager2 어댑터 연결 + Indicator 붙이기
-            viewPagerMenu.adapter = viewPagerAdapter
-            viewPagerIndicator.attachTo(viewPagerMenu)
         }
 
     override fun onDestroy() {
