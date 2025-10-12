@@ -34,7 +34,14 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         view?.post { // view가 생성된 후 실행
+            binding.homeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+
             binding.homeLayout.announceForAccessibility("두 손가락으로 화면을 좌우로 스와이프하여 두 가지 메뉴를 번갈아 확인해보세요")
+
+            // 다시 TalkBack focus 복원
+            binding.homeLayout.postDelayed({
+                binding.homeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+            }, 10000) // 딜레이를 발화 길이에 맞춰 조절
         }
     }
 

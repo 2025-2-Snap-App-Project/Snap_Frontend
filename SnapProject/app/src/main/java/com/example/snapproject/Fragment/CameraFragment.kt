@@ -146,8 +146,15 @@ class CameraFragment : Fragment() {
         super.onResume()
         if (hasPermissions(mContext)) {
             view?.post { // view가 생성된 후 실행
+                binding.cameraLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
                 binding.cameraLayout.announceForAccessibility("하단의 사진 촬영 버튼을 눌러 여러 장의 사진을 촬영하고, 상단의 촬영 완료 버튼을 누르세요.") // 일회성 발화
+
                 setUpCamera() // Camera 세팅
+
+                // 다시 TalkBack focus 복원
+                binding.cameraLayout.postDelayed({
+                    binding.cameraLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                }, 10000) // 딜레이를 발화 길이에 맞춰 조절
             }
         }
     }

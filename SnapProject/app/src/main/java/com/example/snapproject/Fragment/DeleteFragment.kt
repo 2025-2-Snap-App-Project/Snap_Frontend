@@ -41,7 +41,14 @@ class DeleteFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         view?.post { // view가 생성된 후 실행
+            binding.deleteLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+
             binding.deleteLayout.announceForAccessibility("삭제하고 싶은 제품을 클릭하여 선택한 뒤, 하단의 삭제하기 버튼을 눌러주세요.")
+
+            // 다시 TalkBack focus 복원
+            binding.deleteLayout.postDelayed({
+                binding.deleteLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+            }, 10000) // 딜레이를 발화 길이에 맞춰 조절
         }
     }
 

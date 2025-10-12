@@ -42,7 +42,14 @@ class ListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         view?.post { // view가 생성된 후 실행
+            binding.listLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+
             binding.listLayout.announceForAccessibility("소비기한별로 제품 리스트를 확인할 수 있습니다. 원하는 제품을 눌러 상세 정보를 확인해보세요.")
+
+            // 다시 TalkBack focus 복원
+            binding.listLayout.postDelayed({
+                binding.listLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+            }, 10000) // 딜레이를 발화 길이에 맞춰 조절
         }
     }
 
