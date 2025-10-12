@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.DetailIngredientsDialog
 import com.example.snapproject.DetailRecyclerViewAdapter
+import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
@@ -18,6 +19,7 @@ import com.example.snapproject.model.viewobject.DetailDateViewObject
 import com.example.snapproject.model.viewobject.DetailNameViewObject
 import com.example.snapproject.model.viewobject.DetailStorageViewObject
 import com.example.snapproject.model.viewobject.DetailSummaryViewObject
+import com.example.snapproject.readText
 
 class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDialogListener {
     private var _binding: FragmentDetailBinding? = null
@@ -27,6 +29,12 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
     companion object {
         fun newInstance() = DetailFragment()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        MainActivity.tts.readText("제품 상세 설명 화면입니다.")
     }
 
     override fun onCreateView(

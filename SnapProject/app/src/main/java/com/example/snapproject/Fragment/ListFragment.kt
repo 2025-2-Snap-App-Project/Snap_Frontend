@@ -9,9 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.ListRecyclerViewAdapter
+import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentListBinding
 import com.example.snapproject.model.ListItemData
+import com.example.snapproject.readText
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
@@ -35,6 +37,11 @@ class ListFragment : Fragment() {
 
     companion object {
         fun newInstance() = ListFragment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MainActivity.tts.readText("소비기한별로 제품 리스트를 확인할 수 있습니다. 원하는 제품을 눌러 상세 정보를 확인해보세요.")
     }
 
     override fun onCreateView(

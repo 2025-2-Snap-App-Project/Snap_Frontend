@@ -23,6 +23,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentStoreRecordBinding
+import com.example.snapproject.readText
 
 class StoreRecordFragment : Fragment() {
     private var _binding: FragmentStoreRecordBinding? = null
@@ -92,6 +93,12 @@ class StoreRecordFragment : Fragment() {
                 }
             }
         }
+
+
+    override fun onResume() {
+        super.onResume()
+        MainActivity.tts.readText("화면 중앙의 음성 녹음 버튼을 눌러, 제품 보관 장소를 음성으로 입력해주세요.")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

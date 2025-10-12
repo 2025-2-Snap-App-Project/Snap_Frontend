@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.DeleteRecyclerViewAdapter
+import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentDeleteBinding
 import com.example.snapproject.model.ListItemData
+import com.example.snapproject.readText
 
 class DeleteFragment : Fragment() {
     private var _binding: FragmentDeleteBinding? = null
@@ -34,6 +36,11 @@ class DeleteFragment : Fragment() {
 
     companion object {
         fun newInstance() = DeleteFragment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MainActivity.tts.readText("삭제하고 싶은 제품을 클릭하여 선택한 뒤, 하단의 삭제하기 버튼을 눌러주세요.")
     }
 
     override fun onCreateView(

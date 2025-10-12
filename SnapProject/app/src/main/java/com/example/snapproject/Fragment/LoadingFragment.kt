@@ -11,8 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.LoadingFailureDialog
+import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentLoadingBinding
+import com.example.snapproject.readText
 
 class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogListener {
     private var _binding: FragmentLoadingBinding? = null
@@ -20,6 +22,11 @@ class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogLis
 
     companion object {
         fun newInstance() = LoadingFragment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MainActivity.tts.readText("이미지 분석 진행 중입니다. 잠시만 기다려주세요.")
     }
 
     override fun onCreateView(

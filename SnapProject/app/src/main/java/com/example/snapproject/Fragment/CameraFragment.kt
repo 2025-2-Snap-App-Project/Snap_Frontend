@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
+import com.example.snapproject.readText
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -144,6 +145,7 @@ class CameraFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (hasPermissions(mContext)) {
+            MainActivity.tts.readText("하단의 사진 촬영 버튼을 눌러 여러 장의 사진을 촬영하고, 상단의 촬영 완료 버튼을 누르세요.")
             setUpCamera()
         }
     }
