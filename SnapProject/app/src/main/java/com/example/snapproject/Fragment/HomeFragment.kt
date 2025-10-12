@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import com.example.snapproject.HomeViewPagerAdapter
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentHomeBinding
+import com.example.snapproject.setTextColorAsLinearGradient
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -50,25 +51,6 @@ class HomeFragment : Fragment() {
         binding.btnTalkBack.setOnClickListener { // TalkBack 설정 버튼 클릭 시
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) // "시스템 설정 - 접근성"으로 이동
         }
-    }
-
-    // LinearGradient를 적용하는 별도의 확장 메소드 정의
-    private fun TextView.setTextColorAsLinearGradient(colors: IntArray) {
-        if (colors.isEmpty()) {
-            return
-        }
-
-        setTextColor(colors[0])
-        this.paint.shader =
-            LinearGradient(
-                0f,
-                0f,
-                paint.measureText(this.text.toString()),
-                -this.textSize,
-                colors,
-                null,
-                Shader.TileMode.CLAMP,
-            )
     }
 
     private fun initView() =
