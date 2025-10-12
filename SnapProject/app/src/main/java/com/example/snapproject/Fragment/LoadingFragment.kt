@@ -66,10 +66,7 @@ class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogLis
 //        val dialog = LoadingFailureDialog() // LoadingFailureDialog 인스턴스화
 //        dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
 //        dialog.show(parentFragmentManager, "LoadingFailureDialog") // dialog 최종 show
-
-        binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 촬영하기(카메라) 화면으로 이동
-            findNavController().popBackStack()
-        }
+        
         binding.btnHome.setOnClickListener { // "홈으로 돌아가기" 버튼 클릭 -> 홈 화면으로 이동
             findNavController().navigate(R.id.action_loadingFragment_to_homeFragment)
         }
