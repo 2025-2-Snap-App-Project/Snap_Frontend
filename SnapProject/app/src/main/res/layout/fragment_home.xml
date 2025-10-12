@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/homeLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/homeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_white"
@@ -28,16 +28,8 @@
         android:layout_marginTop="53dp"
         android:bufferType="spannable"
         android:fontFamily="@font/pretendard_bold"
-        android:text="안녕하세요, 사용자님!"
-        android:textSize="16sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="47dp"
-        android:layout_marginTop="5dp"
-        android:fontFamily="@font/pretendard_bold"
-        android:text="오늘은 2025.07.25 (금) 입니다."
+        android:lineSpacingExtra="5sp"
+        android:text="안녕하세요, 사용자님!\n두 손가락으로 화면 중앙을 넘겨보세요."
         android:textSize="16sp" />
 
     <androidx.viewpager2.widget.ViewPager2
@@ -46,18 +38,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="39.12dp" />
-
-    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
-        android:id="@+id/viewPagerIndicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="31.52dp"
-        android:contentDescription="메뉴 선택 버튼"
-        app:dotsColor="@color/main_blue"
-        app:dotsCornerRadius="4dp"
-        app:dotsSize="8dp"
-        app:dotsSpacing="6dp" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnTalkBack"

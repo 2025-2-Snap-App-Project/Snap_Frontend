@@ -26,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32.89dp"
-                android:layout_marginTop="35.63dp"
+                android:layout_marginTop="38.95dp"
                 android:fontFamily="@font/pretendard_bold"
                 android:text="날짜 확인"
                 android:textColor="@color/main_white"
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32.89dp"
-                android:layout_marginTop="8.67dp"
+                android:layout_marginTop="9.47dp"
                 android:fontFamily="@font/pretendard_black"
                 android:text="소비기한"
                 android:textColor="@color/main_white"
@@ -46,19 +46,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32.89dp"
-                android:layout_marginTop="15.82dp"
+                android:layout_marginTop="17.29dp"
                 android:fontFamily="@font/pretendard_semibold"
                 android:text="날짜가 임박한 제품을\n카테고리별로 한눈에 확인해요"
                 android:textColor="@color/main_white"
                 android:textSize="17.82sp" />
 
             <ImageView
-                android:layout_width="152.12dp"
-                android:layout_height="152.12dp"
+                android:layout_width="159.04dp"
+                android:layout_height="159.04dp"
                 android:layout_marginStart="121.97dp"
-                android:layout_marginTop="55.3dp"
+                android:layout_marginTop="64.06dp"
                 android:layout_marginEnd="30.15dp"
-                android:layout_marginBottom="45.22dp"
+                android:layout_marginBottom="53.05dp"
                 app:srcCompat="@drawable/ic_date" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
