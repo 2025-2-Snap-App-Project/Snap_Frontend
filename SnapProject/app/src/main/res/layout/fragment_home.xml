@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="47dp"
         android:layout_marginTop="53dp"
-        android:contentDescription="SNAP. 앱 이름"
+        android:contentDescription="스냅 앱의 홈화면입니다."
         android:fontFamily="@font/pretendard_black"
         android:text="SNAP"
         android:textSize="32sp" />
