@@ -146,11 +146,6 @@ class CameraFragment : Fragment() {
         if (hasPermissions(mContext)) {
             setUpCamera()
         }
-
-        binding.btnCapture.post { // Talkback 초기 focus를 카메라 촬영 버튼으로 설정
-            binding.btnCapture.requestFocus()
-            binding.btnCapture.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED)
-        }
     }
 
     private fun initView() =
