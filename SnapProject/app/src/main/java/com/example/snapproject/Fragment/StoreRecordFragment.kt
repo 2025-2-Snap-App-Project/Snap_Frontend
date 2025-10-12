@@ -10,10 +10,8 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,6 +21,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentStoreRecordBinding
+import com.example.snapproject.readText
 
 class StoreRecordFragment : Fragment() {
     private var _binding: FragmentStoreRecordBinding? = null
@@ -48,8 +47,9 @@ class StoreRecordFragment : Fragment() {
     private val settingPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (!hasPermissions(mContext)) { // 사용자가 앱 설정에서도 권한 허용을 해주지 않은 경우
-                Toast.makeText(mContext, "오디오 녹음 권한을 허용해야 앱 사용이 가능합니다.", Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack() // 홈 화면 이동
+                MainActivity.tts.readText("오디오 녹음 권한을 허용해야 앱 사용이 가능합니다.") {
+                    findNavController().popBackStack() // 홈 화면 이동
+                }
             }
         }
 
@@ -81,17 +81,31 @@ class StoreRecordFragment : Fragment() {
                             )
                     }
                 if (noAskAgain) { // 사용자가 다시 묻지 않음을 선택한 경우 -> 앱 설정 화면으로 이동
-                    Toast.makeText(mContext, "앱 설정에서 오디오 녹음 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
-                    val intent =
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            .setData("package:${mContext.packageName}".toUri())
-                    settingPermissionLauncher.launch(intent)
+                    MainActivity.tts.readText("앱 설정에서 오디오 녹음 권한을 허용해주세요.") {
+                        val intent =
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                .setData("package:${mContext.packageName}".toUri())
+                        settingPermissionLauncher.launch(intent)
+                    }
                 } else { // 사용자가 한 번만 거부한 경우
-                    Toast.makeText(mContext, "오디오 녹음 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-                    findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
+                    MainActivity.tts.readText("오디오 녹음 권한이 필요합니다.") {
+                        findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
+                    }
                 }
             }
         }
+
+    override fun onResume() {
+        super.onResume()
+        view?.post { // view가 생성된 후 실행
+            binding.storeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("화면 중앙의 음성 녹음 버튼을 눌러, 제품 보관 장소를 음성으로 입력해주세요.") {
+                binding.storeLayout.post { binding.storeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -138,34 +152,26 @@ class StoreRecordFragment : Fragment() {
         }
 
         // 키보드 바깥쪽 레이아웃 클릭 이벤트
-        binding.parentLayout.setOnTouchListener { _, _ ->
+        binding.storeLayout.setOnTouchListener { _, _ ->
             mActivity.hideKeyboard(binding.edtTxtStore) // 키보드 숨기기
             binding.edtTxtStore.isEnabled = false // EditText 수정 및 클릭 불가
             false
         }
 
         // 음성 녹음 터치 이벤트 - 버튼을 누르기 시작했을 때, 버튼을 눌렀다가 떼었을 때
-        binding.btnRecord.setOnTouchListener { _, event ->
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> { // 버튼을 누르기 시작했을 때 -> Speech-To-Text 시작
-                    binding.edtTxtStore.hint = "" // "키보드 입력 시도 -> 음성 인식 시도"하는 경우를 고려해서 추가한 코드
-                    binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
+        binding.btnRecord.setOnClickListener {
+            binding.edtTxtStore.hint = "" // "키보드 입력 시도 -> 음성 인식 시도"하는 경우를 고려해서 추가한 코드
+            binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
 
-                    // RecognizerIntent 생성
-                    recogIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                    recogIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, mContext.packageName)
-                    recogIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+            // RecognizerIntent 생성
+            recogIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            recogIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, mContext.packageName)
+            recogIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
 
-                    // Speech-To-Text 시작
-                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(mContext)
-                    mRecognizer.setRecognitionListener(listener)
-                    mRecognizer.startListening(recogIntent)
-                }
-                MotionEvent.ACTION_UP -> { // 버튼을 눌렀다가 떼었을 때 -> Speech-To-Text 종료
-                    listener.onEndOfSpeech()
-                }
-            }
-            true
+            // Speech-To-Text 시작
+            mRecognizer = SpeechRecognizer.createSpeechRecognizer(mContext)
+            mRecognizer.setRecognitionListener(listener)
+            mRecognizer.startListening(recogIntent)
         }
     }
 
@@ -194,12 +200,14 @@ class StoreRecordFragment : Fragment() {
             // 에러 발생 시
             override fun onError(error: Int) {
                 binding.edtTxtStore.hint = "음성 인식 오류.\n다시 시도해주세요."
+                MainActivity.tts.readText("음성 인식 오류 발생. 다시 시도해주세요.")
             }
 
             // 음성 인식 종료
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 for (i in matches!!.indices) binding.edtTxtStore.setText('"' + matches[i] + '"') // TextView에 음성 인식 결과 반영
+                MainActivity.tts.readText("음성 인식 결과는 ${matches[0]}입니다.")
             }
 
             override fun onPartialResults(partialResults: Bundle?) {

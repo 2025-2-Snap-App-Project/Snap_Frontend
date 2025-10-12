@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.DeleteRecyclerViewAdapter
+import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentDeleteBinding
 import com.example.snapproject.model.ListItemData
+import com.example.snapproject.readText
 
 class DeleteFragment : Fragment() {
     private var _binding: FragmentDeleteBinding? = null
@@ -34,6 +35,18 @@ class DeleteFragment : Fragment() {
 
     companion object {
         fun newInstance() = DeleteFragment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        view?.post { // view가 생성된 후 실행
+            binding.deleteLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("삭제하고 싶은 제품을 클릭하여 선택한 뒤, 하단의 삭제하기 버튼을 눌러주세요.") {
+                binding.deleteLayout.post { binding.deleteLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -78,7 +91,7 @@ class DeleteFragment : Fragment() {
                         itemId: String,
                         position: Int,
                     ) {
-                        Toast.makeText(context, "${itemId}번 아이템 클릭 (삭제 목적)", Toast.LENGTH_SHORT).show()
+                        MainActivity.tts.readText("${itemId}번 아이템 클릭 (삭제 목적)")
                     }
                 },
             )

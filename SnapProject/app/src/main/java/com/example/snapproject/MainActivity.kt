@@ -1,6 +1,7 @@
 package com.example.snapproject
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -16,6 +17,15 @@ import com.example.snapproject.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var navController: NavController
+
+    companion object {
+        var tts: TextToSpeech? = null // TextToSpeech 변수
+    }
+
+    override fun onResume() {
+        super.onResume()
+        tts = initTTS(this@MainActivity) // TTS 초기화
+    }
 
     // 자식 프래그먼트의 버튼 클릭 리스너 구현
     override fun onChildButtonClicked(destinationId: Int) {
@@ -58,5 +68,14 @@ class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         if (currentFocus is EditText) currentFocus?.clearFocus() // 현재 Focus된 게 EditText라면, Focus 제거하기
+    }
+
+    // 액티비티 종료 시, tts 리소스 정리
+    override fun onDestroy() {
+        if (tts != null) {
+            tts?.stop()
+            tts?.shutdown()
+        }
+        super.onDestroy()
     }
 }

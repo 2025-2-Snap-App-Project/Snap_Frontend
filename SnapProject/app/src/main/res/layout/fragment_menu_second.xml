@@ -4,12 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
+    android:importantForAccessibility="yes"
     android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/talkback_home_menu_second"
         app:cardBackgroundColor="@color/main_blue"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true"

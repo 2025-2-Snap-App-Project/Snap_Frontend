@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/deleteLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,6 +17,7 @@
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="이전 화면으로 돌아가기"
             app:cardBackgroundColor="@android:color/transparent"
             app:contentPadding="30dp"
             app:strokeColor="@android:color/transparent">
@@ -27,7 +29,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/pretendard_black"
@@ -53,16 +55,19 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="날짜 지남"
             android:text="날짜 지남" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="기한 임박"
             android:text="기한 임박" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="기한 여유"
             android:text="기한 여유" />
 
     </com.google.android.material.tabs.TabLayout>
@@ -108,6 +113,7 @@
             android:id="@+id/btnDelete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:contentDescription="선택한 제품들 삭제하기 버튼"
             android:layout_gravity="bottom"
             app:cardBackgroundColor="@color/main_blue"
             app:cardCornerRadius="0dp"

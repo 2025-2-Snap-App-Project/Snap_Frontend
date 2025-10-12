@@ -4,14 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.ListRecyclerViewAdapter
+import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentListBinding
 import com.example.snapproject.model.ListItemData
+import com.example.snapproject.readText
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
@@ -35,6 +36,18 @@ class ListFragment : Fragment() {
 
     companion object {
         fun newInstance() = ListFragment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        view?.post { // view가 생성된 후 실행
+            binding.listLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("소비기한별로 제품 리스트를 확인할 수 있습니다. 원하는 제품을 눌러 상세 정보를 확인해보세요.") {
+                binding.listLayout.post { binding.listLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -80,7 +93,6 @@ class ListFragment : Fragment() {
                         position: Int,
                     ) {
                         val action = ListFragmentDirections.actionListFragmentToDetailFragment(prevPage = "list")
-                        Toast.makeText(context, "클릭한 아이템 ID : $itemId", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(action)
                     }
                 },
@@ -94,7 +106,7 @@ class ListFragment : Fragment() {
                         itemId: String,
                         position: Int,
                     ) {
-                        Toast.makeText(context, "${itemId}번 별 클릭", Toast.LENGTH_SHORT).show()
+                        MainActivity.tts.readText("${itemId}번 별 클릭")
                     }
                 },
             )

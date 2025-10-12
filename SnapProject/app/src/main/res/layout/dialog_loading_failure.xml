@@ -16,29 +16,41 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="42dp"
-            android:fontFamily="@font/pretendard_bold"
-            android:text="분석 실패"
-            android:textColor="@color/dark_gray"
-            android:textSize="20sp" />
+            android:layout_gravity="center"
+            android:contentDescription="@string/talkback_loading_failure"
+            android:gravity="center"
+            android:importantForAccessibility="yes"
+            android:orientation="vertical"
+            android:paddingBottom="26dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="9dp"
-            android:fontFamily="@font/pretendard_regular"
-            android:text="이미지 분석에 실패했습니다."
-            android:textColor="@color/dark_gray"
-            android:textSize="15sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="42dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:importantForAccessibility="no"
+                android:text="분석 실패"
+                android:textColor="@color/dark_gray"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="9dp"
+                android:fontFamily="@font/pretendard_regular"
+                android:importantForAccessibility="no"
+                android:text="이미지 분석에 실패했습니다."
+                android:textColor="@color/dark_gray"
+                android:textSize="15sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="39.35dp"
             android:layout_marginStart="27dp"
-            android:layout_marginTop="26dp"
             android:layout_marginEnd="27dp"
             android:layout_marginBottom="28.65dp"
             android:gravity="center"
@@ -49,6 +61,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:contentDescription="이미지 분석 취소 버튼"
                 app:cardBackgroundColor="@color/light_gray_1"
                 app:cardCornerRadius="5.66dp"
                 app:strokeColor="@android:color/transparent">
@@ -71,6 +84,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="10.68dp"
                 android:layout_weight="1"
+                android:contentDescription="이미지 분석 재시도 버튼"
                 app:cardBackgroundColor="@color/main_blue"
                 app:cardCornerRadius="5.66dp"
                 app:strokeColor="@android:color/transparent">

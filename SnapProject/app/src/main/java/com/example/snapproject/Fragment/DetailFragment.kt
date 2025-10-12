@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.DetailIngredientsDialog
 import com.example.snapproject.DetailRecyclerViewAdapter
+import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
@@ -18,6 +19,7 @@ import com.example.snapproject.model.viewobject.DetailDateViewObject
 import com.example.snapproject.model.viewobject.DetailNameViewObject
 import com.example.snapproject.model.viewobject.DetailStorageViewObject
 import com.example.snapproject.model.viewobject.DetailSummaryViewObject
+import com.example.snapproject.readText
 
 class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDialogListener {
     private var _binding: FragmentDetailBinding? = null
@@ -27,6 +29,13 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
     companion object {
         fun newInstance() = DetailFragment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        view?.post { // view가 생성된 후 실행
+            binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+        }
     }
 
     override fun onCreateView(
@@ -103,6 +112,11 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
             dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
         }
+
+        binding.btnReplay.setOnClickListener { // 설명 다시 듣기 버튼 클릭 -> 제품 상세 설명 다시 들려줌
+            val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
+            MainActivity.tts.readText("제품 상세 설명입니다. $itemTexts")
+        }
     }
 
     private fun initView() =
@@ -111,6 +125,14 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             recyclerview.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             recyclerview.adapter = recyclerViewAdapter
+
+            // RecyclerView 내부의 모든 아이템에 대해 Text를 가져옴
+            val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
+
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("제품 상세 설명입니다. $itemTexts") {
+                binding.detailLayout.post { binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
         }
 
     override fun onDestroy() {

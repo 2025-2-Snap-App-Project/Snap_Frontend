@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -24,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
+import com.example.snapproject.readText
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -58,8 +58,9 @@ class CameraFragment : Fragment() {
     private val settingPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (!hasPermissions(mContext)) { // 사용자가 앱 설정에서도 권한 허용을 해주지 않은 경우
-                Toast.makeText(mContext, "카메라 권한을 허용해야 앱 사용이 가능합니다.", Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack() // 홈 화면 이동
+                MainActivity.tts.readText("카메라 권한을 허용해야 앱 사용이 가능합니다.") {
+                    findNavController().popBackStack() // 홈 화면 이동
+                }
             }
         }
 
@@ -91,14 +92,16 @@ class CameraFragment : Fragment() {
                             )
                     }
                 if (noAskAgain) { // 사용자가 다시 묻지 않음을 선택한 경우 -> 앱 설정 화면으로 이동
-                    Toast.makeText(mContext, "앱 설정에서 카메라 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
-                    val intent =
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            .setData("package:${mContext.packageName}".toUri())
-                    settingPermissionLauncher.launch(intent)
+                    MainActivity.tts.readText("앱 설정에서 카메라 권한을 허용해주세요.") {
+                        val intent =
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                .setData("package:${mContext.packageName}".toUri())
+                        settingPermissionLauncher.launch(intent)
+                    }
                 } else { // 사용자가 한 번만 거부한 경우
-                    Toast.makeText(mContext, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-                    findNavController().popBackStack() // 홈 화면 이동
+                    MainActivity.tts.readText("카메라 권한이 필요합니다.") {
+                        findNavController().popBackStack() // 홈 화면 이동
+                    }
                 }
             }
         }
@@ -143,7 +146,17 @@ class CameraFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (hasPermissions(mContext)) {
-            setUpCamera()
+            view?.post { // view가 생성된 후 실행
+                binding.cameraLayout.importantForAccessibility =
+                    View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+
+                // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+                MainActivity.tts.readText("하단의 사진 촬영 버튼을 눌러 여러 장의 사진을 촬영하고, 상단의 촬영 완료 버튼을 누르세요.") {
+                    binding.cameraLayout.post { binding.cameraLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+                }
+
+                setUpCamera() // Camera 세팅
+            }
         }
     }
 
@@ -234,7 +247,7 @@ class CameraFragment : Fragment() {
 
                 // 이미지 캡쳐 및 저장 성공
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    Toast.makeText(context, "촬영 성공", Toast.LENGTH_SHORT).show()
+                    MainActivity.tts.readText("촬영 성공")
                     outputFileResults.savedUri?.let { uriArrayList.add(it.toString()) } // 이미지 저장 경로를 ArrayList에 추가
 
                     Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/homeLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="47dp"
         android:layout_marginTop="53dp"
+        android:contentDescription="스냅 앱의 홈화면입니다."
         android:fontFamily="@font/pretendard_black"
         android:text="SNAP"
         android:textSize="32sp" />
@@ -51,18 +53,21 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="31.52dp"
+        android:contentDescription="메뉴 선택 버튼"
         app:dotsColor="@color/main_blue"
         app:dotsCornerRadius="4dp"
         app:dotsSize="8dp"
         app:dotsSpacing="6dp" />
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnTalkBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="31dp"
         android:layout_marginTop="33dp"
         android:layout_marginEnd="31dp"
+        android:contentDescription="TalkBack 접근성 설정"
         app:cardBackgroundColor="@color/main_white"
         app:cardCornerRadius="10dp"
         app:contentPadding="10dp"
@@ -83,6 +88,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="17dp"
+        android:contentDescription="오픈소스 라이선스 확인"
         android:fontFamily="@font/pretendard_bold"
         android:text="@string/home_open_source_license"
         android:textColor="@color/dark_gray_2"

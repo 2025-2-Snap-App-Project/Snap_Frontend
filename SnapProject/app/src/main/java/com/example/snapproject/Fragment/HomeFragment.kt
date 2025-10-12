@@ -1,8 +1,10 @@
 package com.example.snapproject.Fragment
 
+import android.content.Intent
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.os.Bundle
+import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
@@ -44,6 +46,10 @@ class HomeFragment : Fragment() {
         viewPagerAdapter = HomeViewPagerAdapter(this)
 
         initView()
+
+        binding.btnTalkBack.setOnClickListener { // TalkBack 설정 버튼 클릭 시
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) // "시스템 설정 - 접근성"으로 이동
+        }
     }
 
     // LinearGradient를 적용하는 별도의 확장 메소드 정의

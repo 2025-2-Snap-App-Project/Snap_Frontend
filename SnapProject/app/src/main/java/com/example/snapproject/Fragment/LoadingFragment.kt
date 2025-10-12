@@ -11,8 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.LoadingFailureDialog
+import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentLoadingBinding
+import com.example.snapproject.readText
 
 class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogListener {
     private var _binding: FragmentLoadingBinding? = null
@@ -20,6 +22,18 @@ class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogLis
 
     companion object {
         fun newInstance() = LoadingFragment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        view?.post { // view가 생성된 후 실행
+            binding.loadingLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("이미지 분석 진행 중입니다. 잠시만 기다려주세요.") {
+                binding.loadingLayout.post { binding.loadingLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -48,10 +62,10 @@ class LoadingFragment : Fragment(), LoadingFailureDialog.LoadingFailureDialogLis
             }
         }
 
-        // 분석 실패 다이얼로그 show
-        val dialog = LoadingFailureDialog() // LoadingFailureDialog 인스턴스화
-        dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
-        dialog.show(parentFragmentManager, "LoadingFailureDialog") // dialog 최종 show
+//        // 분석 실패 다이얼로그 show
+//        val dialog = LoadingFailureDialog() // LoadingFailureDialog 인스턴스화
+//        dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
+//        dialog.show(parentFragmentManager, "LoadingFailureDialog") // dialog 최종 show
 
         binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 촬영하기(카메라) 화면으로 이동
             findNavController().popBackStack()
