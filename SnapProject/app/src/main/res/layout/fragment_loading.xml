@@ -72,7 +72,7 @@
         android:id="@+id/btnHome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:contentDescription="홈 화면으로 돌아가기"
+        android:contentDescription="홈으로 돌아가기 버튼. 이미지 분석을 취소하고 홈 화면으로 돌아갑니다."
         app:cardBackgroundColor="@color/main_blue"
         app:cardCornerRadius="0dp"
         app:contentPadding="20dp"
