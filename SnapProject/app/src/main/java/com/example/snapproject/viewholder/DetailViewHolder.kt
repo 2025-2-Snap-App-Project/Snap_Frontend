@@ -10,5 +10,5 @@ abstract class DetailViewHolder(
     abstract fun bind(item: DetailItemData)
 
     // ViewType별 ViewHolder에서 TTS용 텍스트를 반환하는 추상 함수
-    abstract fun getTextForTTS() : String
+    abstract fun getTextForTTS(): String
 }

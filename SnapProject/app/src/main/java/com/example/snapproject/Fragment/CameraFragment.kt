@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.accessibility.AccessibilityEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -148,7 +147,8 @@ class CameraFragment : Fragment() {
         super.onResume()
         if (hasPermissions(mContext)) {
             view?.post { // view가 생성된 후 실행
-                binding.cameraLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+                binding.cameraLayout.importantForAccessibility =
+                    View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
 
                 // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
                 MainActivity.tts.readText("하단의 사진 촬영 버튼을 눌러 여러 장의 사진을 촬영하고, 상단의 촬영 완료 버튼을 누르세요.") {

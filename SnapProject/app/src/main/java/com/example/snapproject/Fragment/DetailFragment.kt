@@ -31,7 +31,6 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         fun newInstance() = DetailFragment()
     }
 
-
     override fun onResume() {
         super.onResume()
         view?.post { // view가 생성된 후 실행

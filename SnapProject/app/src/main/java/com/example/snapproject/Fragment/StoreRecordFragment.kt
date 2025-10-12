@@ -10,7 +10,6 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
@@ -95,7 +94,6 @@ class StoreRecordFragment : Fragment() {
                 }
             }
         }
-
 
     override fun onResume() {
         super.onResume()

@@ -11,16 +11,13 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import com.example.snapproject.HomeViewPagerAdapter
-import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentHomeBinding
-import com.example.snapproject.readText
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
