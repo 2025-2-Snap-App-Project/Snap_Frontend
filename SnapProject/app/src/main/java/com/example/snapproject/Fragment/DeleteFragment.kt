@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -92,7 +91,7 @@ class DeleteFragment : Fragment() {
                         itemId: String,
                         position: Int,
                     ) {
-                        Toast.makeText(context, "${itemId}번 아이템 클릭 (삭제 목적)", Toast.LENGTH_SHORT).show()
+                        MainActivity.tts.readText("${itemId}번 아이템 클릭 (삭제 목적)")
                     }
                 },
             )
