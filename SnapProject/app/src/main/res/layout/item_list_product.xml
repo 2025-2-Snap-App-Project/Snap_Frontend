@@ -43,13 +43,12 @@
                 android:textSize="13sp" />
         </LinearLayout>
 
-        <CheckBox
-            android:id="@+id/checkboxStar"
-            style="@style/list_star_checkbox"
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:contentDescription="선택 버튼" />
+            app:srcCompat="@drawable/ic_back"
+            android:scaleX="-1"/>
     </FrameLayout>
 
 
