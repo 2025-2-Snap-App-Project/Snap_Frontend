@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.R
+import com.example.snapproject.SnapApplication
 import com.example.snapproject.databinding.FragmentStartBinding
 import com.example.snapproject.setTextColorAsLinearGradient
 
@@ -24,6 +25,11 @@ class StartFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+
+        // SharedPreference에 시작하기 버튼이 클릭된 적이 있다고 기록되어 있다면 -> 시작하기 화면을 보여주지 않고, 바로 홈 화면으로 이동
+        val btnStartClicked = SnapApplication.prefs.getBoolean("btn_start_clicked", false)
+        if (btnStartClicked) findNavController().navigate(R.id.action_startFragment_to_homeFragment)
+
         _binding = FragmentStartBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -36,6 +42,7 @@ class StartFragment : Fragment() {
         initView()
 
         binding.btnStart.setOnClickListener { // "시작하기" 버튼 클릭 -> 홈 화면으로 이동
+            SnapApplication.prefs.setBoolean("btn_start_clicked", true) // "시작하기" 버튼이 클릭되었다고 SharedPreference에 기록
             findNavController().navigate(R.id.action_startFragment_to_homeFragment)
         }
     }
