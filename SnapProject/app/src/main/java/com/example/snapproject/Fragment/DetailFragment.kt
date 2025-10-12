@@ -113,6 +113,11 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
             dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
         }
+
+        binding.btnReplay.setOnClickListener { // 설명 다시 듣기 버튼 클릭 -> 제품 상세 설명 다시 들려줌
+            val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
+            MainActivity.tts.readText("제품 상세 설명입니다. $itemTexts")
+        }
     }
 
     private fun initView() =
