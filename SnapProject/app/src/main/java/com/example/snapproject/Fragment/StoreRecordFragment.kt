@@ -134,6 +134,7 @@ class StoreRecordFragment : Fragment() {
             binding.edtTxtStore.isEnabled = true // EditText 수정 가능
             binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
             binding.edtTxtStore.hint = "보관 장소를\n입력해주세요."
+            Toast.makeText(mContext, "키보드로 보관 장소를 입력해주세요.", Toast.LENGTH_SHORT).show()
             mActivity.showSoftInput(binding.edtTxtStore) // MainActivity의 키보드 보여주는 함수 호출
         }
 
@@ -186,12 +187,14 @@ class StoreRecordFragment : Fragment() {
             // 에러 발생 시
             override fun onError(error: Int) {
                 binding.edtTxtStore.hint = "음성 인식 오류.\n다시 시도해주세요."
+                Toast.makeText(mContext, "음성 인식 오류 발생. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
             }
 
             // 음성 인식 종료
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 for (i in matches!!.indices) binding.edtTxtStore.setText('"' + matches[i] + '"') // TextView에 음성 인식 결과 반영
+                Toast.makeText(mContext, matches[0], Toast.LENGTH_SHORT).show()
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
