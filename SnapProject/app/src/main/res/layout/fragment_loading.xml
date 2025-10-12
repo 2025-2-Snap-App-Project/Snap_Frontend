@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/loadingLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/loadingLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_white"
@@ -16,7 +16,8 @@
         android:contentDescription="@string/talkback_loading_description"
         android:gravity="center"
         android:importantForAccessibility="yes"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="30dp">
 
         <ProgressBar
             android:id="@+id/progressLoading"
