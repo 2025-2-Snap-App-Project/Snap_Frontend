@@ -14,4 +14,9 @@ class DateViewHolder(
 
         applyStyleBetweenAsterisks(binding.tvDate, itemView.context) // ** 사이 단어에 텍스트 스타일 적용
     }
+
+    // 아이템의 TextView 내용 return
+    override fun getTextForTTS(): String {
+        return binding.tvDate.text.toString()
+    }
 }
