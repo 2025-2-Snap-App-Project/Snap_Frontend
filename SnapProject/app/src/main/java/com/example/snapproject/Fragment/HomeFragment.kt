@@ -32,21 +32,6 @@ class HomeFragment : Fragment() {
         fun newInstance() = HomeFragment()
     }
 
-    override fun onResume() {
-        super.onResume()
-        view?.post { // view가 생성된 후 실행
-            binding.homeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
-
-            // 앱 처음 실행 시, 패키지명을 먼저 읽음 -> TTS 발화 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            view?.postDelayed({
-                // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-                MainActivity.tts.readText("두 손가락으로 화면을 좌우로 스와이프하여 두 가지 메뉴를 번갈아 확인해보세요") {
-                    binding.homeLayout.post { binding.homeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
-                }
-            }, 1000)
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
