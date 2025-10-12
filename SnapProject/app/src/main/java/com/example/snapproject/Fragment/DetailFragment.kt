@@ -36,11 +36,6 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         super.onResume()
         view?.post { // view가 생성된 후 실행
             binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
-
-            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            MainActivity.tts.readText("제품 상세 설명 화면입니다.") {
-                binding.detailLayout.post { binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
-            }
         }
     }
 
@@ -126,6 +121,14 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             recyclerview.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             recyclerview.adapter = recyclerViewAdapter
+
+            // RecyclerView 내부의 모든 아이템에 대해 Text를 가져옴
+            val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
+
+            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
+            MainActivity.tts.readText("제품 상세 설명입니다. $itemTexts") {
+                binding.detailLayout.post { binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+            }
         }
 
     override fun onDestroy() {
