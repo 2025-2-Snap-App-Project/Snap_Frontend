@@ -74,11 +74,6 @@ class ListRecyclerViewAdapter(
             binding.btnItem.setOnClickListener {
                 listener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
             }
-
-            // Item 내부의 별(isFavorite) 클릭 리스너 등록
-            binding.checkboxStar.setOnClickListener {
-                starListener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
-            }
         }
     }
 
