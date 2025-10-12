@@ -19,8 +19,6 @@ class StartFragment : Fragment() {
         fun newInstance() = LoadingFragment()
     }
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -62,5 +60,4 @@ class StartFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
-
 }
