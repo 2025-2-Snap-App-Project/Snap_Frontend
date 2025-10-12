@@ -94,7 +94,6 @@ class ListFragment : Fragment() {
                         position: Int,
                     ) {
                         val action = ListFragmentDirections.actionListFragmentToDetailFragment(prevPage = "list")
-                        Toast.makeText(context, "클릭한 아이템 ID : $itemId", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(action)
                     }
                 },
