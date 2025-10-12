@@ -25,7 +25,6 @@ class StartFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-
         // SharedPreference에 시작하기 버튼이 클릭된 적이 있다고 기록되어 있다면 -> 시작하기 화면을 보여주지 않고, 바로 홈 화면으로 이동
         val btnStartClicked = SnapApplication.prefs.getBoolean("btn_start_clicked", false)
         if (btnStartClicked) findNavController().navigate(R.id.action_startFragment_to_homeFragment)
