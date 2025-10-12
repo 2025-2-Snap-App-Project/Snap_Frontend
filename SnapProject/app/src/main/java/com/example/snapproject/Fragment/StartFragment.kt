@@ -34,6 +34,10 @@ class StartFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+
+        binding.btnStart.setOnClickListener { // "시작하기" 버튼 클릭 -> 홈 화면으로 이동
+            findNavController().navigate(R.id.action_startFragment_to_homeFragment)
+        }
     }
 
     private fun initView() =
