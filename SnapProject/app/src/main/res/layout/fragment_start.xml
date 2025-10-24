@@ -30,6 +30,7 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnStart"
+        android:contentDescription="시작하기 버튼. 홈 화면으로 이동합니다."
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/main_blue"

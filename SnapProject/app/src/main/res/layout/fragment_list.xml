@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/listLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/listLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_white"
@@ -17,7 +17,7 @@
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="이전 화면으로 돌아가기"
+            android:contentDescription="이전 버튼. 홈 화면으로 다시 이동합니다."
             app:cardBackgroundColor="@android:color/transparent"
             app:contentPadding="30dp"
             app:strokeColor="@android:color/transparent">
@@ -44,6 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/main_white"
+        android:contentDescription="소비기한 카테고리"
         app:tabIndicatorColor="@color/dark_gray"
         app:tabIndicatorFullWidth="true"
         app:tabIndicatorHeight="2dp"
@@ -114,8 +115,8 @@
             android:layout_width="65dp"
             android:layout_height="65dp"
             android:layout_gravity="bottom|end"
-            android:contentDescription="목록 삭제 버튼"
             android:layout_margin="15dp"
+            android:contentDescription="제품 삭제 버튼. 제품 삭제 화면으로 이동합니다."
             app:cardBackgroundColor="@color/main_blue"
             app:cardCornerRadius="100dp"
             app:strokeColor="@android:color/transparent">
