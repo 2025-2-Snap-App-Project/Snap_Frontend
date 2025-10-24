@@ -22,11 +22,6 @@ class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
         var tts: TextToSpeech? = null // TextToSpeech 변수
     }
 
-    override fun onResume() {
-        super.onResume()
-        tts = initTTS(this@MainActivity) // TTS 초기화
-    }
-
     // 자식 프래그먼트의 버튼 클릭 리스너 구현
     override fun onChildButtonClicked(destinationId: Int) {
         // 자식 프래그먼트로부터 전달받은 이벤트 수행 (화면 전환)
@@ -39,6 +34,8 @@ class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
         // 뷰 바인딩
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
+
+        tts = initTTS(this@MainActivity) // TTS 초기화
 
         setUpJetpackNavigation() // 화면 전환 컨트롤러 -> 프래그먼트 전환
 
