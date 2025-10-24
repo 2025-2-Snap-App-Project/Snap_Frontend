@@ -1,15 +1,19 @@
 package com.example.snapproject.Fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.SnapApplication
 import com.example.snapproject.databinding.FragmentStartBinding
+import com.example.snapproject.readText
 import com.example.snapproject.setTextColorAsLinearGradient
 
 class StartFragment : Fragment() {
@@ -39,6 +43,10 @@ class StartFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            MainActivity.tts?.readText("TalkBack을 키고 앱을 사용해주세요.")
+        }, 500)
 
         binding.btnStart.setOnClickListener { // "시작하기" 버튼 클릭 -> 홈 화면으로 이동
             SnapApplication.prefs.setBoolean("btn_start_clicked", true) // "시작하기" 버튼이 클릭되었다고 SharedPreference에 기록

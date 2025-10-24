@@ -20,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:contentDescription="SNAP 앱에 오신 걸 환영해요! 화면 하단의 시작하기 버튼을 눌러주세요."
             android:fontFamily="@font/pretendard_black"
             android:text="SNAP"
             android:textSize="54.82sp" />
@@ -29,6 +30,7 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnStart"
+        android:contentDescription="시작하기 버튼. 홈 화면으로 이동합니다."
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/main_blue"

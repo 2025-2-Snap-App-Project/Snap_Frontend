@@ -91,7 +91,7 @@ class DeleteFragment : Fragment() {
                         itemId: String,
                         position: Int,
                     ) {
-                        MainActivity.tts.readText("${itemId}번 아이템 클릭 (삭제 목적)")
+                        MainActivity.tts.readText("${itemId}번 아이템이 선택되었습니다.")
                     }
                 },
             )

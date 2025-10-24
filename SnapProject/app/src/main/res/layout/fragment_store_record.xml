@@ -17,7 +17,7 @@
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="이전 화면으로 돌아가기"
+            android:contentDescription="이전 버튼. 제품 상세 설명 화면으로 이동합니다."
             app:cardBackgroundColor="@android:color/transparent"
             app:contentPadding="30dp"
             app:strokeColor="@android:color/transparent">
@@ -50,7 +50,7 @@
             android:id="@+id/btnRecord"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="음성 녹음 버튼"
+            android:contentDescription="음성 녹음 버튼. 버튼을 누른 뒤, 보관 장소를 음성으로 입력합니다."
             app:cardBackgroundColor="@android:color/transparent"
             app:strokeColor="@android:color/transparent">
 
@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="31dp"
             android:layout_marginEnd="31dp"
-            android:contentDescription="입력한 내용 저장하기 버튼"
+            android:contentDescription="다음으로 버튼. 입력한 내용을 저장하고 이전 화면으로 이동합니다."
             app:cardBackgroundColor="@color/main_blue"
             app:cardCornerRadius="10dp"
             app:contentPadding="10dp"
@@ -115,7 +115,7 @@
             android:layout_marginStart="31dp"
             android:layout_marginTop="17dp"
             android:layout_marginEnd="31dp"
-            android:contentDescription="키보드로 입력하기 버튼"
+            android:contentDescription="키보드로 입력 버튼. 키보드로 보관 장소를 입력합니다."
             app:cardBackgroundColor="@color/main_white"
             app:cardCornerRadius="10dp"
             app:contentPadding="10dp"
