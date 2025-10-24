@@ -90,7 +90,7 @@
             android:layout_marginStart="31dp"
             android:layout_marginTop="17dp"
             android:layout_marginEnd="31dp"
-            android:contentDescription="제품 설명 다시 듣기 버튼. 제품에 대한 전체 설명을 다시 들을 수 있습니다."
+            android:contentDescription="전체 설명 듣기 버튼. 제품에 대한 전체 설명을 한 번에 들을 수 있습니다."
             app:cardBackgroundColor="@color/main_white"
             app:cardCornerRadius="10dp"
             app:contentPadding="10dp"
@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="설명 다시 듣기"
+                android:text="전체 설명 듣기"
                 android:textColor="@color/main_blue"
                 android:textSize="14sp" />
         </com.google.android.material.card.MaterialCardView>
