@@ -68,21 +68,11 @@ class ListRecyclerViewAdapter(
             binding.apply {
                 tvProductName.text = listItemData.productName
                 tvExpirationDate.text = listItemData.expirationDate
-                checkboxStar.isChecked = listItemData.isFavorite
-
-                checkboxStar.setOnCheckedChangeListener { _, isChecked ->
-                    listItemData.isFavorite = isChecked
-                }
             }
 
             // 소비기한 리스트 Item 클릭 리스너 등록
             binding.btnItem.setOnClickListener {
                 listener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
-            }
-
-            // Item 내부의 별(isFavorite) 클릭 리스너 등록
-            binding.checkboxStar.setOnClickListener {
-                starListener?.onItemClick(binding.root, listItemData.itemId, adapterPosition)
             }
         }
     }

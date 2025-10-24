@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/homeLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/homeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_white"
@@ -28,70 +28,58 @@
         android:layout_marginTop="53dp"
         android:bufferType="spannable"
         android:fontFamily="@font/pretendard_bold"
-        android:text="안녕하세요, 사용자님!"
-        android:textSize="16sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="47dp"
-        android:layout_marginTop="5dp"
-        android:fontFamily="@font/pretendard_bold"
-        android:text="오늘은 2025.07.25 (금) 입니다."
+        android:lineSpacingExtra="5sp"
+        android:text="안녕하세요, 사용자님!\n두 손가락으로 화면 중앙을 넘겨보세요."
         android:textSize="16sp" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPagerMenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="39.12dp" />
+        android:layout_marginTop="39.12dp"
+        android:layout_weight="1" />
 
-    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
-        android:id="@+id/viewPagerIndicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="31.52dp"
-        android:contentDescription="메뉴 선택 버튼"
-        app:dotsColor="@color/main_blue"
-        app:dotsCornerRadius="4dp"
-        app:dotsSize="8dp"
-        app:dotsSpacing="6dp" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/btnTalkBack"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginStart="31dp"
-        android:layout_marginTop="33dp"
-        android:layout_marginEnd="31dp"
-        android:contentDescription="TalkBack 접근성 설정"
-        app:cardBackgroundColor="@color/main_white"
-        app:cardCornerRadius="10dp"
-        app:contentPadding="10dp"
-        app:strokeColor="@color/main_blue">
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnTalkBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="31dp"
+            android:layout_marginTop="33dp"
+            android:layout_marginEnd="31dp"
+            android:contentDescription="TalkBack 접근성 설정"
+            app:cardBackgroundColor="@color/main_white"
+            app:cardCornerRadius="10dp"
+            app:contentPadding="10dp"
+            app:strokeColor="@color/main_blue">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="TalkBack 설정"
+                android:textColor="@color/main_blue"
+                android:textSize="14sp" />
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="17dp"
+            android:layout_marginBottom="14dp"
+            android:contentDescription="오픈소스 라이선스 확인"
             android:fontFamily="@font/pretendard_bold"
-            android:text="TalkBack 설정"
-            android:textColor="@color/main_blue"
-            android:textSize="14sp" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="17dp"
-        android:contentDescription="오픈소스 라이선스 확인"
-        android:fontFamily="@font/pretendard_bold"
-        android:text="@string/home_open_source_license"
-        android:textColor="@color/dark_gray_2"
-        android:textSize="13sp" />
+            android:text="@string/home_open_source_license"
+            android:textColor="@color/dark_gray_2"
+            android:textSize="13sp" />
+    </LinearLayout>
 
 </LinearLayout>

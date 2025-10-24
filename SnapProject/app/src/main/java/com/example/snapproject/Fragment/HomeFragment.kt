@@ -75,9 +75,8 @@ class HomeFragment : Fragment() {
             tvBuilder.setSpan(colorBlueSpan, 7, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             tvWelcome.text = tvBuilder
 
-            // ViewPager2 어댑터 연결 + Indicator 붙이기
+            // ViewPager2 어댑터 연결
             viewPagerMenu.adapter = viewPagerAdapter
-            viewPagerIndicator.attachTo(viewPagerMenu)
         }
 
     override fun onDestroy() {
