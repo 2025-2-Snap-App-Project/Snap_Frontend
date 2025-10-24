@@ -1,5 +1,7 @@
 package com.example.snapproject.Fragment
 
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +22,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileNotFoundException
 
 class LoadingFragment : Fragment() {
     private var _binding: FragmentLoadingBinding? = null
@@ -65,8 +68,9 @@ class LoadingFragment : Fragment() {
 
         if (uriArrLst != null) {
             for (strUri in uriArrLst) {
-                Log.d("LoadingFragment", "전달 받은 이미지 경로 : ${strUri.toUri()}") // Uri로 타입 변환 후, 경로 확인
-                imgArrLst.add(File(strUri)) // 이미지 ArrayList에 이미지 파일 하나씩 추가
+                val uri = strUri.toUri() // String -> Uri로 변환
+                Log.d("LoadingFragment", "전달 받은 이미지 경로 : $uri") // Uri로 타입 변환 후, 경로 확인
+                imgArrLst.add(uriToFile(requireContext(), uri)) // 이미지 ArrayList에 이미지 파일 하나씩 추가
             }
         }
 
@@ -105,4 +109,16 @@ class LoadingFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
+
+    // Uri를 File 형태로 변환
+    private fun uriToFile(context: Context, uri: Uri): File {
+        val inputStream = context.contentResolver.openInputStream(uri)
+            ?: throw FileNotFoundException("파일을 찾을 수 없음 : $uri")
+
+        // 임시 File 생성 -> Uri에 있는 이미지를 임시 File에 복사
+        val tempFile = File.createTempFile("upload", ".png", context.cacheDir)
+        inputStream.use { input -> tempFile.outputStream().use { output -> input.copyTo(output) } }
+        return tempFile // 생성된 임시 File (이미지 파일) 리턴
+    }
+
 }
