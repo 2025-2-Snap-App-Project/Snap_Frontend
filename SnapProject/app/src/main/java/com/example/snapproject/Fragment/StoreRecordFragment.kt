@@ -20,7 +20,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
-import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentStoreRecordBinding
 import com.example.snapproject.model.db.Product
 import com.example.snapproject.model.db.ProductDatabase
