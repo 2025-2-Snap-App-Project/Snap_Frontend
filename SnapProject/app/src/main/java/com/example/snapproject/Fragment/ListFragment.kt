@@ -166,6 +166,10 @@ class ListFragment : Fragment() {
         if (pastList != null) {
             addListItemData(pastList)
         }
+
+        // 소비기한 지난 제품 개수 계산 -> UI 반영
+        val pastCount = productDB?.productDao()?.getCountGone(todayStr)
+        binding.tvItemNum.text = "소비기한이 지난\n제품이 ${pastCount}개입니다."
     }
 
     // 날짜 임박 (7일 이하) 제품 목록 보여줌
@@ -175,6 +179,10 @@ class ListFragment : Fragment() {
         if (imminentList != null) {
             addListItemData(imminentList)
         }
+
+        // 소비기한 임박한 제품 개수 계산 -> UI 반영
+        val imminentCount = productDB?.productDao()?.getCountImminent(todayStr, sevenDaysLaterStr)
+        binding.tvItemNum.text = "소비기한이 임박한\n제품이 ${imminentCount}개입니다."
     }
 
     // 날짜 여유 (7일 초과) 제품 목록 보여줌
@@ -184,6 +192,10 @@ class ListFragment : Fragment() {
         if (plentyList != null) {
             addListItemData(plentyList)
         }
+
+        // 소비기한 많이 남은 제품 개수 계산 -> UI 반영
+        val plentyCount = productDB?.productDao()?.getCountPlenty(sevenDaysLaterStr)
+        binding.tvItemNum.text = "소비기한이 많이 남은\n제품이 ${plentyCount}개입니다."
     }
 
 }
