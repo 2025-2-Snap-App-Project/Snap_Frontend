@@ -15,6 +15,11 @@ import com.example.snapproject.model.ListItemData
 import com.example.snapproject.model.db.Product
 import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.readText
+import com.google.android.material.tabs.TabLayout
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
@@ -70,6 +75,38 @@ class ListFragment : Fragment() {
             recyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             recyclerview.adapter = recyclerViewAdapter
 
+            val today = Date() // 오늘 날짜
+
+            // "오늘의 7일 후 날짜" 계산
+            val calender = Calendar.getInstance()
+            calender.time = today
+            calender.add(Calendar.DAY_OF_YEAR, 7)
+
+            // "오늘 날짜", "오늘의 7일 후 날짜" -> yyyy.MM.dd 형태로 변환
+            val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()) // YYYY.MM.DD 형태로 변환해주는 formatter
+            val todayStr = formatter.format(today) // "오늘 날짜" 변환
+            val sevenDaysLaterStr = formatter.format(calender.time) // "오늘의 7일 후 날짜" 변환
+
+            // 화면 진입 시, 첫 번째 탭(날짜 지남) 선택 -> 날짜 지난 제품 목록 보여줌
+            tabLayoutCategory.post {
+                tabLayoutCategory.getTabAt(0)?.select()
+                showListPlenty(sevenDaysLaterStr)
+            }
+
+            // 탭이 선택될 때마다, 해당 날짜에 맞는 제품 목록 보여줌
+            tabLayoutCategory.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    tab?.let {
+                        when (it.position) {
+                            0 -> showListGone(todayStr) // 날짜 지난 제품 목록 보여줌
+                            1 -> showListImminent(todayStr, sevenDaysLaterStr)  // 날짜 임박 (7일 이하) 제품 목록 보여줌
+                            2 -> showListPlenty(sevenDaysLaterStr) // 날짜 여유 (7일 초과) 제품 목록 보여줌
+                        }
+                    }
+                }
+                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+                override fun onTabReselected(tab: TabLayout.Tab?) {}
+            })
 
             // 아이템 클릭 리스너 연결 (아이템 클릭 시, 상세 설명 화면으로 이동)
             recyclerViewAdapter.setItemClickListener(
