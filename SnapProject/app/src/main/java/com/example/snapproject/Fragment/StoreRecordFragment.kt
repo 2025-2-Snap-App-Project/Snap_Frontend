@@ -35,6 +35,8 @@ class StoreRecordFragment : Fragment() {
     private lateinit var recogIntent: Intent
     private lateinit var mRecognizer: SpeechRecognizer
 
+    private lateinit var storageLocation: String // 사용자가 입력한 제품 보관 장소
+
     companion object {
         fun newInstance() = StoreRecordFragment()
 
@@ -207,7 +209,8 @@ class StoreRecordFragment : Fragment() {
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 for (i in matches!!.indices) binding.edtTxtStore.setText('"' + matches[i] + '"') // TextView에 음성 인식 결과 반영
-                MainActivity.tts.readText("음성 인식 결과는 ${matches[0]}입니다.")
+                storageLocation = matches[0] // 입력한 보관 장소 -> 별도의 변수에 저장
+                MainActivity.tts.readText("음성 인식 결과는 ${storageLocation}입니다.")
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
