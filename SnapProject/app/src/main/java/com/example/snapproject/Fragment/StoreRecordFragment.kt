@@ -195,7 +195,13 @@ class StoreRecordFragment : Fragment() {
     }
 
     // Product 테이블에 새로운 제품을 Insert하는 함수
-    private fun insertStorage(location: String, name: String, date: String, summary: List<String>, ingredients: String) {
+    private fun insertStorage(
+        location: String,
+        name: String,
+        date: String,
+        summary: List<String>,
+        ingredients: String,
+    ) {
         val productDB = ProductDatabase.getInstance(requireContext())
         val product = Product(location, name, date, summary, ingredients)
         productDB?.productDao()?.insert(product)

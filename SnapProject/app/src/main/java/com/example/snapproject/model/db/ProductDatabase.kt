@@ -10,7 +10,7 @@ import androidx.room.TypeConverters
 @Database(entities = [Product::class], version = 1)
 @TypeConverters(StringListConverters::class)
 abstract class ProductDatabase : RoomDatabase() {
-    abstract fun productDao() : ProductDao
+    abstract fun productDao(): ProductDao
 
     companion object {
         private var instance: ProductDatabase? = null
@@ -18,12 +18,13 @@ abstract class ProductDatabase : RoomDatabase() {
         @Synchronized
         fun getInstance(context: Context): ProductDatabase? {
             if (instance == null) {
-                synchronized(ProductDatabase::class){
-                    instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        ProductDatabase::class.java,
-                        "storage-database"
-                    ).allowMainThreadQueries().build()
+                synchronized(ProductDatabase::class) {
+                    instance =
+                        Room.databaseBuilder(
+                            context.applicationContext,
+                            ProductDatabase::class.java,
+                            "storage-database",
+                        ).allowMainThreadQueries().build()
                 }
             }
             return instance

@@ -12,6 +12,6 @@ class StringListConverters {
 
     @TypeConverter
     fun jsonToList(value: String): List<String>? {
-        return Gson().fromJson(value,Array<String>::class.java)?.toList()
+        return Gson().fromJson(value, Array<String>::class.java)?.toList()
     }
 }

@@ -92,7 +92,10 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         }
         binding.btnStore.setOnClickListener { // 보관하기 버튼 클릭 -> 보관하기(녹음) 화면으로 이동
             val action =
-                DetailFragmentDirections.actionDetailFragmentToStoreRecordFragment(prevPage = prevPage, analyzeResponse = response) // "어떤 화면에서 넘어온 건지 + 서버 응답 결과" -> args로 전달
+                DetailFragmentDirections.actionDetailFragmentToStoreRecordFragment(
+                    prevPage = prevPage,
+                    analyzeResponse = response,
+                ) // "어떤 화면에서 넘어온 건지 + 서버 응답 결과" -> args로 전달
             findNavController().navigate(action)
         }
 
