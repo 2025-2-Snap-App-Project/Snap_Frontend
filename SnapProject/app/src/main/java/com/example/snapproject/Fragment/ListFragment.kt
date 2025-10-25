@@ -12,6 +12,8 @@ import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentListBinding
 import com.example.snapproject.model.ListItemData
+import com.example.snapproject.model.db.Product
+import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.readText
 
 class ListFragment : Fragment() {
@@ -119,7 +121,7 @@ class ListFragment : Fragment() {
     }
 
     // 리사이클러뷰 Item에 데이터 추가 -> UI 업데이트
-    private fun addListItemData(data: ArrayList<ListItemData>) {
+    private fun addListItemData(data: List<Product>) {
         val itemList = ArrayList<ListItemData>(data.size)
         for (i in data) { // [입력으로 들어온 data <-> 리사이클러뷰 item data class] 매핑
             itemList.add(
@@ -134,4 +136,32 @@ class ListFragment : Fragment() {
         // 모든 Item이 추가된 Item 리스트를 UI에 반영
         recyclerViewAdapter.differ.submitList(itemList)
     }
+
+    // 날짜 지난 제품 목록 보여줌
+    fun showListGone(todayStr: String) {
+        val productDB = ProductDatabase.getInstance(requireContext())
+        val pastList = productDB?.productDao()?.getListGone(todayStr)
+        if (pastList != null) {
+            addListItemData(pastList)
+        }
+    }
+
+    // 날짜 임박 (7일 이하) 제품 목록 보여줌
+    fun showListImminent(todayStr: String, sevenDaysLaterStr: String) {
+        val productDB = ProductDatabase.getInstance(requireContext())
+        val imminentList = productDB?.productDao()?.getListImminent(todayStr, sevenDaysLaterStr)
+        if (imminentList != null) {
+            addListItemData(imminentList)
+        }
+    }
+
+    // 날짜 여유 (7일 초과) 제품 목록 보여줌
+    fun showListPlenty(sevenDaysLaterStr: String) {
+        val productDB = ProductDatabase.getInstance(requireContext())
+        val plentyList = productDB?.productDao()?.getListPlenty(sevenDaysLaterStr)
+        if (plentyList != null) {
+            addListItemData(plentyList)
+        }
+    }
+
 }
