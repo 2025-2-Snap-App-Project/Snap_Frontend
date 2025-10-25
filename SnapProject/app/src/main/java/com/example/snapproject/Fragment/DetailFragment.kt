@@ -83,9 +83,6 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             binding.tvStore.text = "보관 장소 수정" // 버튼 내부 텍스트 수정
         }
 
-        for (summary in itemSummary) { // itemSummary의 element를 하나씩 더미 데이터 ArrayList에 추가
-            dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
-        }
 
         recyclerViewAdapter = DetailRecyclerViewAdapter(dataArrayList) // RecyclerView 어댑터 생성
 
