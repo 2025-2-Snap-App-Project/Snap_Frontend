@@ -16,5 +16,5 @@ data class AnalyzeResponse(
         @SerializedName("product_name")
         val productName: String,
         val summary: List<String>,
-    )
+    ) : Serializable
 }
