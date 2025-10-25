@@ -79,9 +79,8 @@ class LoadingFragment : Fragment() {
                 when (val result = ApiRepository.postAnalyze(imgArrLst)) { // result = 서버 요청 결과
                     is ApiResult.Success -> { // 서버 통신 성공 시
                         Log.d("LoadingFragment", "Success: $result")
-                        // 제품 상세 설명 화면으로 이동
-                        val action =
-                            LoadingFragmentDirections.actionLoadingFragmentToDetailFragment(prevPage = "loading")
+                        // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "로딩 페이지에서 이동했음", 서버 응답)
+                        val action = LoadingFragmentDirections.actionLoadingFragmentToDetailFragment(prevPage = "loading", analyzeResponse = result.data)
                         findNavController().navigate(action)
                         return@launch // 리턴하여 반복문 빠져나옴.
                     }

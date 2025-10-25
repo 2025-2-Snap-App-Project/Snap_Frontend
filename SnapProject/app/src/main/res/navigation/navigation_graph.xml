@@ -76,6 +76,10 @@
             android:name="prevPage"
             android:defaultValue=""
             app:argType="string" />
+        <argument
+            android:name="analyzeResponse"
+            app:argType="com.example.snapproject.model.AnalyzeResponse"
+            app:nullable="true" />
         <action
             android:id="@+id/action_detailFragment_to_storeRecordFragment"
             app:destination="@id/storeRecordFragment" />
