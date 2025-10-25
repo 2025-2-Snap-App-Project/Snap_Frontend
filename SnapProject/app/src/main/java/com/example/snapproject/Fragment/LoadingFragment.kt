@@ -103,7 +103,7 @@ class LoadingFragment : Fragment() {
         }
 
         binding.btnHome.setOnClickListener { // "홈으로 돌아가기" 버튼 클릭 -> 홈 화면으로 이동
-            findNavController().navigate(R.id.action_loadingFragment_to_homeFragment)
+            findNavController().popBackStack()
         }
     }
 
