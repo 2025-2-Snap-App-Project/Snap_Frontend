@@ -98,11 +98,18 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         }
 
         binding.btnMoreInfo.setOnClickListener {
+            // SafeArgs로 받은 서버 응답 결과 중, 원재료명 정보 가져오기
+            val txtIngredients = response?.data?.ingredients
+
             // 원재료명 다이얼로그 show
-            val dialog =
-                DetailIngredientsDialog(txtIngredients) // DetailIngredientsDialog 인스턴스화 (원재료명도 같이 입력으로 넣어줌)
-            dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
-            dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
+            if (txtIngredients != null) { // 원재료명 정보가 null이 아니라면
+                val dialog =
+                    DetailIngredientsDialog(txtIngredients) // DetailIngredientsDialog 인스턴스화 (원재료명도 같이 입력으로 넣어줌)
+                dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
+                dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
+            } else {
+                MainActivity.tts.readText("원재료명 정보가 인식되지 않았습니다.")
+            }
         }
 
         binding.btnReplay.setOnClickListener { // 설명 다시 듣기 버튼 클릭 -> 제품 상세 설명 다시 들려줌
