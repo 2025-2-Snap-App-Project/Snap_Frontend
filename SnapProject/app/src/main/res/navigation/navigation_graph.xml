@@ -46,7 +46,7 @@
         <action
             android:id="@+id/action_loadingFragment_to_detailFragment"
             app:destination="@id/detailFragment"
-            app:popUpTo="@id/cameraFragment"/>
+            app:popUpTo="@id/homeFragment"/>
     </fragment>
     <fragment
         android:id="@+id/listFragment"

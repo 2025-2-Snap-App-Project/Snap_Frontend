@@ -88,7 +88,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
         initView()
 
-        binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 소비기한 리스트 화면으로 이동
+        binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> "홈 화면" or "소비기한 리스트" 화면으로 이동
             findNavController().popBackStack()
         }
         binding.btnStore.setOnClickListener { // 보관하기 버튼 클릭 -> 보관하기(녹음) 화면으로 이동
