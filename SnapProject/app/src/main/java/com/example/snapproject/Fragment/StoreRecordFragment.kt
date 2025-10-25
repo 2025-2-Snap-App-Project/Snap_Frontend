@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
+import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentStoreRecordBinding
 import com.example.snapproject.model.db.Product
 import com.example.snapproject.model.db.ProductDatabase
@@ -135,17 +136,31 @@ class StoreRecordFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Safe Args로 받은 데이터 가져오기
-        val args: StoreRecordFragmentArgs by navArgs()
-        val prevPage = args.prevPage
-
         initView()
 
         binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 제품 상세 설명 화면으로 이동
             findNavController().popBackStack()
         }
         binding.btnNext.setOnClickListener { // 다음으로 버튼 클릭 -> DB의 테이블 Update 로직 추가 필요
-            findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
+            // Safe Args로 받은 데이터 가져오기
+            val args: StoreRecordFragmentArgs by navArgs()
+            val prevPage = args.prevPage
+            val response = args.analyzeResponse
+
+            if (prevPage == "loading") { // 로딩 화면에서 넘어온 경우 -> 서버 응답 결과 가져와서 테이블에 Insert
+                // Safe Args로 받은 서버 응답 결과 -> 각각 변수에 저장
+                val productName = String.format(resources.getString(R.string.detail_item_name), response?.data?.productName)
+                val expirationDate = String.format(resources.getString(R.string.detail_item_date), response?.data?.expirationDate)
+                val summary = response?.data?.summary
+                val ingredients = response?.data?.ingredients
+
+                if (this::storageLocation.isInitialized && summary != null && ingredients != null) { // 누락된 정보가 없는 경우
+                    insertStorage(storageLocation, productName, expirationDate, summary, ingredients) // 테이블에 신규 제품 Insert
+                    findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
+                } else { // 누락된 정보가 있다면
+                    MainActivity.tts.readText("제품 정보를 저장할 수 없습니다!")
+                }
+            }
         }
 
         binding.btnKeyBoard.setOnClickListener { // "키보드로 입력" 버튼 클릭
