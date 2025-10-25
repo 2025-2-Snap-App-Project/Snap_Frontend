@@ -74,15 +74,18 @@ class LoadingFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch { // Fragment의 뷰 생명 주기
+            while(isActive) { // Fragment의 뷰가 살아있는 동안 계속 반복 (에러 발생 시, 서버 요청 무한 재시도)
                 when (val result = ApiRepository.postAnalyze(imgArrLst)) { // result = 서버 요청 결과
                     is ApiResult.Success -> { // 서버 통신 성공 시
                         Log.d("LoadingFragment", "Success: $result")
                         // 제품 상세 설명 화면으로 이동
-                        val action = LoadingFragmentDirections.actionLoadingFragmentToDetailFragment(prevPage = "loading")
+                        val action =
+                            LoadingFragmentDirections.actionLoadingFragmentToDetailFragment(prevPage = "loading")
                         findNavController().navigate(action)
                         return@launch // 리턴하여 반복문 빠져나옴.
                     }
+
                     is ApiResult.Error -> { // 서버 통신 실패 시
                         when (result.code) {
                             400 -> MainActivity.tts.readText("이미지 누락. 다시 이미지 분석을 시도합니다.")
@@ -90,10 +93,14 @@ class LoadingFragment : Fragment() {
                             500 -> MainActivity.tts.readText("서버 오류 발생. 다시 이미지 분석을 시도합니다.")
                             else -> MainActivity.tts.readText("알 수 없는 오류 발생. 다시 이미지 분석을 시도합니다.")
                         }
-                        Log.e("LoadingFragment", "Error code: ${result.code}, message: ${result.message}")
+                        Log.e(
+                            "LoadingFragment",
+                            "Error code: ${result.code}, message: ${result.message}"
+                        )
                         delay(5000) // 딜레이 주고 서버 요청 재시도.
                     }
                 }
+            }
         }
 
         binding.btnHome.setOnClickListener { // "홈으로 돌아가기" 버튼 클릭 -> 홈 화면으로 이동
