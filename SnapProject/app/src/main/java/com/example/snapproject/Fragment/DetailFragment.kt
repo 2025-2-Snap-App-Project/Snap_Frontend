@@ -17,7 +17,6 @@ import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.model.viewobject.DetailDateViewObject
 import com.example.snapproject.model.viewobject.DetailNameViewObject
-import com.example.snapproject.model.viewobject.DetailStorageViewObject
 import com.example.snapproject.model.viewobject.DetailSummaryViewObject
 import com.example.snapproject.readText
 
@@ -25,6 +24,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
 
+    private var dataArrayList: ArrayList<DetailItemData> = arrayListOf() // RecyclerView 아이템 ArrayList
     private lateinit var recyclerViewAdapter: DetailRecyclerViewAdapter // RecyclerView 어댑터
 
     companion object {
@@ -53,50 +53,41 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        val itemName = String.format(resources.getString(R.string.detail_item_name), "초코파이")
-        val itemDate = String.format(resources.getString(R.string.detail_item_date), "2025.07.22")
-        val itemStorage =
-            String.format(resources.getString(R.string.detail_item_storage), "냉장고 두 번째 칸")
-        val itemSummary =
-            arrayListOf(
-                "이 제품은 **닭가슴살**을 주재료로 한 가공식품입니다. 전반적으로 단백질이 풍부하지만, **몇 가지 주의할 점**이 있습니다. ",
-                "1. **대두(콩)**과 **밀**은 대표적인 알레르기 유발 성분입니다.",
-                "2. **혼합제제(폴리인산나트륨, 피로인산나트륨)**는 가공식품에서 보존성과 조직감을 높이기 위한 첨가물로, 과도한 섭취 시 신장 건강에 영향을 줄 수 있습니다.",
-                "3. **L-글루타민산나트륨(MSG)**는 감칠맛을 내는 조미료로, 일반적으로 안전하지만, 일부 민감한 사람에게는 두통 등을 유발할 수 있습니다.",
-            )
-        val txtIngredients =
-            "밀가루(밀:미국산,호주산), 마시멜로(물엿, 설탕, 젤라틴), 식물성유지(팜유), 설탕, 전란액, 코코아분말, 정제소금, 합성착향료(바닐린), " +
-                "탄산수소나트륨(팽창제), 밀가루(밀:미국산,호주산), 마시멜로(물엿, 설탕, 젤라틴), 식물성유지(팜유), 설탕, 전란액, 코코아분말, " +
-                "정제소금, 합성착향료(바닐린), 탄산수소나트륨(팽창제), 밀가루(밀:미국산,호주산), 마시멜로(물엿, 설탕, 젤라틴), 식물성유지(팜유), " +
-                "설탕, 전란액, 코코아분말, 정제소금, 합성착향료(바닐린), 탄산수소나트륨(팽창제)"
-
-        // 제품명, 소비기한, 보관 장소 아이템 -> 더미 데이터 ArrayList에 담기
-        val dataArrayList: ArrayList<DetailItemData> =
-            arrayListOf(
-                DetailItemData("DETAIL_NAME", DetailNameViewObject(itemName)),
-                DetailItemData("DETAIL_DATE", DetailDateViewObject(itemDate)),
-            )
-
         // Safe Args로 받은 데이터 가져오기
         val args: DetailFragmentArgs by navArgs()
         val prevPage = args.prevPage
+        val response = args.analyzeResponse
 
-        if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
-            dataArrayList.add(
-                DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage)),
-            ) // itemStorage (보관 장소 설명) 도 더미 데이터 ArrayList에 추가
-            binding.tvStore.text = "보관 장소 수정" // 버튼 내부 텍스트 수정
+        if (prevPage == "loading") { // 이전 화면이 로딩 화면인 경우
+            // SafeArgs로 받은 서버 응답 결과를 각각 변수에 저장
+            val itemName = String.format(resources.getString(R.string.detail_item_name), response?.data?.productName)
+            val itemDate = String.format(resources.getString(R.string.detail_item_date), response?.data?.expirationDate)
+            val itemSummary = response?.data?.summary
+
+            if (itemSummary != null) { // 제품 요약 정보가 null이 아니라면
+                // 제품명, 소비기한, 요약 -> ArrayList에 추가
+                dataArrayList.add(DetailItemData("DETAIL_NAME", DetailNameViewObject(itemName)))
+                dataArrayList.add(DetailItemData("DETAIL_DATE", DetailDateViewObject(itemDate)))
+                for (summary in itemSummary) {
+                    dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
+                }
+            } else {
+                MainActivity.tts.readText("제품 상세 정보가 누락되었습니다.")
+            }
         }
 
-        for (summary in itemSummary) { // itemSummary의 element를 하나씩 더미 데이터 ArrayList에 추가
-            dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
-        }
+//        if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
+//            dataArrayList.add(
+//                DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage)),
+//            ) // itemStorage (보관 장소 설명) 도 더미 데이터 ArrayList에 추가
+//            binding.tvStore.text = "보관 장소 수정" // 버튼 내부 텍스트 수정
+//        }
 
         recyclerViewAdapter = DetailRecyclerViewAdapter(dataArrayList) // RecyclerView 어댑터 생성
 
         initView()
 
-        binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 소비기한 리스트 화면으로 이동
+        binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> "홈 화면" or "소비기한 리스트" 화면으로 이동
             findNavController().popBackStack()
         }
         binding.btnStore.setOnClickListener { // 보관하기 버튼 클릭 -> 보관하기(녹음) 화면으로 이동
@@ -106,11 +97,18 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         }
 
         binding.btnMoreInfo.setOnClickListener {
+            // SafeArgs로 받은 서버 응답 결과 중, 원재료명 정보 가져오기
+            val txtIngredients = response?.data?.ingredients
+
             // 원재료명 다이얼로그 show
-            val dialog =
-                DetailIngredientsDialog(txtIngredients) // DetailIngredientsDialog 인스턴스화 (원재료명도 같이 입력으로 넣어줌)
-            dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
-            dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
+            if (txtIngredients != null) { // 원재료명 정보가 null이 아니라면
+                val dialog =
+                    DetailIngredientsDialog(txtIngredients) // DetailIngredientsDialog 인스턴스화 (원재료명도 같이 입력으로 넣어줌)
+                dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
+                dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
+            } else {
+                MainActivity.tts.readText("원재료명 정보가 인식되지 않았습니다.")
+            }
         }
 
         binding.btnReplay.setOnClickListener { // 설명 다시 듣기 버튼 클릭 -> 제품 상세 설명 다시 들려줌

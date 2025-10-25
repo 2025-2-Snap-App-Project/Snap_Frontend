@@ -92,7 +92,8 @@ class ListFragment : Fragment() {
                         itemId: String,
                         position: Int,
                     ) {
-                        val action = ListFragmentDirections.actionListFragmentToDetailFragment(prevPage = "list")
+                        // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "리스트 페이지에서 이동했음", 서버 응답은 null)
+                        val action = ListFragmentDirections.actionListFragmentToDetailFragment(prevPage = "list", analyzeResponse = null)
                         findNavController().navigate(action)
                     }
                 },
