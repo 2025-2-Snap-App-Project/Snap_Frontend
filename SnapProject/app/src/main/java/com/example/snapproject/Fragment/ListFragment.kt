@@ -76,6 +76,21 @@ class ListFragment : Fragment() {
             recyclerview.adapter = recyclerViewAdapter
 
             filterProductsBySelectedTab() // 선택된 탭(날짜)을 기준으로 필터링된 제품 목록 조회
+
+            // 아이템 클릭 리스너 연결 (아이템 클릭 시, 상세 설명 화면으로 이동)
+            recyclerViewAdapter.setItemClickListener(
+                object : ListRecyclerViewAdapter.OnItemClickInterface {
+                    override fun onItemClick(
+                        v: View,
+                        itemId: Int,
+                        position: Int,
+                    ) {
+                        // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "리스트 페이지에서 이동했음", 서버 응답은 null)
+                        val action = ListFragmentDirections.actionListFragmentToDetailFragment(prevPage = "list", analyzeResponse = null)
+                        findNavController().navigate(action)
+                    }
+                },
+            )
         }
 
     override fun onDestroy() {
@@ -117,21 +132,6 @@ class ListFragment : Fragment() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
-
-        // 아이템 클릭 리스너 연결 (아이템 클릭 시, 상세 설명 화면으로 이동)
-        recyclerViewAdapter.setItemClickListener(
-            object : ListRecyclerViewAdapter.OnItemClickInterface {
-                override fun onItemClick(
-                    v: View,
-                    itemId: Int,
-                    position: Int,
-                ) {
-                    // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "리스트 페이지에서 이동했음", 서버 응답은 null)
-                    val action = ListFragmentDirections.actionListFragmentToDetailFragment(prevPage = "list", analyzeResponse = null)
-                    findNavController().navigate(action)
-                }
-            },
-        )
     }
 
     // 리사이클러뷰 Item에 데이터 추가 -> UI 업데이트
