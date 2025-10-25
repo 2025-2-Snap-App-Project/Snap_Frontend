@@ -91,5 +91,9 @@
             android:name="prevPage"
             android:defaultValue=""
             app:argType="string" />
+        <argument
+            android:name="analyzeResponse"
+            app:argType="com.example.snapproject.model.AnalyzeResponse"
+            app:nullable="true" />
     </fragment>
 </navigation>
