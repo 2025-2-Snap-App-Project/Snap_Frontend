@@ -21,8 +21,8 @@ object ApiClient {
         OkHttpClient.Builder()
             .addInterceptor(logging)
             .connectTimeout(10, TimeUnit.SECONDS) // 서버 연결 최대 10초 수행
-            .writeTimeout(120, TimeUnit.SECONDS) // 서버 요청 최대 2분 수행 -> ex) 오디오 파일 업로드
-            .readTimeout(600, TimeUnit.SECONDS) // 서버 응답 최대 10분 수행 -> ex) AI 발표 분석(Whisper 등) 후 응답
+            .writeTimeout(120, TimeUnit.SECONDS) // 서버 요청 최대 2분 수행
+            .readTimeout(600, TimeUnit.SECONDS) // 서버 응답 최대 10분 수행
             .build()
 
     val instance: Retrofit by lazy {
