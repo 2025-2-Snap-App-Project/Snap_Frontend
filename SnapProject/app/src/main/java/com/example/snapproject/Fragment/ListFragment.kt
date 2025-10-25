@@ -76,19 +76,6 @@ class ListFragment : Fragment() {
             recyclerview.adapter = recyclerViewAdapter
 
             filterProductsBySelectedTab() // 선택된 탭(날짜)을 기준으로 필터링된 제품 목록 조회
-
-            // 아이템 내부의 별(isFavorite) 클릭 리스너 연결
-            recyclerViewAdapter.setStarClickListener(
-                object : ListRecyclerViewAdapter.OnItemClickInterface {
-                    override fun onItemClick(
-                        v: View,
-                        itemId: Int,
-                        position: Int,
-                    ) {
-                        MainActivity.tts.readText("${itemId}번 별 클릭")
-                    }
-                },
-            )
         }
 
     override fun onDestroy() {
