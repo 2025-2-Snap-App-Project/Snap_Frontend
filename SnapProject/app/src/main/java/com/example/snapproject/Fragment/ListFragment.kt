@@ -75,53 +75,7 @@ class ListFragment : Fragment() {
             recyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             recyclerview.adapter = recyclerViewAdapter
 
-            val today = Date() // 오늘 날짜
-
-            // "오늘의 7일 후 날짜" 계산
-            val calender = Calendar.getInstance()
-            calender.time = today
-            calender.add(Calendar.DAY_OF_YEAR, 7)
-
-            // "오늘 날짜", "오늘의 7일 후 날짜" -> yyyy.MM.dd 형태로 변환
-            val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()) // YYYY.MM.DD 형태로 변환해주는 formatter
-            val todayStr = formatter.format(today) // "오늘 날짜" 변환
-            val sevenDaysLaterStr = formatter.format(calender.time) // "오늘의 7일 후 날짜" 변환
-
-            // 화면 진입 시, 첫 번째 탭(날짜 지남) 선택 -> 날짜 지난 제품 목록 보여줌
-            tabLayoutCategory.post {
-                tabLayoutCategory.getTabAt(0)?.select()
-                showListGone(todayStr)
-            }
-
-            // 탭이 선택될 때마다, 해당 날짜에 맞는 제품 목록 보여줌
-            tabLayoutCategory.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabSelected(tab: TabLayout.Tab?) {
-                    tab?.let {
-                        when (it.position) {
-                            0 -> showListGone(todayStr) // 날짜 지난 제품 목록 보여줌
-                            1 -> showListImminent(todayStr, sevenDaysLaterStr)  // 날짜 임박 (7일 이하) 제품 목록 보여줌
-                            2 -> showListPlenty(sevenDaysLaterStr) // 날짜 여유 (7일 초과) 제품 목록 보여줌
-                        }
-                    }
-                }
-                override fun onTabUnselected(tab: TabLayout.Tab?) {}
-                override fun onTabReselected(tab: TabLayout.Tab?) {}
-            })
-
-            // 아이템 클릭 리스너 연결 (아이템 클릭 시, 상세 설명 화면으로 이동)
-            recyclerViewAdapter.setItemClickListener(
-                object : ListRecyclerViewAdapter.OnItemClickInterface {
-                    override fun onItemClick(
-                        v: View,
-                        itemId: Int,
-                        position: Int,
-                    ) {
-                        // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "리스트 페이지에서 이동했음", 서버 응답은 null)
-                        val action = ListFragmentDirections.actionListFragmentToDetailFragment(prevPage = "list", analyzeResponse = null)
-                        findNavController().navigate(action)
-                    }
-                },
-            )
+            filterProductsBySelectedTab() // 선택된 탭(날짜)을 기준으로 필터링된 제품 목록 조회
 
             // 아이템 내부의 별(isFavorite) 클릭 리스너 연결
             recyclerViewAdapter.setStarClickListener(
@@ -140,6 +94,57 @@ class ListFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    // 선택된 탭(날짜)을 기준으로 필터링된 제품 목록 조회
+    fun filterProductsBySelectedTab() {
+        val today = Date() // 오늘 날짜
+
+        // "오늘의 7일 후 날짜" 계산
+        val calender = Calendar.getInstance()
+        calender.time = today
+        calender.add(Calendar.DAY_OF_YEAR, 7)
+
+        // "오늘 날짜", "오늘의 7일 후 날짜" -> yyyy.MM.dd 형태로 변환
+        val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()) // YYYY.MM.DD 형태로 변환해주는 formatter
+        val todayStr = formatter.format(today) // "오늘 날짜" 변환
+        val sevenDaysLaterStr = formatter.format(calender.time) // "오늘의 7일 후 날짜" 변환
+
+        // 화면 진입 시, 첫 번째 탭(날짜 지남) 선택 -> 날짜 지난 제품 목록 보여줌
+        binding.tabLayoutCategory.post {
+            binding.tabLayoutCategory.getTabAt(0)?.select()
+            showListGone(todayStr)
+        }
+
+        // 탭이 선택될 때마다, 해당 날짜에 맞는 제품 목록 보여줌
+        binding.tabLayoutCategory.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.let {
+                    when (it.position) {
+                        0 -> showListGone(todayStr) // 날짜 지난 제품 목록 보여줌
+                        1 -> showListImminent(todayStr, sevenDaysLaterStr)  // 날짜 임박 (7일 이하) 제품 목록 보여줌
+                        2 -> showListPlenty(sevenDaysLaterStr) // 날짜 여유 (7일 초과) 제품 목록 보여줌
+                    }
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+
+        // 아이템 클릭 리스너 연결 (아이템 클릭 시, 상세 설명 화면으로 이동)
+        recyclerViewAdapter.setItemClickListener(
+            object : ListRecyclerViewAdapter.OnItemClickInterface {
+                override fun onItemClick(
+                    v: View,
+                    itemId: Int,
+                    position: Int,
+                ) {
+                    // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "리스트 페이지에서 이동했음", 서버 응답은 null)
+                    val action = ListFragmentDirections.actionListFragmentToDetailFragment(prevPage = "list", analyzeResponse = null)
+                    findNavController().navigate(action)
+                }
+            },
+        )
     }
 
     // 리사이클러뷰 Item에 데이터 추가 -> UI 업데이트
