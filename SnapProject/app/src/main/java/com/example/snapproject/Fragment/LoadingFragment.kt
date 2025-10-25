@@ -13,7 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
-import com.example.snapproject.R
 import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentLoadingBinding
@@ -75,12 +74,16 @@ class LoadingFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch { // Fragment의 뷰 생명 주기
-            while(isActive) { // Fragment의 뷰가 살아있는 동안 계속 반복 (에러 발생 시, 서버 요청 무한 재시도)
+            while (isActive) { // Fragment의 뷰가 살아있는 동안 계속 반복 (에러 발생 시, 서버 요청 무한 재시도)
                 when (val result = ApiRepository.postAnalyze(imgArrLst)) { // result = 서버 요청 결과
                     is ApiResult.Success -> { // 서버 통신 성공 시
                         Log.d("LoadingFragment", "Success: $result")
                         // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "로딩 페이지에서 이동했음", 서버 응답)
-                        val action = LoadingFragmentDirections.actionLoadingFragmentToDetailFragment(prevPage = "loading", analyzeResponse = result.data)
+                        val action =
+                            LoadingFragmentDirections.actionLoadingFragmentToDetailFragment(
+                                prevPage = "loading",
+                                analyzeResponse = result.data,
+                            )
                         findNavController().navigate(action)
                         return@launch // 리턴하여 반복문 빠져나옴.
                     }
@@ -94,7 +97,7 @@ class LoadingFragment : Fragment() {
                         }
                         Log.e(
                             "LoadingFragment",
-                            "Error code: ${result.code}, message: ${result.message}"
+                            "Error code: ${result.code}, message: ${result.message}",
                         )
                         delay(5000) // 딜레이 주고 서버 요청 재시도.
                     }
@@ -117,14 +120,17 @@ class LoadingFragment : Fragment() {
     }
 
     // Uri를 File 형태로 변환
-    private fun uriToFile(context: Context, uri: Uri): File {
-        val inputStream = context.contentResolver.openInputStream(uri)
-            ?: throw FileNotFoundException("파일을 찾을 수 없음 : $uri")
+    private fun uriToFile(
+        context: Context,
+        uri: Uri,
+    ): File {
+        val inputStream =
+            context.contentResolver.openInputStream(uri)
+                ?: throw FileNotFoundException("파일을 찾을 수 없음 : $uri")
 
         // 임시 File 생성 -> Uri에 있는 이미지를 임시 File에 복사
         val tempFile = File.createTempFile("upload", ".png", context.cacheDir)
         inputStream.use { input -> tempFile.outputStream().use { output -> input.copyTo(output) } }
         return tempFile // 생성된 임시 File (이미지 파일) 리턴
     }
-
 }

@@ -17,7 +17,6 @@ import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.model.viewobject.DetailDateViewObject
 import com.example.snapproject.model.viewobject.DetailNameViewObject
-import com.example.snapproject.model.viewobject.DetailStorageViewObject
 import com.example.snapproject.model.viewobject.DetailSummaryViewObject
 import com.example.snapproject.readText
 
@@ -25,7 +24,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
 
-    private var dataArrayList : ArrayList<DetailItemData> = arrayListOf() // RecyclerView 아이템 ArrayList
+    private var dataArrayList: ArrayList<DetailItemData> = arrayListOf() // RecyclerView 아이템 ArrayList
     private lateinit var recyclerViewAdapter: DetailRecyclerViewAdapter // RecyclerView 어댑터
 
     companion object {

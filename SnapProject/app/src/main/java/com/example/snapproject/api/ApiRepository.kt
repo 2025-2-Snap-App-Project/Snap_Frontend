@@ -19,21 +19,21 @@ import java.io.File
 object ApiRepository {
     private val apiService: ApiService = ApiClient.instance.create(ApiService::class.java)
 
-    suspend fun postAnalyze(
-        imageFiles: List<File>,
-    ): ApiResult<AnalyzeResponse> {
-        val result = apiSafeCall { // result -> 서버 요청한 뒤의 결과를 저장
-            // 서버로 보내줘야 하는 데이터 -> MultiPartBody로 변환
-            val imageParts = imageFiles.map { file ->
-                val reqFile = file.asRequestBody("image/*".toMediaType())
-                MultipartBody.Part.createFormData("images[]", file.name, reqFile)
-            }
+    suspend fun postAnalyze(imageFiles: List<File>): ApiResult<AnalyzeResponse> {
+        val result =
+            apiSafeCall { // result -> 서버 요청한 뒤의 결과를 저장
+                // 서버로 보내줘야 하는 데이터 -> MultiPartBody로 변환
+                val imageParts =
+                    imageFiles.map { file ->
+                        val reqFile = file.asRequestBody("image/*".toMediaType())
+                        MultipartBody.Part.createFormData("images[]", file.name, reqFile)
+                    }
 
-            // ApiService 인터페이스에 선언된 함수 호출하여 POST 요청
-            apiService.postAnalyzeRaw(
-                imageParts,
-            )
-        }
+                // ApiService 인터페이스에 선언된 함수 호출하여 POST 요청
+                apiService.postAnalyzeRaw(
+                    imageParts,
+                )
+            }
         return result
     }
 }
