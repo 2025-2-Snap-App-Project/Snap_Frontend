@@ -135,7 +135,7 @@ class ListFragment : Fragment() {
     }
 
     // 리사이클러뷰 Item에 데이터 추가 -> UI 업데이트
-    private fun addListItemData(data: List<Product>) {
+    fun addListItemData(data: List<Product>) {
         val itemList = ArrayList<ListItemData>(data.size)
         for (i in data) { // [입력으로 들어온 data <-> 리사이클러뷰 item data class] 매핑
             itemList.add(
