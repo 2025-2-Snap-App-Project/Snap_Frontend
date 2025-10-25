@@ -90,7 +90,7 @@ class ListFragment : Fragment() {
             // 화면 진입 시, 첫 번째 탭(날짜 지남) 선택 -> 날짜 지난 제품 목록 보여줌
             tabLayoutCategory.post {
                 tabLayoutCategory.getTabAt(0)?.select()
-                showListPlenty(sevenDaysLaterStr)
+                showListGone(todayStr)
             }
 
             // 탭이 선택될 때마다, 해당 날짜에 맞는 제품 목록 보여줌
