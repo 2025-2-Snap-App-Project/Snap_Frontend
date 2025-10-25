@@ -75,14 +75,14 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             } else {
                 MainActivity.tts.readText("제품 상세 정보가 누락되었습니다.")
             }
-
-        if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
-            dataArrayList.add(
-                DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage)),
-            ) // itemStorage (보관 장소 설명) 도 더미 데이터 ArrayList에 추가
-            binding.tvStore.text = "보관 장소 수정" // 버튼 내부 텍스트 수정
         }
 
+//        if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
+//            dataArrayList.add(
+//                DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage)),
+//            ) // itemStorage (보관 장소 설명) 도 더미 데이터 ArrayList에 추가
+//            binding.tvStore.text = "보관 장소 수정" // 버튼 내부 텍스트 수정
+//        }
 
         recyclerViewAdapter = DetailRecyclerViewAdapter(dataArrayList) // RecyclerView 어댑터 생성
 
