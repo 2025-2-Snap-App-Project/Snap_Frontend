@@ -89,7 +89,7 @@ class ListFragment : Fragment() {
                 object : ListRecyclerViewAdapter.OnItemClickInterface {
                     override fun onItemClick(
                         v: View,
-                        itemId: String,
+                        itemId: Int,
                         position: Int,
                     ) {
                         // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "리스트 페이지에서 이동했음", 서버 응답은 null)
@@ -104,7 +104,7 @@ class ListFragment : Fragment() {
                 object : ListRecyclerViewAdapter.OnItemClickInterface {
                     override fun onItemClick(
                         v: View,
-                        itemId: String,
+                        itemId: Int,
                         position: Int,
                     ) {
                         MainActivity.tts.readText("${itemId}번 별 클릭")
@@ -124,7 +124,7 @@ class ListFragment : Fragment() {
         for (i in data) { // [입력으로 들어온 data <-> 리사이클러뷰 item data class] 매핑
             itemList.add(
                 ListItemData(
-                    i.itemId,
+                    i.productId,
                     i.productName,
                     i.expirationDate,
                     i.isDeleteChecked,

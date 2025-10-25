@@ -20,7 +20,7 @@ class ListRecyclerViewAdapter(
     interface OnItemClickInterface {
         fun onItemClick(
             v: View,
-            itemId: String,
+            itemId: Int,
             position: Int,
         )
     }
