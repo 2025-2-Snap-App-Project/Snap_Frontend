@@ -9,17 +9,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.ListRecyclerViewAdapter
 import com.example.snapproject.MainActivity
+import com.example.snapproject.ProductListHelper
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentListBinding
 import com.example.snapproject.model.ListItemData
-import com.example.snapproject.model.db.Product
-import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.readText
 import com.google.android.material.tabs.TabLayout
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
@@ -75,7 +70,10 @@ class ListFragment : Fragment() {
             recyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             recyclerview.adapter = recyclerViewAdapter
 
-            filterProductsBySelectedTab() // 선택된 탭(날짜)을 기준으로 필터링된 제품 목록 조회
+            val todayStr = ProductListHelper.getTodayDateStr() // 오늘 날짜 -> yyyy.MM.dd
+            val sevenDaysLaterStr = ProductListHelper.getSevenDaysLaterDateStr() // 오늘로부터 7일 후 날짜 -> yyyy.MM.dd
+
+            filterProductsBySelectedTab(todayStr, sevenDaysLaterStr) // 선택된 탭(날짜)을 기준으로 필터링된 제품 목록 조회
 
             // 아이템 클릭 리스너 연결 (아이템 클릭 시, 상세 설명 화면으로 이동)
             recyclerViewAdapter.setItemClickListener(
@@ -92,30 +90,18 @@ class ListFragment : Fragment() {
                 },
             )
         }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
     // 선택된 탭(날짜)을 기준으로 필터링된 제품 목록 조회
-    fun filterProductsBySelectedTab() {
-        val today = Date() // 오늘 날짜
-
-        // "오늘의 7일 후 날짜" 계산
-        val calender = Calendar.getInstance()
-        calender.time = today
-        calender.add(Calendar.DAY_OF_YEAR, 7)
-
-        // "오늘 날짜", "오늘의 7일 후 날짜" -> yyyy.MM.dd 형태로 변환
-        val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()) // YYYY.MM.DD 형태로 변환해주는 formatter
-        val todayStr = formatter.format(today) // "오늘 날짜" 변환
-        val sevenDaysLaterStr = formatter.format(calender.time) // "오늘의 7일 후 날짜" 변환
-
+    private fun filterProductsBySelectedTab(todayStr: String, sevenDaysLaterStr: String) {
         // 화면 진입 시, 첫 번째 탭(날짜 지남) 선택 -> 날짜 지난 제품 목록 보여줌
         binding.tabLayoutCategory.post {
-            binding.tabLayoutCategory.getTabAt(0)?.select()
-            showListGone(todayStr)
+            binding.tabLayoutCategory.getTabAt(0)?.select() // 첫 번째 탭 선택
+            val list = ProductListHelper.getListGone(requireContext(), todayStr) // 날짜 기준으로 필터링된 제품 목록 불러오기
+
+            // ListItemData를 차례대로 생성하여, 리사이클러뷰 어댑터에 바뀐 내용 반영
+            recyclerViewAdapter.differ.submitList(list.map { p -> ListItemData(p.productId, p.productName, p.expirationDate, false) })
+
+            // 제품 개수를 UI에 반영
+            binding.tvItemNum.text = "소비기한이 지난\n제품이 ${ProductListHelper.getCountGone(requireContext(), todayStr)}개입니다."
         }
 
         // 탭이 선택될 때마다, 해당 날짜에 맞는 제품 목록 보여줌
@@ -123,9 +109,21 @@ class ListFragment : Fragment() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
                     when (it.position) {
-                        0 -> showListGone(todayStr) // 날짜 지난 제품 목록 보여줌
-                        1 -> showListImminent(todayStr, sevenDaysLaterStr)  // 날짜 임박 (7일 이하) 제품 목록 보여줌
-                        2 -> showListPlenty(sevenDaysLaterStr) // 날짜 여유 (7일 초과) 제품 목록 보여줌
+                        0 -> { // 날짜 지난 제품 목록 보여줌
+                            val list = ProductListHelper.getListGone(requireContext(), todayStr)
+                            recyclerViewAdapter.differ.submitList(list.map { p -> ListItemData(p.productId, p.productName, p.expirationDate, false) })
+                            binding.tvItemNum.text = "소비기한이 지난\n제품이 ${ProductListHelper.getCountGone(requireContext(), todayStr)}개입니다."
+                        }
+                        1 -> { // 날짜 임박 (7일 이하) 제품 목록 보여줌
+                            val list = ProductListHelper.getListImminent(requireContext(), todayStr, sevenDaysLaterStr)
+                            recyclerViewAdapter.differ.submitList(list.map { p -> ListItemData(p.productId, p.productName, p.expirationDate, false) })
+                            binding.tvItemNum.text = "소비기한이 임박한\n제품이 ${ProductListHelper.getCountImminent(requireContext(), todayStr, sevenDaysLaterStr)}개입니다."
+                        }
+                        2 -> { // 날짜 여유 (7일 초과) 제품 목록 보여줌
+                            val list = ProductListHelper.getListPlenty(requireContext(), sevenDaysLaterStr)
+                            recyclerViewAdapter.differ.submitList(list.map { p -> ListItemData(p.productId, p.productName, p.expirationDate, false) })
+                            binding.tvItemNum.text = "소비기한이 많이 남은\n제품이 ${ProductListHelper.getCountPlenty(requireContext(), sevenDaysLaterStr)}개입니다."
+                        }
                     }
                 }
             }
@@ -134,60 +132,8 @@ class ListFragment : Fragment() {
         })
     }
 
-    // 리사이클러뷰 Item에 데이터 추가 -> UI 업데이트
-    fun addListItemData(data: List<Product>) {
-        val itemList = ArrayList<ListItemData>(data.size)
-        for (i in data) { // [입력으로 들어온 data <-> 리사이클러뷰 item data class] 매핑
-            itemList.add(
-                ListItemData(
-                    i.productId,
-                    i.productName,
-                    i.expirationDate,
-                    false,
-                ),
-            )
-        }
-        // 모든 Item이 추가된 Item 리스트를 UI에 반영
-        recyclerViewAdapter.differ.submitList(itemList)
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
-
-    // 날짜 지난 제품 목록 보여줌
-    fun showListGone(todayStr: String) {
-        val productDB = ProductDatabase.getInstance(requireContext())
-        val pastList = productDB?.productDao()?.getListGone(todayStr)
-        if (pastList != null) {
-            addListItemData(pastList)
-        }
-
-        // 소비기한 지난 제품 개수 계산 -> UI 반영
-        val pastCount = productDB?.productDao()?.getCountGone(todayStr)
-        binding.tvItemNum.text = "소비기한이 지난\n제품이 ${pastCount}개입니다."
-    }
-
-    // 날짜 임박 (7일 이하) 제품 목록 보여줌
-    fun showListImminent(todayStr: String, sevenDaysLaterStr: String) {
-        val productDB = ProductDatabase.getInstance(requireContext())
-        val imminentList = productDB?.productDao()?.getListImminent(todayStr, sevenDaysLaterStr)
-        if (imminentList != null) {
-            addListItemData(imminentList)
-        }
-
-        // 소비기한 임박한 제품 개수 계산 -> UI 반영
-        val imminentCount = productDB?.productDao()?.getCountImminent(todayStr, sevenDaysLaterStr)
-        binding.tvItemNum.text = "소비기한이 임박한\n제품이 ${imminentCount}개입니다."
-    }
-
-    // 날짜 여유 (7일 초과) 제품 목록 보여줌
-    fun showListPlenty(sevenDaysLaterStr: String) {
-        val productDB = ProductDatabase.getInstance(requireContext())
-        val plentyList = productDB?.productDao()?.getListPlenty(sevenDaysLaterStr)
-        if (plentyList != null) {
-            addListItemData(plentyList)
-        }
-
-        // 소비기한 많이 남은 제품 개수 계산 -> UI 반영
-        val plentyCount = productDB?.productDao()?.getCountPlenty(sevenDaysLaterStr)
-        binding.tvItemNum.text = "소비기한이 많이 남은\n제품이 ${plentyCount}개입니다."
-    }
-
 }
