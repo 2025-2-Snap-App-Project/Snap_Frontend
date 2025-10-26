@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
+import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentStoreRecordBinding
 import com.example.snapproject.model.db.Product
 import com.example.snapproject.model.db.ProductDatabase
@@ -157,9 +158,9 @@ class StoreRecordFragment : Fragment() {
 
                 if (this::storageLocation.isInitialized && productName != null &&
                     expirationDate != null && summary != null && ingredients != null
-                ) { // 누락된 정보가 없는 경우
+                ) { // 누락된 정보가 없는 경우 -> 테이블에 신규 제품 Insert한 뒤, 홈 화면으로 이동
                     insertStorage(storageLocation, productName, expirationDate, summary, ingredients) // 테이블에 신규 제품 Insert
-                    findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
+                    findNavController().popBackStack(R.id.homeFragment, false)
                 } else { // 누락된 정보가 있다면
                     MainActivity.tts.readText("제품 정보를 저장할 수 없습니다!")
                 }
