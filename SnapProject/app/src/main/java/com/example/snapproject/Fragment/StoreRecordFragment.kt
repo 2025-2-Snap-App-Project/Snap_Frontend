@@ -9,6 +9,7 @@ import android.provider.Settings
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -145,6 +146,7 @@ class StoreRecordFragment : Fragment() {
             val args: StoreRecordFragmentArgs by navArgs()
             val prevPage = args.prevPage
             val response = args.analyzeResponse
+            val itemId = args.itemId
 
             if (prevPage == "loading") { // 로딩 화면에서 넘어온 경우 -> 서버 응답 결과 가져와서 테이블에 Insert
                 // Safe Args로 받은 서버 응답 결과 -> 각각 변수에 저장
@@ -161,6 +163,15 @@ class StoreRecordFragment : Fragment() {
                 } else { // 누락된 정보가 있다면
                     MainActivity.tts.readText("제품 정보를 저장할 수 없습니다!")
                 }
+            }
+            if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
+                Log.d("StoreRecordFragment", "현재 제품 ID : $itemId") // 현재 제품 ID 확인
+
+                // 제품의 보관 장소 업데이트 (DB)
+                val productDB = ProductDatabase.getInstance(requireContext())
+                productDB?.productDao()?.updateStorage(storageLocation, itemId)
+
+                findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
             }
         }
 

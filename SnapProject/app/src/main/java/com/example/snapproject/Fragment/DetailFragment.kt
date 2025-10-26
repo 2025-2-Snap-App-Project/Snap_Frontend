@@ -59,6 +59,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         val args: DetailFragmentArgs by navArgs()
         val prevPage = args.prevPage
         val response = args.analyzeResponse
+        val itemId = args.itemId // 현재 제품의 ID 가져오기 (Safe Args)
 
         if (prevPage == "loading") { // 이전 화면이 로딩 화면인 경우
             // SafeArgs로 받은 서버 응답 결과를 각각 변수에 저장
@@ -82,7 +83,6 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             binding.tvStore.text = "보관 장소 수정" // 버튼 내부 텍스트 수정
 
             // DB에서 해당 제품에 대한 상세 정보 불러오기
-            val itemId = args.itemId // 현재 제품의 ID 가져오기 (Safe Args)
             val productDB = ProductDatabase.getInstance(requireContext())
             val detailData = productDB?.productDao()?.getDetail(itemId)
 
@@ -117,6 +117,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                 DetailFragmentDirections.actionDetailFragmentToStoreRecordFragment(
                     prevPage = prevPage,
                     analyzeResponse = response,
+                    itemId = itemId,
                 ) // "어떤 화면에서 넘어온 건지 + 서버 응답 결과" -> args로 전달
             findNavController().navigate(action)
         }
