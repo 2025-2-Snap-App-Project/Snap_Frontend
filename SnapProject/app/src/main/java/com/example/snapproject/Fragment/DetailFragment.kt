@@ -25,8 +25,6 @@ import com.example.snapproject.readText
 class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDialogListener {
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
-
-    private var dataArrayList: ArrayList<DetailItemData> = arrayListOf() // RecyclerView 아이템 ArrayList
     private lateinit var recyclerViewAdapter: DetailRecyclerViewAdapter // RecyclerView 어댑터
 
     companion object {
@@ -54,6 +52,9 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        // RecyclerView 아이템 ArrayList
+        val dataArrayList: ArrayList<DetailItemData> = arrayListOf()
 
         // Safe Args로 받은 데이터 가져오기
         val args: DetailFragmentArgs by navArgs()
