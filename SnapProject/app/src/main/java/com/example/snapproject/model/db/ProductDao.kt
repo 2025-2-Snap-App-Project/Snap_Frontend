@@ -51,5 +51,8 @@ interface ProductDao {
 
     // 특정 제품의 보관 장소 업데이트
     @Query("UPDATE ProductTable SET storageLocation = :storageLocation WHERE productId = :itemId")
-    fun updateStorage(storageLocation: String, itemId: Int)
+    fun updateStorage(
+        storageLocation: String,
+        itemId: Int,
+    )
 }

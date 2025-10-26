@@ -117,7 +117,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                 DetailFragmentDirections.actionDetailFragmentToStoreRecordFragment(
                     prevPage = prevPage,
                     analyzeResponse = response,
-                    itemId = itemId
+                    itemId = itemId,
                 ) // "어떤 화면에서 넘어온 건지 + 서버 응답 결과" -> args로 전달
             findNavController().navigate(action)
         }
