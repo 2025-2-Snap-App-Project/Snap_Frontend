@@ -44,4 +44,8 @@ interface ProductDao {
     // 선택한 제품 ID (1개 이상)에 해당하는 레코드 일괄 삭제
     @Query("DELETE FROM ProductTable WHERE productId IN (:itemIds)")
     fun deleteList(itemIds: List<Int>)
+
+    // 특정 제품의 상세 정보 불러오기
+    @Query("SELECT * FROM ProductTable WHERE productId = :itemId")
+    fun getDetail(itemId: Int): Product
 }
