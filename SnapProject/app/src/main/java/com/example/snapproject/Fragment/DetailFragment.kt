@@ -122,7 +122,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         }
 
         binding.btnMoreInfo.setOnClickListener {
-            var txtIngredients : String? = null
+            var txtIngredients: String? = null
 
             if (prevPage == "loading") { // 로딩 화면에서 넘어온 경우
                 // Safe Args로 받은 서버 응답 결과 중, 원재료명 정보 가져오기
