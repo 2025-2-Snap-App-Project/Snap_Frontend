@@ -122,8 +122,20 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         }
 
         binding.btnMoreInfo.setOnClickListener {
-            // SafeArgs로 받은 서버 응답 결과 중, 원재료명 정보 가져오기
-            val txtIngredients = response?.data?.ingredients
+            var txtIngredients : String? = null
+
+            if (prevPage == "loading") { // 로딩 화면에서 넘어온 경우
+                // Safe Args로 받은 서버 응답 결과 중, 원재료명 정보 가져오기
+                txtIngredients = response?.data?.ingredients
+            }
+
+            if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
+                // DB에서 해당 제품에 대한 원재료명 정보 읽어오기
+                val itemId = args.itemId // 현재 제품의 ID 가져오기 (Safe Args)
+                val productDB = ProductDatabase.getInstance(requireContext())
+                val detailData = productDB?.productDao()?.getDetail(itemId)
+                txtIngredients = detailData?.ingredients // 원재료명 정보
+            }
 
             // 원재료명 다이얼로그 show
             if (txtIngredients != null) { // 원재료명 정보가 null이 아니라면
