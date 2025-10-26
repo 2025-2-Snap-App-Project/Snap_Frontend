@@ -40,4 +40,8 @@ interface ProductDao {
     // "날짜 여유"(7일 초과) 레코드 개수 리턴
     @Query("SELECT COUNT(*) FROM ProductTable WHERE expirationDate > :sevenDaysLater")
     fun getCountPlenty(sevenDaysLater: String): Int
+
+    // 선택한 제품 ID (1개 이상)에 해당하는 레코드 일괄 삭제
+    @Query("DELETE FROM ProductTable WHERE productId IN (:itemIds)")
+    fun deleteList(itemIds: List<Int>)
 }

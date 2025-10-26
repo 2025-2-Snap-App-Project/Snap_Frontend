@@ -13,6 +13,8 @@ import com.example.snapproject.MainActivity
 import com.example.snapproject.ProductListHelper
 import com.example.snapproject.databinding.FragmentDeleteBinding
 import com.example.snapproject.model.ListItemData
+import com.example.snapproject.model.db.Product
+import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.readText
 import com.google.android.material.tabs.TabLayout
 
@@ -74,6 +76,11 @@ class DeleteFragment : Fragment() {
             }
 
             Log.d("DeleteFragment", "삭제할 아이템 리스트: $itemIds") // 삭제할 아이템 ID 리스트 확인
+
+            // DB에서 선택한 제품 일괄 삭제
+            val productDB = ProductDatabase.getInstance(requireContext())
+            productDB?.productDao()?.deleteList(itemIds)
+
             findNavController().popBackStack() // 소비기한 리스트 화면으로 이동
         }
     }
