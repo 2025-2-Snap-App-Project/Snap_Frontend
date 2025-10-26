@@ -9,30 +9,18 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.ListRecyclerViewAdapter
 import com.example.snapproject.MainActivity
+import com.example.snapproject.ProductListHelper
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentListBinding
 import com.example.snapproject.model.ListItemData
 import com.example.snapproject.readText
+import com.google.android.material.tabs.TabLayout
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var recyclerViewAdapter: ListRecyclerViewAdapter // RecyclerView 어댑터
-
-    // 리스트에 넣을 더미 데이터 생성 -> ArrayList에 담기
-    private val dataOne = ListItemData("1", "제품명1", "2021.11.20", false)
-    private val dataTwo = ListItemData("2", "제품명2", "2022.11.20", false)
-    private val dataThree = ListItemData("3", "제품명3", "2023.11.20", false)
-    private val dataFour = ListItemData("4", "제품명4", "2024.11.20", false)
-    private val dataFive = ListItemData("5", "제품명5", "2025.11.20", false)
-    private val dataSix = ListItemData("6", "제품명6", "2026.11.20", false)
-    private val dataSeven = ListItemData("7", "제품명7", "2027.11.20", false)
-    private val dataEight = ListItemData("8", "제품명8", "2028.11.20", false)
-    private val dataNine = ListItemData("9", "제품명9", "2029.11.20", false)
-    private val dateTen = ListItemData("10", "제품명10", "2030.11.20", false)
-    private val dataArray: ArrayList<ListItemData> =
-        arrayListOf(dataOne, dataTwo, dataThree, dataFour, dataFive, dataSix, dataSeven, dataEight, dataNine, dateTen)
 
     companion object {
         fun newInstance() = ListFragment()
@@ -41,11 +29,15 @@ class ListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         view?.post { // view가 생성된 후 실행
-            binding.listLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
+            binding.listLayout.importantForAccessibility =
+                View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
 
             // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
             MainActivity.tts.readText("소비기한별로 제품 리스트를 확인할 수 있습니다. 원하는 제품을 눌러 상세 정보를 확인해보세요.") {
-                binding.listLayout.post { binding.listLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
+                binding.listLayout.post {
+                    binding.listLayout.importantForAccessibility =
+                        View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                }
             }
         }
     }
@@ -79,59 +71,155 @@ class ListFragment : Fragment() {
     private fun initView() =
         with(binding) {
             // xml의 recyclerview와 앞서 만든 RecyclerView 어댑터 연결
-            recyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            recyclerview.layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             recyclerview.adapter = recyclerViewAdapter
 
-            addListItemData(dataArray) // 소비기한 리스트 Item에 데이터 추가 (ArrayList에 담아둔 더미 데이터)
+            val todayStr = ProductListHelper.getTodayDateStr() // 오늘 날짜 -> yyyy.MM.dd
+            val sevenDaysLaterStr =
+                ProductListHelper.getSevenDaysLaterDateStr() // 오늘로부터 7일 후 날짜 -> yyyy.MM.dd
+
+            filterProductsBySelectedTab(
+                todayStr,
+                sevenDaysLaterStr,
+            ) // 선택된 탭(날짜)을 기준으로 필터링된 제품 목록 조회
 
             // 아이템 클릭 리스너 연결 (아이템 클릭 시, 상세 설명 화면으로 이동)
             recyclerViewAdapter.setItemClickListener(
                 object : ListRecyclerViewAdapter.OnItemClickInterface {
                     override fun onItemClick(
                         v: View,
-                        itemId: String,
+                        itemId: Int,
                         position: Int,
                     ) {
                         // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "리스트 페이지에서 이동했음", 서버 응답은 null)
-                        val action = ListFragmentDirections.actionListFragmentToDetailFragment(prevPage = "list", analyzeResponse = null)
+                        val action =
+                            ListFragmentDirections.actionListFragmentToDetailFragment(
+                                prevPage = "list",
+                                analyzeResponse = null,
+                            )
                         findNavController().navigate(action)
                     }
                 },
             )
+        }
 
-            // 아이템 내부의 별(isFavorite) 클릭 리스너 연결
-            recyclerViewAdapter.setStarClickListener(
-                object : ListRecyclerViewAdapter.OnItemClickInterface {
-                    override fun onItemClick(
-                        v: View,
-                        itemId: String,
-                        position: Int,
-                    ) {
-                        MainActivity.tts.readText("${itemId}번 별 클릭")
-                    }
+    // 선택된 탭(날짜)을 기준으로 필터링된 제품 목록 조회
+    private fun filterProductsBySelectedTab(
+        todayStr: String,
+        sevenDaysLaterStr: String,
+    ) {
+        // 화면 진입 시, 첫 번째 탭(날짜 지남) 선택 -> 날짜 지난 제품 목록 보여줌
+        binding.tabLayoutCategory.post {
+            binding.tabLayoutCategory.getTabAt(0)?.select() // 첫 번째 탭 선택
+            val list =
+                ProductListHelper.getListGone(requireContext(), todayStr) // 날짜 기준으로 필터링된 제품 목록 불러오기
+
+            // ListItemData를 차례대로 생성하여, 리사이클러뷰 어댑터에 바뀐 내용 반영
+            recyclerViewAdapter.differ.submitList(
+                list.map { p ->
+                    ListItemData(
+                        p.productId,
+                        p.productName,
+                        p.expirationDate,
+                        false,
+                    )
                 },
             )
+
+            // 제품 개수를 UI에 반영
+            binding.tvItemNum.text =
+                "소비기한이 지난\n제품이 ${ProductListHelper.getCountGone(requireContext(), todayStr)}개입니다."
         }
+
+        // 탭이 선택될 때마다, 해당 날짜에 맞는 제품 목록 보여줌
+        binding.tabLayoutCategory.addOnTabSelectedListener(
+            object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    tab?.let {
+                        when (it.position) {
+                            0 -> { // 날짜 지난 제품 목록 보여줌
+                                val list = ProductListHelper.getListGone(requireContext(), todayStr)
+                                recyclerViewAdapter.differ.submitList(
+                                    list.map { p ->
+                                        ListItemData(
+                                            p.productId,
+                                            p.productName,
+                                            p.expirationDate,
+                                            false,
+                                        )
+                                    },
+                                )
+                                binding.tvItemNum.text = "소비기한이 지난\n제품이 ${
+                                    ProductListHelper.getCountGone(
+                                        requireContext(),
+                                        todayStr,
+                                    )
+                                }개입니다."
+                            }
+
+                            1 -> { // 날짜 임박 (7일 이하) 제품 목록 보여줌
+                                val list =
+                                    ProductListHelper.getListImminent(
+                                        requireContext(),
+                                        todayStr,
+                                        sevenDaysLaterStr,
+                                    )
+                                recyclerViewAdapter.differ.submitList(
+                                    list.map { p ->
+                                        ListItemData(
+                                            p.productId,
+                                            p.productName,
+                                            p.expirationDate,
+                                            false,
+                                        )
+                                    },
+                                )
+                                binding.tvItemNum.text = "소비기한이 임박한\n제품이 ${
+                                    ProductListHelper.getCountImminent(
+                                        requireContext(),
+                                        todayStr,
+                                        sevenDaysLaterStr,
+                                    )
+                                }개입니다."
+                            }
+
+                            2 -> { // 날짜 여유 (7일 초과) 제품 목록 보여줌
+                                val list =
+                                    ProductListHelper.getListPlenty(
+                                        requireContext(),
+                                        sevenDaysLaterStr,
+                                    )
+                                recyclerViewAdapter.differ.submitList(
+                                    list.map { p ->
+                                        ListItemData(
+                                            p.productId,
+                                            p.productName,
+                                            p.expirationDate,
+                                            false,
+                                        )
+                                    },
+                                )
+                                binding.tvItemNum.text = "소비기한이 많이 남은\n제품이 ${
+                                    ProductListHelper.getCountPlenty(
+                                        requireContext(),
+                                        sevenDaysLaterStr,
+                                    )
+                                }개입니다."
+                            }
+                        }
+                    }
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+                override fun onTabReselected(tab: TabLayout.Tab?) {}
+            },
+        )
+    }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    // 리사이클러뷰 Item에 데이터 추가 -> UI 업데이트
-    private fun addListItemData(data: ArrayList<ListItemData>) {
-        val itemList = ArrayList<ListItemData>(data.size)
-        for (i in data) { // [입력으로 들어온 data <-> 리사이클러뷰 item data class] 매핑
-            itemList.add(
-                ListItemData(
-                    i.itemId,
-                    i.productName,
-                    i.expirationDate,
-                    i.isDeleteChecked,
-                ),
-            )
-        }
-        // 모든 Item이 추가된 Item 리스트를 UI에 반영
-        recyclerViewAdapter.differ.submitList(itemList)
     }
 }
