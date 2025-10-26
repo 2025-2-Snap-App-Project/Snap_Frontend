@@ -13,7 +13,6 @@ import com.example.snapproject.MainActivity
 import com.example.snapproject.ProductListHelper
 import com.example.snapproject.databinding.FragmentDeleteBinding
 import com.example.snapproject.model.ListItemData
-import com.example.snapproject.model.db.Product
 import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.readText
 import com.google.android.material.tabs.TabLayout
