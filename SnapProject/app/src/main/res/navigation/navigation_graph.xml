@@ -76,6 +76,9 @@
             android:defaultValue=""
             app:argType="string" />
         <argument
+            android:name="itemId"
+            app:argType="integer" />
+        <argument
             android:name="analyzeResponse"
             app:argType="com.example.snapproject.model.AnalyzeResponse"
             app:nullable="true" />
