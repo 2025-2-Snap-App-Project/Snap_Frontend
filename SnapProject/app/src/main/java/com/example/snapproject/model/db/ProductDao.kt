@@ -13,25 +13,31 @@ interface ProductDao {
 
     // "날짜 지남" 레코드 조회 메서드
     @Query("SELECT * FROM ProductTable WHERE expirationDate < :today")
-    fun getListGone(today: String) : List<Product>
+    fun getListGone(today: String): List<Product>
 
     // "날짜 임박"(7일 이하) 레코드 조회 메서드
     @Query("SELECT * FROM ProductTable WHERE expirationDate > :today AND expirationDate <= :sevenDaysLater")
-    fun getListImminent(today: String, sevenDaysLater: String) : List<Product>
+    fun getListImminent(
+        today: String,
+        sevenDaysLater: String,
+    ): List<Product>
 
     // "날짜 여유"(7일 초과) 레코드 조회 메서드
     @Query("SELECT * FROM ProductTable WHERE expirationDate > :sevenDaysLater")
-    fun getListPlenty(sevenDaysLater: String) : List<Product>
+    fun getListPlenty(sevenDaysLater: String): List<Product>
 
     // "날짜 지남" 레코드 개수 리턴
     @Query("SELECT COUNT(*) FROM ProductTable WHERE expirationDate < :today")
-    fun getCountGone(today: String) : Int
+    fun getCountGone(today: String): Int
 
     // "날짜 임박"(7일 이하) 레코드 개수 리턴
     @Query("SELECT COUNT(*) FROM ProductTable WHERE expirationDate > :today AND expirationDate <= :sevenDaysLater")
-    fun getCountImminent(today: String, sevenDaysLater: String) : Int
+    fun getCountImminent(
+        today: String,
+        sevenDaysLater: String,
+    ): Int
 
     // "날짜 여유"(7일 초과) 레코드 개수 리턴
     @Query("SELECT COUNT(*) FROM ProductTable WHERE expirationDate > :sevenDaysLater")
-    fun getCountPlenty(sevenDaysLater: String) : Int
+    fun getCountPlenty(sevenDaysLater: String): Int
 }
