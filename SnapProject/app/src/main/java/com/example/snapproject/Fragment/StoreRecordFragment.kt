@@ -165,7 +165,13 @@ class StoreRecordFragment : Fragment() {
                 }
             }
             if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
-                Log.d("StoreRecordFragment", "현재 제품 ID : $itemId")
+                Log.d("StoreRecordFragment", "현재 제품 ID : $itemId") // 현재 제품 ID 확인
+
+                // 제품의 보관 장소 업데이트 (DB)
+                val productDB = ProductDatabase.getInstance(requireContext())
+                productDB?.productDao()?.updateStorage(storageLocation, itemId)
+
+                findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
             }
         }
 
