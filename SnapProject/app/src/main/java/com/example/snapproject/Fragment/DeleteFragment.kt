@@ -1,6 +1,7 @@
 package com.example.snapproject.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,6 +64,16 @@ class DeleteFragment : Fragment() {
             findNavController().popBackStack()
         }
         binding.btnDelete.setOnClickListener { // 삭제하기 버튼 클릭 -> 리스트에서 Item 삭제 로직 추가 필요
+            val checkedItems = recyclerViewAdapter.getCheckedItems() // 체크된(삭제할) 아이템 List 가져오기
+            val itemIds = checkedItems.map { it.itemId } // 체크된(삭제할) 아이템 ID 리스트 생성
+
+            // 체크된 아이템이 없는 경우 -> 음성 안내 후, 리턴
+            if (checkedItems.isEmpty()) {
+                MainActivity.tts.readText("선택된 항목이 없습니다.")
+                return@setOnClickListener
+            }
+
+            Log.d("DeleteFragment", "삭제할 아이템 리스트: $itemIds") // 삭제할 아이템 ID 리스트 확인
             findNavController().popBackStack() // 소비기한 리스트 화면으로 이동
         }
     }

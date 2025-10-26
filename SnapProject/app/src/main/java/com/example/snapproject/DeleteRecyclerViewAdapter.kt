@@ -101,4 +101,9 @@ class DeleteRecyclerViewAdapter(
 
     // 소비기한 리스트 Item 개수 반환
     override fun getItemCount() = differ.currentList.size
+
+    // 체크된 Item 리스트 가져오기
+    fun getCheckedItems(): List<ListItemData> {
+        return differ.currentList.filter { it.isDeleteChecked }
+    }
 }
