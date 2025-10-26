@@ -15,8 +15,10 @@ import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
+import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.model.viewobject.DetailDateViewObject
 import com.example.snapproject.model.viewobject.DetailNameViewObject
+import com.example.snapproject.model.viewobject.DetailStorageViewObject
 import com.example.snapproject.model.viewobject.DetailSummaryViewObject
 import com.example.snapproject.readText
 
@@ -76,12 +78,32 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             }
         }
 
-//        if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
-//            dataArrayList.add(
-//                DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage)),
-//            ) // itemStorage (보관 장소 설명) 도 더미 데이터 ArrayList에 추가
-//            binding.tvStore.text = "보관 장소 수정" // 버튼 내부 텍스트 수정
-//        }
+        if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
+            binding.tvStore.text = "보관 장소 수정" // 버튼 내부 텍스트 수정
+
+            // DB에서 해당 제품에 대한 상세 정보 불러오기
+            val itemId = args.itemId // 현재 제품의 ID 가져오기 (Safe Args)
+            val productDB = ProductDatabase.getInstance(requireContext())
+            val detailData = productDB?.productDao()?.getDetail(itemId)
+
+            if (detailData != null) { // DB에서 불러온 정보가 null이 아니라면
+                // DB에서 가져온 내용을 각각 변수에 저장
+                val itemName = String.format(resources.getString(R.string.detail_item_name), detailData.productName) // 제품명
+                val itemDate = String.format(resources.getString(R.string.detail_item_date), detailData.expirationDate) // 소비기한
+                val itemStorage = String.format(resources.getString(R.string.detail_item_storage), detailData.storageLocation) // 보관 장소
+                val itemSummary = detailData.summary // 제품 요약 설명
+
+                // 변수의 값을 데이터 ArrrayList에 하나씩 추가
+                dataArrayList.add(DetailItemData("DETAIL_NAME", DetailNameViewObject(itemName)))
+                dataArrayList.add(DetailItemData("DETAIL_DATE", DetailDateViewObject(itemDate)))
+                dataArrayList.add(DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage)))
+                for (summary in itemSummary) {
+                    dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
+                }
+            } else { // DB에서 불러온 정보가 null이라면
+                MainActivity.tts.readText("제품 상세 정보를 불러올 수 없습니다!")
+            }
+        }
 
         recyclerViewAdapter = DetailRecyclerViewAdapter(dataArrayList) // RecyclerView 어댑터 생성
 
@@ -100,8 +122,20 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         }
 
         binding.btnMoreInfo.setOnClickListener {
-            // SafeArgs로 받은 서버 응답 결과 중, 원재료명 정보 가져오기
-            val txtIngredients = response?.data?.ingredients
+            var txtIngredients: String? = null
+
+            if (prevPage == "loading") { // 로딩 화면에서 넘어온 경우
+                // Safe Args로 받은 서버 응답 결과 중, 원재료명 정보 가져오기
+                txtIngredients = response?.data?.ingredients
+            }
+
+            if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
+                // DB에서 해당 제품에 대한 원재료명 정보 읽어오기
+                val itemId = args.itemId // 현재 제품의 ID 가져오기 (Safe Args)
+                val productDB = ProductDatabase.getInstance(requireContext())
+                val detailData = productDB?.productDao()?.getDetail(itemId)
+                txtIngredients = detailData?.ingredients // 원재료명 정보
+            }
 
             // 원재료명 다이얼로그 show
             if (txtIngredients != null) { // 원재료명 정보가 null이 아니라면

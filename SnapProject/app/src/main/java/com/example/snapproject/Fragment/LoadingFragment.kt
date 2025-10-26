@@ -83,6 +83,7 @@ class LoadingFragment : Fragment() {
                             LoadingFragmentDirections.actionLoadingFragmentToDetailFragment(
                                 prevPage = "loading",
                                 analyzeResponse = result.data,
+                                itemId = -1,
                             )
                         findNavController().navigate(action)
                         return@launch // 리턴하여 반복문 빠져나옴.
