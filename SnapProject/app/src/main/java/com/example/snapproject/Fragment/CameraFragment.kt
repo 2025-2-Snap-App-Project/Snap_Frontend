@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
@@ -21,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.snapproject.DataProcess
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
@@ -41,6 +43,8 @@ class CameraFragment : Fragment() {
     private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
     private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
+
+    private val dataProcess = DataProcess()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -244,6 +248,12 @@ class CameraFragment : Fragment() {
                 }
             },
         )
+    }
+
+    // 이미지 처리 함수
+    private fun imageProcess(imageProxy: ImageProxy) {
+        val bitmap = dataProcess.imageToBitmap(imageProxy)
+        val floatBuilder = dataProcess.bitmapToFloatBuffer(bitmap)
     }
 
     override fun onDestroy() {
