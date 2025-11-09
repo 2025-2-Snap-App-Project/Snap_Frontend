@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
@@ -29,6 +30,7 @@ import com.example.snapproject.readText
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.Executors
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -202,6 +204,16 @@ class CameraFragment : Fragment() {
         // 이미지 캡쳐 Builder 객체 생성
         imageCapture = ImageCapture.Builder().build()
 
+        // 이미지 분석을 위한 ImageAnalysis 객체 생성 및 세팅
+        val imageAnalyzer = ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+
+        imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) {
+            imageProcess(it)
+            it.close()
+        }
+
         // 기존에 연결되어 있던 use-cases 우선 해제(unbind)
         cameraProvider.unbindAll()
 
@@ -213,6 +225,7 @@ class CameraFragment : Fragment() {
                 cameraSelector,
                 preview,
                 imageCapture,
+                imageAnalyzer,
             )
         } catch (exc: Exception) {
             Log.e("CameraFragment", "Use case binding failed", exc)
