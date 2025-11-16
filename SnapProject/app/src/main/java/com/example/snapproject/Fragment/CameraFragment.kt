@@ -297,7 +297,7 @@ class CameraFragment : Fragment() {
 
         // YOLO 추론 최종 결과 출력
         val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
-        binding.rectView.transformRect(results) // 실제 기기 화면 크기에 맞게 좌표값 조정
+        binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
         binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
 
     }
