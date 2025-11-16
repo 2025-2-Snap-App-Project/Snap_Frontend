@@ -1,14 +1,17 @@
 package com.example.snapproject
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.camera.core.ImageProxy
 import java.nio.FloatBuffer
 
-class DataProcess {
+class DataProcess(val context: Context) { // context 추가
     companion object {
         const val BATCH_SIZE = 1
         const val INPUT_SIZE = 640
         const val PIXEL_SIZE = 3
+        const val FILE_NAME = "yolov8n.onnx" // YOLO 모델 파일명
+        const val LABEL_NAME = "yolov8n.txt" // YOLO 모델 라벨링 txt 파일명
     }
 
     // imageProxy에서 bitmap을 만들어 640x640의 bitmap으로 변환
