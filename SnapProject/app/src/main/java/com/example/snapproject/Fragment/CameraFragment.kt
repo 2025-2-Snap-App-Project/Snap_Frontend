@@ -50,7 +50,7 @@ class CameraFragment : Fragment() {
     private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
-    private val dataProcess = DataProcess(context = requireContext())
+    private lateinit var dataProcess: DataProcess
 
     // OrtSession 관련 변수
     private lateinit var ortEnvironment: OrtEnvironment
@@ -135,6 +135,9 @@ class CameraFragment : Fragment() {
 
         mContext = context
         mActivity = context as MainActivity
+        
+        // mContext 초기화된 뒤에, DataProcess 객체 생성
+        dataProcess = DataProcess(context = mContext)
     }
 
     override fun onViewCreated(
