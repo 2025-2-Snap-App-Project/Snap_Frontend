@@ -1,5 +1,7 @@
 package com.example.snapproject.Fragment
 
+import ai.onnxruntime.OrtEnvironment
+import ai.onnxruntime.OrtSession
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -46,7 +48,11 @@ class CameraFragment : Fragment() {
     private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
-    private val dataProcess = DataProcess()
+    private val dataProcess = DataProcess(context = requireContext())
+
+    // OrtSession 관련 변수
+    private lateinit var ortEnvironment: OrtEnvironment
+    private lateinit var session: OrtSession
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -272,5 +278,19 @@ class CameraFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
+    private fun load() {
+        // 파일 불러오기
+        dataProcess.loadModel()
+        dataProcess.loadLabel()
+
+        // OrtSession 객체 생성
+        ortEnvironment = OrtEnvironment.getEnvironment()
+        session = ortEnvironment.createSession(
+            this.context?.filesDir?.absolutePath.toString() + "/" + DataProcess.FILE_NAME,
+            OrtSession.SessionOptions()
+        )
     }
 }
