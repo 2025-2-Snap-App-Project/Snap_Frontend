@@ -1,5 +1,6 @@
 package com.example.snapproject.Fragment
 
+import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
@@ -31,6 +32,7 @@ import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.Executors
 
@@ -272,7 +274,22 @@ class CameraFragment : Fragment() {
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
         val bitmap = dataProcess.imageToBitmap(imageProxy)
-        val floatBuilder = dataProcess.bitmapToFloatBuffer(bitmap)
+        val floatBuffer = dataProcess.bitmapToFloatBuffer(bitmap)
+        val inputName = session.inputNames.iterator().next()
+
+        // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
+        val shape = longArrayOf(
+            DataProcess.BATCH_SIZE.toLong(),
+            DataProcess.PIXEL_SIZE.toLong(),
+            DataProcess.INPUT_SIZE.toLong(),
+            DataProcess.INPUT_SIZE.toLong()
+        )
+
+        // YOLO 추론 코드
+        val inputTensor = OnnxTensor.createTensor(ortEnvironment, floatBuffer, shape)
+        val resultTensor = session.run(Collections.singletonMap(inputName, inputTensor))
+        val outputs = resultTensor.get(0).value as Array<*>
+
     }
 
     override fun onDestroy() {
