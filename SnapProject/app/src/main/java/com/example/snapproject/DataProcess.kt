@@ -12,6 +12,7 @@ import java.nio.FloatBuffer
 import java.util.PriorityQueue
 import kotlin.math.max
 import kotlin.math.min
+import androidx.core.graphics.scale
 
 class DataProcess(val context: Context) { // context 추가
 
@@ -25,10 +26,16 @@ class DataProcess(val context: Context) { // context 추가
         const val LABEL_NAME = "yolov8n.txt" // YOLO 모델 라벨링 txt 파일명
     }
 
-    // imageProxy에서 bitmap을 만들어 640x640의 bitmap으로 변환
-    fun imageToBitmap(imageProxy: ImageProxy): Bitmap {
-        val bitmap = imageProxy.toBitmap()
-        return Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, true)
+    // imageProxy에서 bitmap을 만들어 640x640의 회전된 bitmap으로 변환
+    fun imageToBitmap(imageProxy: ImageProxy, degrees: Int): Bitmap {
+        val bitmap = imageProxy.toBitmap().scale(INPUT_SIZE, INPUT_SIZE) // 비트맵 생성
+
+        // Matrix 객체에 매개변수로 받은 회전 각도 적용
+        val matrix = android.graphics.Matrix()
+        matrix.postRotate(degrees.toFloat())
+
+        // 회전된 비트맵 반환
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     // 이미지를 FloatBuffer에 담는 함수
