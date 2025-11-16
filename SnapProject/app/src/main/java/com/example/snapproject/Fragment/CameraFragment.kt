@@ -294,6 +294,11 @@ class CameraFragment : Fragment() {
         val resultTensor = session.run(Collections.singletonMap(inputName, inputTensor))
         val outputs = resultTensor.get(0).value as Array<*>
 
+        // YOLO 추론 최종 결과 출력
+        val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
+        binding.rectView.transformRect(results) // 실제 기기 화면 크기에 맞게 좌표값 조정
+        binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+
     }
 
     override fun onDestroy() {
@@ -313,5 +318,8 @@ class CameraFragment : Fragment() {
             this.context?.filesDir?.absolutePath.toString() + "/" + DataProcess.FILE_NAME,
             OrtSession.SessionOptions()
         )
+
+        // assets의 txt 파일을 불러와서 RectView에 라벨 클래스 전달
+        binding.rectView.setClassLabel(dataProcess.classes)
     }
 }
