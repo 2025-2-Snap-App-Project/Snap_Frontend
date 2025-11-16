@@ -3,9 +3,16 @@ package com.example.snapproject
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.camera.core.ImageProxy
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStreamReader
 import java.nio.FloatBuffer
 
 class DataProcess(val context: Context) { // context 추가
+
+    lateinit var classes: Array<String>
+
     companion object {
         const val BATCH_SIZE = 1
         const val INPUT_SIZE = 640
@@ -49,5 +56,33 @@ class DataProcess(val context: Context) { // context 추가
         }
         buffer.rewind() // position 0
         return buffer
+    }
+
+    // onnx 파일 (YOLO 모델 파일) 불러오는 함수
+    fun loadModel() {
+        val assetManager = context.assets
+        val outputFile = File(context.filesDir.toString() + "/" + FILE_NAME)
+
+        assetManager.open(FILE_NAME).use { inputStream ->
+            FileOutputStream(outputFile).use { outputStream ->
+                val buffer = ByteArray(4 * 1024)
+                var read: Int
+                while (inputStream.read(buffer).also { read = it } != -1) {
+                    outputStream.write(buffer, 0, read)
+                }
+            }
+        }
+    }
+
+    // 라벨링 txt 파일 불러오는 함수
+    fun loadLabel() {
+        BufferedReader(InputStreamReader(context.assets.open(LABEL_NAME))).use { reader ->
+            var line: String?
+            val classList = ArrayList<String>()
+            while (reader.readLine().also { line = it } != null) {
+                classList.add(line!!)
+            }
+            classes = classList.toTypedArray()
+        }
     }
 }
