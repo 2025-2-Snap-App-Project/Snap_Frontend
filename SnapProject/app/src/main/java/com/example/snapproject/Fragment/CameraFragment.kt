@@ -170,6 +170,7 @@ class CameraFragment : Fragment() {
             if (!hasPermissions(mContext)) {
                 requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
             } else {
+                load() // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
                 setUpCamera()
             }
         }
