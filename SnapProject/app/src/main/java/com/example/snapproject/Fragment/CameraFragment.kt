@@ -55,6 +55,7 @@ class CameraFragment : Fragment() {
 
     private lateinit var dataProcess: DataProcess
 
+    private var isNameDetected : Boolean = false
     // TextRecognizer 인스턴스 생성
     val txtRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
@@ -330,8 +331,8 @@ class CameraFragment : Fragment() {
             Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
 
             // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
-            if (width > 0 && height > 0) {
                 val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
+            if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isNameDetected) { // 제품명을 1번만 detect하도록
                 Log.d("croppedBitmap", "$croppedBitmap")
             }
         }
