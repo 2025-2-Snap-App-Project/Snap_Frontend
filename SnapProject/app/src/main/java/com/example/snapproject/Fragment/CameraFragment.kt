@@ -284,8 +284,11 @@ class CameraFragment : Fragment() {
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
-        val bitmap = dataProcess.imageToBitmap(imageProxy, rotation) // 회전 각도도 함께 전달
-        val floatBuffer = dataProcess.bitmapToFloatBuffer(bitmap)
+
+        val bitmap = dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
+        val rotatedBitmap = dataProcess.imageToRotatedBitmap(bitmap, rotation) // 회전된 비트맵 이미지
+
+        val floatBuffer = dataProcess.bitmapToFloatBuffer(rotatedBitmap)
         val inputName = session.inputNames.iterator().next()
 
         // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
