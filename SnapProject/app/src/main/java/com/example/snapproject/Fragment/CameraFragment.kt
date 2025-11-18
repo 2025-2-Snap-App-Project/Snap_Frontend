@@ -31,6 +31,9 @@ import com.example.snapproject.DataProcess
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
+import com.google.firebase.Firebase
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.functions
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import java.io.ByteArrayOutputStream
@@ -57,7 +60,9 @@ class CameraFragment : Fragment() {
 
     private lateinit var dataProcess: DataProcess
 
+    private lateinit var functions: FirebaseFunctions
     private var isNameDetected : Boolean = false
+
     // TextRecognizer 인스턴스 생성
     val txtRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
@@ -345,6 +350,9 @@ class CameraFragment : Fragment() {
                 croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
                 val imageBytes: ByteArray = byteArrayOutputStream.toByteArray()
                 val base64encoded = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
+
+                // Cloud Functions의 인스턴스 초기화
+                functions = Firebase.functions
             }
         }
     }
