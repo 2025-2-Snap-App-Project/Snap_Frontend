@@ -33,11 +33,13 @@ import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.Executors
+import kotlin.io.encoding.Base64
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -338,6 +340,11 @@ class CameraFragment : Fragment() {
                 // 이미지 축소
                 croppedBitmap = scaleBitmapDown(croppedBitmap, 640)
 
+                // [비트맵 객체 -> base64로 인코딩된 문자열] 변환
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                val imageBytes: ByteArray = byteArrayOutputStream.toByteArray()
+                val base64encoded = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
             }
         }
     }
