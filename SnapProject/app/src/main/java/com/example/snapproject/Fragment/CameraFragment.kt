@@ -331,11 +331,36 @@ class CameraFragment : Fragment() {
             Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
 
             // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
-                val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
             if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isNameDetected) { // 제품명을 1번만 detect하도록
+                var croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
                 Log.d("croppedBitmap", "$croppedBitmap")
+
+                // 이미지 축소
+                croppedBitmap = scaleBitmapDown(croppedBitmap, 640)
+
             }
         }
+    }
+
+    // OCR 수행 전, 이미지 축소
+    private fun scaleBitmapDown(bitmap: Bitmap, maxDimension: Int): Bitmap {
+        val originalWidth = bitmap.width
+        val originalHeight = bitmap.height
+        var resizedWidth = maxDimension
+        var resizedHeight = maxDimension
+        if (originalHeight > originalWidth) {
+            resizedHeight = maxDimension
+            resizedWidth =
+                (resizedHeight * originalWidth.toFloat() / originalHeight.toFloat()).toInt()
+        } else if (originalWidth > originalHeight) {
+            resizedWidth = maxDimension
+            resizedHeight =
+                (resizedWidth * originalHeight.toFloat() / originalWidth.toFloat()).toInt()
+        } else if (originalHeight == originalWidth) {
+            resizedHeight = maxDimension
+            resizedWidth = maxDimension
+        }
+        return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false)
     }
 
     override fun onDestroy() {
