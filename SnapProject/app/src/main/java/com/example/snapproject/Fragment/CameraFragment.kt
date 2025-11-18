@@ -371,6 +371,21 @@ class CameraFragment : Fragment() {
                 val features = JsonArray()
                 features.add(feature)
                 request.add("features", features)
+
+                // annotateImage 함수 호출
+                annotateImage(request.toString())
+                    .addOnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                            Log.d("firebaseMlKit", "OCR 실패")
+                            isNameDetected = true
+                        } else {
+                            val annotation = task.result!!.asJsonArray[0].asJsonObject["fullTextAnnotation"].asJsonObject
+                            System.out.format("%nComplete annotation:")
+                            System.out.format("%n%s", annotation["text"].asString)
+                            Log.d("firebaseMlKit", "OCR 결과 : ${annotation["text"].asString}")
+                            isNameDetected = true
+                        }
+                    }
             }
         }
     }
