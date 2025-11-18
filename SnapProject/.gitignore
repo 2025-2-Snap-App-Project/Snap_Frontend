@@ -120,6 +120,9 @@ obj/
 *.iws
 /out/
 
+# Google Services (e.g. APIs or Firebase)
+google-services.json
+
 # User-specific configurations
 .idea/caches/
 .idea/libraries/
