@@ -107,7 +107,7 @@ class DataProcess(val context: Context) { // context 추가
 
     // 후보 추출 함수 (최대 8400개의 results 객체 생성 -> nms 호출하여 겹치는 박스 제거 후 최종 결과 반환)
     fun outputsToNPMSPredictions(outputs: Array<*>): ArrayList<YoloResult> {
-        val confidenceThreshold = 0.45f // confidence 임계값
+        val confidenceThreshold = 0.70f // confidence 임계값
         val results = ArrayList<YoloResult>()
         val rows: Int
         val cols: Int
