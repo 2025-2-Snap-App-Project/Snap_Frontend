@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import kotlin.math.round
@@ -81,5 +82,10 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
             )
         }
         super.onDraw(canvas)
+    }
+
+    // 화면에 그려진 RectF 리턴
+    fun getDrawRect(): RectF? {
+        return results?.firstOrNull()?.rectF
     }
 }
