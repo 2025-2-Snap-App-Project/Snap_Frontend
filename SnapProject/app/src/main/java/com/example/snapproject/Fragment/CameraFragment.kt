@@ -378,6 +378,17 @@ class CameraFragment : Fragment() {
         return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false)
     }
 
+    // Cloud Function 함수 호출을 위한 메서드
+    private fun annotateImage(requestJson: String): Task<JsonElement> {
+        return functions
+            .getHttpsCallable("annotateImage")
+            .call(requestJson)
+            .continueWith { task ->
+                val result = task.result?.data
+                JsonParser.parseString(Gson().toJson(result))
+            }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
