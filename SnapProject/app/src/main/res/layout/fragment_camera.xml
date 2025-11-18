@@ -10,7 +10,13 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/previewCamera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+
+    <com.example.snapproject.RectView
+        android:id="@+id/rectView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnComplete"

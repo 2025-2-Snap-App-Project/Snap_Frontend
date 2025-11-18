@@ -1,5 +1,8 @@
 package com.example.snapproject.Fragment
 
+import ai.onnxruntime.OnnxTensor
+import ai.onnxruntime.OrtEnvironment
+import ai.onnxruntime.OrtSession
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,8 +15,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
@@ -21,12 +26,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.snapproject.DataProcess
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.Collections
 import java.util.Locale
+import java.util.concurrent.Executors
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -41,6 +49,12 @@ class CameraFragment : Fragment() {
     private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
     private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
+
+    private lateinit var dataProcess: DataProcess
+
+    // OrtSession 관련 변수
+    private lateinit var ortEnvironment: OrtEnvironment
+    private lateinit var session: OrtSession
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,6 +135,9 @@ class CameraFragment : Fragment() {
 
         mContext = context
         mActivity = context as MainActivity
+
+        // mContext 초기화된 뒤에, DataProcess 객체 생성
+        dataProcess = DataProcess(context = mContext)
     }
 
     override fun onViewCreated(
@@ -156,6 +173,7 @@ class CameraFragment : Fragment() {
             if (!hasPermissions(mContext)) {
                 requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
             } else {
+                load() // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
                 setUpCamera()
             }
         }
@@ -198,6 +216,17 @@ class CameraFragment : Fragment() {
         // 이미지 캡쳐 Builder 객체 생성
         imageCapture = ImageCapture.Builder().build()
 
+        // 이미지 분석을 위한 ImageAnalysis 객체 생성 및 세팅
+        val imageAnalyzer =
+            ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+
+        imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) {
+            imageProcess(it)
+            it.close()
+        }
+
         // 기존에 연결되어 있던 use-cases 우선 해제(unbind)
         cameraProvider.unbindAll()
 
@@ -209,6 +238,7 @@ class CameraFragment : Fragment() {
                 cameraSelector,
                 preview,
                 imageCapture,
+                imageAnalyzer,
             )
         } catch (exc: Exception) {
             Log.e("CameraFragment", "Use case binding failed", exc)
@@ -246,8 +276,53 @@ class CameraFragment : Fragment() {
         )
     }
 
+    // 이미지 처리 함수
+    private fun imageProcess(imageProxy: ImageProxy) {
+        val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
+        val bitmap = dataProcess.imageToBitmap(imageProxy, rotation) // 회전 각도도 함께 전달
+        val floatBuffer = dataProcess.bitmapToFloatBuffer(bitmap)
+        val inputName = session.inputNames.iterator().next()
+
+        // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
+        val shape =
+            longArrayOf(
+                DataProcess.BATCH_SIZE.toLong(),
+                DataProcess.PIXEL_SIZE.toLong(),
+                DataProcess.INPUT_SIZE.toLong(),
+                DataProcess.INPUT_SIZE.toLong(),
+            )
+
+        // YOLO 추론 코드
+        val inputTensor = OnnxTensor.createTensor(ortEnvironment, floatBuffer, shape)
+        val resultTensor = session.run(Collections.singletonMap(inputName, inputTensor))
+        val outputs = resultTensor.get(0).value as Array<*>
+
+        // YOLO 추론 최종 결과 출력
+        val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
+        binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
+        binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
+    private fun load() {
+        // 파일 불러오기
+        dataProcess.loadModel()
+        dataProcess.loadLabel()
+
+        // OrtSession 객체 생성
+        ortEnvironment = OrtEnvironment.getEnvironment()
+        session =
+            ortEnvironment.createSession(
+                this.context?.filesDir?.absolutePath.toString() + "/" + DataProcess.FILE_NAME,
+                OrtSession.SessionOptions(),
+            )
+
+        // assets의 txt 파일을 불러와서 RectView에 라벨 클래스 전달
+        binding.rectView.setClassLabel(dataProcess.classes)
     }
 }
