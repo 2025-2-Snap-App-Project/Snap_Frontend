@@ -30,6 +30,8 @@ import com.example.snapproject.DataProcess
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Collections
@@ -51,6 +53,9 @@ class CameraFragment : Fragment() {
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
     private lateinit var dataProcess: DataProcess
+
+    // TextRecognizer 인스턴스 생성
+    val txtRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
     // OrtSession 관련 변수
     private lateinit var ortEnvironment: OrtEnvironment
