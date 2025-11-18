@@ -135,7 +135,7 @@ class CameraFragment : Fragment() {
 
         mContext = context
         mActivity = context as MainActivity
-        
+
         // mContext 초기화된 뒤에, DataProcess 객체 생성
         dataProcess = DataProcess(context = mContext)
     }
@@ -217,9 +217,10 @@ class CameraFragment : Fragment() {
         imageCapture = ImageCapture.Builder().build()
 
         // 이미지 분석을 위한 ImageAnalysis 객체 생성 및 세팅
-        val imageAnalyzer = ImageAnalysis.Builder()
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .build()
+        val imageAnalyzer =
+            ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
 
         imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) {
             imageProcess(it)
@@ -283,12 +284,13 @@ class CameraFragment : Fragment() {
         val inputName = session.inputNames.iterator().next()
 
         // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
-        val shape = longArrayOf(
-            DataProcess.BATCH_SIZE.toLong(),
-            DataProcess.PIXEL_SIZE.toLong(),
-            DataProcess.INPUT_SIZE.toLong(),
-            DataProcess.INPUT_SIZE.toLong()
-        )
+        val shape =
+            longArrayOf(
+                DataProcess.BATCH_SIZE.toLong(),
+                DataProcess.PIXEL_SIZE.toLong(),
+                DataProcess.INPUT_SIZE.toLong(),
+                DataProcess.INPUT_SIZE.toLong(),
+            )
 
         // YOLO 추론 코드
         val inputTensor = OnnxTensor.createTensor(ortEnvironment, floatBuffer, shape)
@@ -299,7 +301,6 @@ class CameraFragment : Fragment() {
         val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
         binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
         binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
-
     }
 
     override fun onDestroy() {
@@ -315,10 +316,11 @@ class CameraFragment : Fragment() {
 
         // OrtSession 객체 생성
         ortEnvironment = OrtEnvironment.getEnvironment()
-        session = ortEnvironment.createSession(
-            this.context?.filesDir?.absolutePath.toString() + "/" + DataProcess.FILE_NAME,
-            OrtSession.SessionOptions()
-        )
+        session =
+            ortEnvironment.createSession(
+                this.context?.filesDir?.absolutePath.toString() + "/" + DataProcess.FILE_NAME,
+                OrtSession.SessionOptions(),
+            )
 
         // assets의 txt 파일을 불러와서 RectView에 라벨 클래스 전달
         binding.rectView.setClassLabel(dataProcess.classes)

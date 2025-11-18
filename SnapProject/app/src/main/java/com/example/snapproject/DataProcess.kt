@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.RectF
 import androidx.camera.core.ImageProxy
+import androidx.core.graphics.scale
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
@@ -12,7 +13,6 @@ import java.nio.FloatBuffer
 import java.util.PriorityQueue
 import kotlin.math.max
 import kotlin.math.min
-import androidx.core.graphics.scale
 
 class DataProcess(val context: Context) { // context 추가
 
@@ -27,7 +27,10 @@ class DataProcess(val context: Context) { // context 추가
     }
 
     // imageProxy에서 bitmap을 만들어 640x640의 회전된 bitmap으로 변환
-    fun imageToBitmap(imageProxy: ImageProxy, degrees: Int): Bitmap {
+    fun imageToBitmap(
+        imageProxy: ImageProxy,
+        degrees: Int,
+    ): Bitmap {
         val bitmap = imageProxy.toBitmap().scale(INPUT_SIZE, INPUT_SIZE) // 비트맵 생성
 
         // Matrix 객체에 매개변수로 받은 회전 각도 적용
@@ -53,7 +56,7 @@ class DataProcess(val context: Context) { // context 추가
             0,
             0,
             bitmap.width,
-            bitmap.height
+            bitmap.height,
         )
 
         for (i in 0 until INPUT_SIZE - 1) {
@@ -141,12 +144,13 @@ class DataProcess(val context: Context) { // context 추가
                 val height = output[i][3]
 
                 // YOLO의 x,y,w,h -> RectF로 변환
-                val rectF = RectF(
-                    max(0f, xPos - width / 2f),
-                    max(0f, yPos - height / 2f),
-                    min(INPUT_SIZE - 1f, xPos + width / 2f),
-                    min(INPUT_SIZE - 1f, yPos + height / 2f)
-                )
+                val rectF =
+                    RectF(
+                        max(0f, xPos - width / 2f),
+                        max(0f, yPos - height / 2f),
+                        min(INPUT_SIZE - 1f, xPos + width / 2f),
+                        min(INPUT_SIZE - 1f, yPos + height / 2f),
+                    )
                 val result = YoloResult(detectionClass, maxScore, rectF)
                 results.add(result)
             }
@@ -162,9 +166,10 @@ class DataProcess(val context: Context) { // context 추가
 
         for (i in classes.indices) {
             // 가장 높은 확률값인 클래스 찾기
-            val pq = PriorityQueue<YoloResult>(50) { o1, o2 ->
-                o1.score.compareTo(o2.score)
-            }
+            val pq =
+                PriorityQueue<YoloResult>(50) { o1, o2 ->
+                    o1.score.compareTo(o2.score)
+                }
             val classResults = results.filter { it.classIndex == i }
             pq.addAll(classResults)
 
@@ -190,32 +195,52 @@ class DataProcess(val context: Context) { // context 추가
     }
 
     // 겹치는 부분 비율 계산
-    private fun boxIOU(a: RectF, b: RectF): Float {
+    private fun boxIOU(
+        a: RectF,
+        b: RectF,
+    ): Float {
         return boxIntersection(a, b) / boxUnion(a, b)
     }
 
     // 교집합 계산
-    private fun boxIntersection(a: RectF, b: RectF): Float {
-        val w = overlap(
-            (a.left + a.right) / 2f, a.right - a.left,
-            (b.left + b.right) / 2f, b.right - b.left
-        )
-        val h = overlap(
-            (a.top + a.bottom) / 2f, a.bottom - a.top,
-            (b.top + b.bottom) / 2f, b.bottom - b.top
-        )
+    private fun boxIntersection(
+        a: RectF,
+        b: RectF,
+    ): Float {
+        val w =
+            overlap(
+                (a.left + a.right) / 2f,
+                a.right - a.left,
+                (b.left + b.right) / 2f,
+                b.right - b.left,
+            )
+        val h =
+            overlap(
+                (a.top + a.bottom) / 2f,
+                a.bottom - a.top,
+                (b.top + b.bottom) / 2f,
+                b.bottom - b.top,
+            )
 
         return if (w < 0 || h < 0) 0f else w * h
     }
 
     // 합집합 계산
-    private fun boxUnion(a: RectF, b: RectF): Float {
+    private fun boxUnion(
+        a: RectF,
+        b: RectF,
+    ): Float {
         val i: Float = boxIntersection(a, b)
         return (a.right - a.left) * (a.bottom - a.top) + (b.right - b.left) * (b.bottom - b.top) - i
     }
 
     // 겹치는 부분 길이 계산
-    private fun overlap(x1: Float, w1: Float, x2: Float, w2: Float): Float {
+    private fun overlap(
+        x1: Float,
+        w1: Float,
+        x2: Float,
+        w2: Float,
+    ): Float {
         val l1 = x1 - w1 / 2
         val l2 = x2 - w2 / 2
         val left = max(l1, l2)

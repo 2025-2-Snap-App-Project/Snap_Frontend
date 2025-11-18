@@ -14,18 +14,24 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
     private lateinit var classes: Array<String>
 
     // 텍스트 Paint 설정
-    private val textPaint = Paint().also {
-        it.textSize = 60f
-        it.color = Color.WHITE
-    }
+    private val textPaint =
+        Paint().also {
+            it.textSize = 60f
+            it.color = Color.WHITE
+        }
 
     // 객체 박스 Paint 설정
-    private val boxPaint = Paint().also {
-        it.style = Paint.Style.STROKE
-    }
+    private val boxPaint =
+        Paint().also {
+            it.style = Paint.Style.STROKE
+        }
 
     // 실제 기기의 화면 크기에 맞게 좌표값 수정
-    fun transformRect(results: ArrayList<YoloResult>, previewWidth: Int, previewHeight: Int) {
+    fun transformRect(
+        results: ArrayList<YoloResult>,
+        previewWidth: Int,
+        previewHeight: Int,
+    ) {
         val modelSize = DataProcess.INPUT_SIZE.toFloat() // YOLO 모델 입력 이미지 크기
         val scale: Float // YOLO 모델 입력 이미지 좌표 -> PreviewView 좌표 변환 시, 곱하는 비율
 
@@ -50,9 +56,9 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
 
         // 좌표 변환 (YOLO 모델 입력 이미지 좌표 -> PreviewView 좌표)
         results.forEach { r ->
-            r.rectF.left   = r.rectF.left * scale - offsetX
-            r.rectF.right  = r.rectF.right * scale - offsetX
-            r.rectF.top    = r.rectF.top * scale - offsetY
+            r.rectF.left = r.rectF.left * scale - offsetX
+            r.rectF.right = r.rectF.right * scale - offsetX
+            r.rectF.top = r.rectF.top * scale - offsetY
             r.rectF.bottom = r.rectF.bottom * scale - offsetY
         }
         this.results = results
@@ -71,7 +77,7 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
                 classes[it.classIndex] + ", " + round(it.score * 100) + "%",
                 it.rectF.left + 10,
                 it.rectF.top + 60,
-                textPaint
+                textPaint,
             )
         }
         super.onDraw(canvas)
