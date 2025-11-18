@@ -69,4 +69,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.onnxruntime.android)
+    implementation(libs.text.recognition)
+    implementation(libs.text.recognition.korean)
 }
