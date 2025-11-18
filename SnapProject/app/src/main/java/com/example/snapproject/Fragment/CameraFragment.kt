@@ -49,7 +49,7 @@ import java.text.SimpleDateFormat
 import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.Executors
-import kotlin.io.encoding.Base64
+import android.util.Base64
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
