@@ -31,9 +31,16 @@ import com.example.snapproject.DataProcess
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
+import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.functions
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import java.io.ByteArrayOutputStream
@@ -353,6 +360,17 @@ class CameraFragment : Fragment() {
 
                 // Cloud Functions의 인스턴스 초기화
                 functions = Firebase.functions
+
+                // Json 요청
+                val request = JsonObject()
+                val image = JsonObject()
+                image.add("content", JsonPrimitive(base64encoded))
+                request.add("image", image)
+                val feature = JsonObject()
+                feature.add("type", JsonPrimitive("TEXT_DETECTION"))
+                val features = JsonArray()
+                features.add(feature)
+                request.add("features", features)
             }
         }
     }
