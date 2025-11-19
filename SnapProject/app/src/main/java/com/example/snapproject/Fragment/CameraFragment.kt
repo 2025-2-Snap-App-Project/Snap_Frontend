@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.graphics.Camera
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +34,8 @@ import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.functions
 import com.google.gson.Gson
@@ -49,9 +52,6 @@ import java.text.SimpleDateFormat
 import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.Executors
-import android.util.Base64
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -71,7 +71,7 @@ class CameraFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var functions: FirebaseFunctions
-    private var isNameDetected : Boolean = false
+    private var isNameDetected: Boolean = false
 
     // TextRecognizer 인스턴스 생성
     val txtRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
@@ -344,7 +344,7 @@ class CameraFragment : Fragment() {
             val width = ((drawRect.right - drawRect.left) * scaleX).toInt()
             val height = ((drawRect.bottom - drawRect.top) * scaleY).toInt()
 
-            Log.d("croppedImg", "left: ${left}, top: ${top}, width: ${width}, height: $height")
+            Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
             Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
 
             // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
@@ -371,7 +371,6 @@ class CameraFragment : Fragment() {
                             val base64encoded = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
 
                             firebaseFunction(base64encoded) // Firebase Functions 호출
-
                         } else {
                             Log.e("googleAuth", "signInAnonymously:failure", task.exception)
                         }
@@ -381,7 +380,7 @@ class CameraFragment : Fragment() {
     }
 
     // Firebase Functions 호출
-    private fun firebaseFunction(base64encoded: String){
+    private fun firebaseFunction(base64encoded: String)  {
         // Cloud Functions의 인스턴스 초기화
         functions = Firebase.functions
 
@@ -413,7 +412,10 @@ class CameraFragment : Fragment() {
     }
 
     // OCR 수행 전, 이미지 축소
-    private fun scaleBitmapDown(bitmap: Bitmap, maxDimension: Int): Bitmap {
+    private fun scaleBitmapDown(
+        bitmap: Bitmap,
+        maxDimension: Int,
+    ): Bitmap {
         val originalWidth = bitmap.width
         val originalHeight = bitmap.height
         var resizedWidth = maxDimension

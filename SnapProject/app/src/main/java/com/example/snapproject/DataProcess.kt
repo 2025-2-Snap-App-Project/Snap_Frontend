@@ -27,9 +27,7 @@ class DataProcess(val context: Context) { // context 추가
     }
 
     // imageProxy에서 bitmap 생성
-    fun imageToBitmap(
-        imageProxy: ImageProxy,
-    ): Bitmap {
+    fun imageToBitmap(imageProxy: ImageProxy): Bitmap {
         return imageProxy.toBitmap().scale(INPUT_SIZE, INPUT_SIZE) // 비트맵 생성
     }
 
@@ -37,7 +35,7 @@ class DataProcess(val context: Context) { // context 추가
     fun imageToRotatedBitmap(
         bitmap: Bitmap,
         degrees: Int,
-    ) :Bitmap {
+    ): Bitmap {
         // Matrix 객체에 매개변수로 받은 회전 각도 적용
         val matrix = android.graphics.Matrix()
         matrix.postRotate(degrees.toFloat())
