@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Camera
+import android.graphics.Path
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -37,6 +38,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -343,11 +345,25 @@ class CameraFragment : Fragment() {
                 // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
                 val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
                 Log.d("croppedBitmap", "$croppedBitmap")
+
+                // 비트맵 이미지를 File(.png)로 저장
+                saveBitmapToFile(fullBitmap)
             }
         }
 
         // 소비기한 OCR 수행
         recognizeExpiryDate(fullBitmap)
+    }
+
+    // 비트맵 이미지를 File 타입으로 바꿔서 저장
+    private fun saveBitmapToFile(bitmap: Bitmap): File {
+        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
+        val fileItem = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
+        fileItem.createNewFile()
+        val fos = FileOutputStream(fileItem)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+        fos.close()
+        return fileItem
     }
 
     // 소비기한 OCR 수행
