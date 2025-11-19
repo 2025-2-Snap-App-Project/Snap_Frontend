@@ -77,4 +77,5 @@ dependencies {
     implementation(libs.google.firebase.analytics)
     implementation(libs.firebase.functions)
     implementation(libs.gson)
+    implementation(libs.firebase.auth)
 }
