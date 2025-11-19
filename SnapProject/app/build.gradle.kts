@@ -4,6 +4,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint")
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -69,4 +70,12 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.onnxruntime.android)
+    implementation(libs.text.recognition)
+    implementation(libs.text.recognition.korean)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.google.firebase.analytics)
+    implementation(libs.firebase.functions)
+    implementation(libs.gson)
+    implementation(libs.firebase.auth)
 }

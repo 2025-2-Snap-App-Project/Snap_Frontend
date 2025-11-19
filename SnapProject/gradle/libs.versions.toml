@@ -1,5 +1,7 @@
 [versions]
 agp = "8.9.0"
+firebaseBom = "34.6.0"
+firebaseFunctions = "22.1.0"
 gson = "2.13.1"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
@@ -25,11 +27,17 @@ cameraView = "1.5.0"
 cameraExtensions = "1.5.0"
 materialVersion = "1.13.0"
 roomRuntimeAndroid = "2.8.3"
+textRecognitionKorean = "16.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntimeAndroid" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-functions = { module = "com.google.firebase:firebase-functions", version.ref = "firebaseFunctions" }
+google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -53,6 +61,8 @@ androidx-camera-view = { group = "androidx.camera", name = "camera-view", versio
 androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "cameraExtensions" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
+text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognitionKorean" }
+text-recognition-korean = { module = "com.google.mlkit:text-recognition-korean", version.ref = "textRecognitionKorean" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

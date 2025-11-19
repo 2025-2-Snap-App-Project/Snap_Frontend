@@ -6,9 +6,11 @@ import ai.onnxruntime.OrtSession
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Camera
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +32,21 @@ import com.example.snapproject.DataProcess
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
+import com.google.android.gms.tasks.Task
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.functions
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Collections
@@ -51,6 +68,13 @@ class CameraFragment : Fragment() {
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
     private lateinit var dataProcess: DataProcess
+
+    private lateinit var auth: FirebaseAuth
+    private lateinit var functions: FirebaseFunctions
+    private var isNameDetected: Boolean = false
+
+    // TextRecognizer 인스턴스 생성
+    val txtRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
     // OrtSession 관련 변수
     private lateinit var ortEnvironment: OrtEnvironment
@@ -279,8 +303,11 @@ class CameraFragment : Fragment() {
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
-        val bitmap = dataProcess.imageToBitmap(imageProxy, rotation) // 회전 각도도 함께 전달
-        val floatBuffer = dataProcess.bitmapToFloatBuffer(bitmap)
+
+        val bitmap = dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
+        val rotatedBitmap = dataProcess.imageToRotatedBitmap(bitmap, rotation) // 회전된 비트맵 이미지
+
+        val floatBuffer = dataProcess.bitmapToFloatBuffer(rotatedBitmap)
         val inputName = session.inputNames.iterator().next()
 
         // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
@@ -301,6 +328,122 @@ class CameraFragment : Fragment() {
         val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
         binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
         binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+
+        // 화면에 그려진 Rect 크기만큼 비트맵 이미지 생성
+        val drawRect = binding.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
+        val fullBitmap = imageProxy.toBitmap() // 전체 Preview에 대한 비트맵 이미지 생성
+
+        // drawRect를 카메라 Bitmap 크기에 맞게 변환해줄 때 필요한 변수
+        val scaleX = fullBitmap.width.toFloat() / binding.previewCamera.width
+        val scaleY = fullBitmap.height.toFloat() / binding.previewCamera.height
+
+        if (drawRect != null) { // drawRect가 화면에 표시된 상태라면
+            // drawRect에 Scale 값을 곱해서 카메라 Bitmap 크기에 맞게 변환
+            val left = (drawRect.left * scaleX).toInt()
+            val top = (drawRect.top * scaleY).toInt()
+            val width = ((drawRect.right - drawRect.left) * scaleX).toInt()
+            val height = ((drawRect.bottom - drawRect.top) * scaleY).toInt()
+
+            Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
+            Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
+
+            // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
+            if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isNameDetected) { // 제품명을 1번만 detect하도록
+                auth = Firebase.auth
+
+                // Google Auth 익명 로그인 진행
+                auth.signInAnonymously()
+                    .addOnCompleteListener(mActivity) { task ->
+                        if (task.isSuccessful) { // 익명 로그인 성공 시
+                            Log.d("googleAuth", "signInAnonymously:success")
+                            val user = auth.currentUser
+
+                            var croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
+                            Log.d("croppedBitmap", "$croppedBitmap")
+
+                            // 이미지 축소
+                            croppedBitmap = scaleBitmapDown(croppedBitmap, 640)
+
+                            // [비트맵 객체 -> base64로 인코딩된 문자열] 변환
+                            val byteArrayOutputStream = ByteArrayOutputStream()
+                            croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                            val imageBytes: ByteArray = byteArrayOutputStream.toByteArray()
+                            val base64encoded = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
+
+                            firebaseFunction(base64encoded) // Firebase Functions 호출
+                        } else {
+                            Log.e("googleAuth", "signInAnonymously:failure", task.exception)
+                        }
+                    }
+            }
+        }
+    }
+
+    // Firebase Functions 호출
+    private fun firebaseFunction(base64encoded: String)  {
+        // Cloud Functions의 인스턴스 초기화
+        functions = Firebase.functions
+
+        // Json 요청
+        val request = JsonObject()
+        val image = JsonObject()
+        image.add("content", JsonPrimitive(base64encoded))
+        request.add("image", image)
+        val feature = JsonObject()
+        feature.add("type", JsonPrimitive("TEXT_DETECTION"))
+        val features = JsonArray()
+        features.add(feature)
+        request.add("features", features)
+
+        // annotateImage 함수 호출
+        annotateImage(request.toString())
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.d("firebaseMlKit", "OCR 실패")
+                    isNameDetected = true
+                } else {
+                    val annotation = task.result!!.asJsonArray[0].asJsonObject["fullTextAnnotation"].asJsonObject
+                    System.out.format("%nComplete annotation:")
+                    System.out.format("%n%s", annotation["text"].asString)
+                    Log.d("firebaseMlKit", "OCR 결과 : ${annotation["text"].asString}")
+                    isNameDetected = true
+                }
+            }
+    }
+
+    // OCR 수행 전, 이미지 축소
+    private fun scaleBitmapDown(
+        bitmap: Bitmap,
+        maxDimension: Int,
+    ): Bitmap {
+        val originalWidth = bitmap.width
+        val originalHeight = bitmap.height
+        var resizedWidth = maxDimension
+        var resizedHeight = maxDimension
+        if (originalHeight > originalWidth) {
+            resizedHeight = maxDimension
+            resizedWidth =
+                (resizedHeight * originalWidth.toFloat() / originalHeight.toFloat()).toInt()
+        } else if (originalWidth > originalHeight) {
+            resizedWidth = maxDimension
+            resizedHeight =
+                (resizedWidth * originalHeight.toFloat() / originalWidth.toFloat()).toInt()
+        } else if (originalHeight == originalWidth) {
+            resizedHeight = maxDimension
+            resizedWidth = maxDimension
+        }
+        return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false)
+    }
+
+    // Cloud Function 함수 호출을 위한 메서드
+    private fun annotateImage(requestJson: String): Task<JsonElement> {
+        return functions
+            .getHttpsCallable("annotateImage")
+            .call(requestJson)
+            .continueWith { task ->
+                val result = task.result?.data
+                JsonParser.parseString(Gson().toJson(result))
+            }
     }
 
     override fun onDestroy() {

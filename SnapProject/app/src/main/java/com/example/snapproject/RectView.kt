@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import kotlin.math.round
@@ -33,33 +34,17 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
         previewHeight: Int,
     ) {
         val modelSize = DataProcess.INPUT_SIZE.toFloat() // YOLO 모델 입력 이미지 크기
-        val scale: Float // YOLO 모델 입력 이미지 좌표 -> PreviewView 좌표 변환 시, 곱하는 비율
 
-        // 상하좌우 여백이 생기는 경우 -> 위치 조정을 위한 보정값 변수
-        val offsetX: Float // 좌우 여백이 생기는 경우, X 좌표를 얼마나 이동할 건지
-        val offsetY: Float // 상하 여백이 생기는 경우, Y 좌표를 얼마나 이동할 건지
-
-        val previewRatio = previewWidth.toFloat() / previewHeight // PreviewView의 가로세로 비율
-        val modelRatio = 1f // YOLO 모델 입력 이미지 가로세로 비율 = 1.0 (640 : 640)
-
-        if (previewRatio > modelRatio) { // LandScape 형태일 때(위아래 여백 생김) 계산
-            scale = previewWidth / modelSize
-            val realHeight = modelSize * scale
-            offsetX = 0f
-            offsetY = (realHeight - previewHeight) / 2f
-        } else { // Portrait 형태일 때(좌우 여백 생김) 계산
-            scale = previewHeight / modelSize
-            val realWidth = modelSize * scale
-            offsetX = (realWidth - previewWidth) / 2f
-            offsetY = 0f
-        }
+        // YOLO 모델 입력 이미지 좌표 -> PreviewView 좌표 변환 시, 곱하는 비율
+        val scaleX = previewWidth / modelSize
+        val scaleY = previewHeight / modelSize
 
         // 좌표 변환 (YOLO 모델 입력 이미지 좌표 -> PreviewView 좌표)
         results.forEach { r ->
-            r.rectF.left = r.rectF.left * scale - offsetX
-            r.rectF.right = r.rectF.right * scale - offsetX
-            r.rectF.top = r.rectF.top * scale - offsetY
-            r.rectF.bottom = r.rectF.bottom * scale - offsetY
+            r.rectF.left *= scaleX
+            r.rectF.right *= scaleX
+            r.rectF.top *= scaleY
+            r.rectF.bottom *= scaleY
         }
         this.results = results
     }
@@ -81,5 +66,10 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
             )
         }
         super.onDraw(canvas)
+    }
+
+    // 화면에 그려진 RectF 리턴
+    fun getDrawRect(): RectF? {
+        return results?.firstOrNull()?.rectF
     }
 }

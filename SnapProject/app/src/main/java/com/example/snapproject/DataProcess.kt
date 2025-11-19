@@ -26,13 +26,16 @@ class DataProcess(val context: Context) { // context 추가
         const val LABEL_NAME = "yolov8n.txt" // YOLO 모델 라벨링 txt 파일명
     }
 
-    // imageProxy에서 bitmap을 만들어 640x640의 회전된 bitmap으로 변환
-    fun imageToBitmap(
-        imageProxy: ImageProxy,
+    // imageProxy에서 bitmap 생성
+    fun imageToBitmap(imageProxy: ImageProxy): Bitmap {
+        return imageProxy.toBitmap().scale(INPUT_SIZE, INPUT_SIZE) // 비트맵 생성
+    }
+
+    // 회전된 비트맵 생성
+    fun imageToRotatedBitmap(
+        bitmap: Bitmap,
         degrees: Int,
     ): Bitmap {
-        val bitmap = imageProxy.toBitmap().scale(INPUT_SIZE, INPUT_SIZE) // 비트맵 생성
-
         // Matrix 객체에 매개변수로 받은 회전 각도 적용
         val matrix = android.graphics.Matrix()
         matrix.postRotate(degrees.toFloat())
@@ -102,7 +105,7 @@ class DataProcess(val context: Context) { // context 추가
 
     // 후보 추출 함수 (최대 8400개의 results 객체 생성 -> nms 호출하여 겹치는 박스 제거 후 최종 결과 반환)
     fun outputsToNPMSPredictions(outputs: Array<*>): ArrayList<YoloResult> {
-        val confidenceThreshold = 0.45f // confidence 임계값
+        val confidenceThreshold = 0.70f // confidence 임계값
         val results = ArrayList<YoloResult>()
         val rows: Int
         val cols: Int
