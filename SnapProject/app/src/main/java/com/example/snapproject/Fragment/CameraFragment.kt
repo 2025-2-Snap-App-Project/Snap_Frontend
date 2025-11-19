@@ -354,6 +354,24 @@ class CameraFragment : Fragment() {
                 Log.d("croppedBitmap", "$croppedBitmap")
             }
         }
+
+        // 소비기한 OCR 수행
+        recognizeExpiryDate(fullBitmap)
+    }
+
+    // 소비기한 OCR 수행
+    private fun recognizeExpiryDate(bitmap: Bitmap) {
+        // Bitmap 객체에서 InputImage 객체 생성
+        val image = InputImage.fromBitmap(bitmap, 0)
+
+        // OCR 수행
+        txtRecognizer.process(image)
+            .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
+                Log.d("firebaseMlKit", it.text)
+            }
+            .addOnFailureListener { e ->
+                Log.e("firebaseMlKit", "${e.message}")
+            }
     }
 
     override fun onDestroy() {
