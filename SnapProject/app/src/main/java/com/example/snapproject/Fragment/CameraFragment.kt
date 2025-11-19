@@ -390,6 +390,38 @@ class CameraFragment : Fragment() {
         }
     }
 
+    // Firebase Functions 호출
+    private fun firebaseFunction(base64encoded: String){
+        // Cloud Functions의 인스턴스 초기화
+        functions = Firebase.functions
+
+        // Json 요청
+        val request = JsonObject()
+        val image = JsonObject()
+        image.add("content", JsonPrimitive(base64encoded))
+        request.add("image", image)
+        val feature = JsonObject()
+        feature.add("type", JsonPrimitive("TEXT_DETECTION"))
+        val features = JsonArray()
+        features.add(feature)
+        request.add("features", features)
+
+        // annotateImage 함수 호출
+        annotateImage(request.toString())
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.d("firebaseMlKit", "OCR 실패")
+                    isNameDetected = true
+                } else {
+                    val annotation = task.result!!.asJsonArray[0].asJsonObject["fullTextAnnotation"].asJsonObject
+                    System.out.format("%nComplete annotation:")
+                    System.out.format("%n%s", annotation["text"].asString)
+                    Log.d("firebaseMlKit", "OCR 결과 : ${annotation["text"].asString}")
+                    isNameDetected = true
+                }
+            }
+    }
+
     // OCR 수행 전, 이미지 축소
     private fun scaleBitmapDown(bitmap: Bitmap, maxDimension: Int): Bitmap {
         val originalWidth = bitmap.width
