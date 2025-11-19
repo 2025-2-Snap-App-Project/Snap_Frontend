@@ -66,6 +66,7 @@ class CameraFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var functions: FirebaseFunctions
     private var isNameDetected: Boolean = false
+    private var isRequesting = false // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
 
     // TextRecognizer 인스턴스 생성
     val txtRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
@@ -341,7 +342,10 @@ class CameraFragment : Fragment() {
             Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
             Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
 
-            if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isNameDetected) { // 제품명을 1번만 detect하도록
+            // 제품명을 1번만 detect하도록 설정 + 중복 요청 방지
+            if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isRequesting && !isNameDetected) {
+                isRequesting = true // 중복 요청 방지를 위한 변수 (현재 POST 요청 중)
+
                 // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
                 val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
                 Log.d("croppedBitmap", "$croppedBitmap")
