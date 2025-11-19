@@ -10,7 +10,6 @@ import android.graphics.Bitmap
 import android.graphics.Camera
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -32,23 +31,16 @@ import com.example.snapproject.DataProcess
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
-import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.functions.FirebaseFunctions
-import com.google.firebase.functions.functions
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.google.gson.JsonPrimitive
+import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.ResolverStyle
 import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.Executors
@@ -347,103 +339,70 @@ class CameraFragment : Fragment() {
             Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
             Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
 
-            // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
             if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isNameDetected) { // 제품명을 1번만 detect하도록
-                auth = Firebase.auth
-
-                // Google Auth 익명 로그인 진행
-                auth.signInAnonymously()
-                    .addOnCompleteListener(mActivity) { task ->
-                        if (task.isSuccessful) { // 익명 로그인 성공 시
-                            Log.d("googleAuth", "signInAnonymously:success")
-                            val user = auth.currentUser
-
-                            var croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
-                            Log.d("croppedBitmap", "$croppedBitmap")
-
-                            // 이미지 축소
-                            croppedBitmap = scaleBitmapDown(croppedBitmap, 640)
-
-                            // [비트맵 객체 -> base64로 인코딩된 문자열] 변환
-                            val byteArrayOutputStream = ByteArrayOutputStream()
-                            croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-                            val imageBytes: ByteArray = byteArrayOutputStream.toByteArray()
-                            val base64encoded = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
-
-                            firebaseFunction(base64encoded) // Firebase Functions 호출
-                        } else {
-                            Log.e("googleAuth", "signInAnonymously:failure", task.exception)
-                        }
-                    }
+                // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
+                val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
+                Log.d("croppedBitmap", "$croppedBitmap")
             }
         }
+
+        // 소비기한 OCR 수행
+        recognizeExpiryDate(fullBitmap)
     }
 
-    // Firebase Functions 호출
-    private fun firebaseFunction(base64encoded: String)  {
-        // Cloud Functions의 인스턴스 초기화
-        functions = Firebase.functions
+    // 소비기한 OCR 수행
+    private fun recognizeExpiryDate(bitmap: Bitmap) {
+        // Bitmap 객체에서 InputImage 객체 생성
+        val image = InputImage.fromBitmap(bitmap, 0)
 
-        // Json 요청
-        val request = JsonObject()
-        val image = JsonObject()
-        image.add("content", JsonPrimitive(base64encoded))
-        request.add("image", image)
-        val feature = JsonObject()
-        feature.add("type", JsonPrimitive("TEXT_DETECTION"))
-        val features = JsonArray()
-        features.add(feature)
-        request.add("features", features)
-
-        // annotateImage 함수 호출
-        annotateImage(request.toString())
-            .addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.d("firebaseMlKit", "OCR 실패")
-                    isNameDetected = true
-                } else {
-                    val annotation = task.result!!.asJsonArray[0].asJsonObject["fullTextAnnotation"].asJsonObject
-                    System.out.format("%nComplete annotation:")
-                    System.out.format("%n%s", annotation["text"].asString)
-                    Log.d("firebaseMlKit", "OCR 결과 : ${annotation["text"].asString}")
-                    isNameDetected = true
+        // OCR 수행
+        txtRecognizer.process(image)
+            .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
+                Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
+                val dates = extractValidDates(it.text) // 소비기한 조건 체크
+                if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
+                    Log.d("ocrDateSuccess", "인식된 날짜: ${dates.first()}")
+                } else { // 소비기한이 인식되지 않은 경우
+                    Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
                 }
             }
-    }
-
-    // OCR 수행 전, 이미지 축소
-    private fun scaleBitmapDown(
-        bitmap: Bitmap,
-        maxDimension: Int,
-    ): Bitmap {
-        val originalWidth = bitmap.width
-        val originalHeight = bitmap.height
-        var resizedWidth = maxDimension
-        var resizedHeight = maxDimension
-        if (originalHeight > originalWidth) {
-            resizedHeight = maxDimension
-            resizedWidth =
-                (resizedHeight * originalWidth.toFloat() / originalHeight.toFloat()).toInt()
-        } else if (originalWidth > originalHeight) {
-            resizedWidth = maxDimension
-            resizedHeight =
-                (resizedWidth * originalHeight.toFloat() / originalWidth.toFloat()).toInt()
-        } else if (originalHeight == originalWidth) {
-            resizedHeight = maxDimension
-            resizedWidth = maxDimension
-        }
-        return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false)
-    }
-
-    // Cloud Function 함수 호출을 위한 메서드
-    private fun annotateImage(requestJson: String): Task<JsonElement> {
-        return functions
-            .getHttpsCallable("annotateImage")
-            .call(requestJson)
-            .continueWith { task ->
-                val result = task.result?.data
-                JsonParser.parseString(Gson().toJson(result))
+            .addOnFailureListener { e ->
+                Log.e("ocrDateError", "${e.message}")
             }
+    }
+
+    // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수
+    private fun extractValidDates(text: String): List<String> {
+        // 날짜 정규식: 2자리 또는 4자리 연도, 점(.) 또는 하이픈(-), 월/일 1~2자리
+        val dateRegex = "\\b(\\d{2}|\\d{4})[.\\-]\\s*(\\d{1,2})[.\\-]\\s*(\\d{1,2})\\b".toRegex()
+
+        // 최종 결과 반환용 formatter
+        val formatter =
+            DateTimeFormatter.ofPattern("yyyy.MM.dd")
+                .withResolverStyle(ResolverStyle.STRICT)
+
+        return dateRegex.findAll(text) // 정규식에 해당되는 모든 부분 찾기
+            .mapNotNull {
+                // 공백 제거 -> . or - 으로 split
+                val parts = it.value.replace(" ", "").split('.', '-')
+
+                // 연, 월, 일 변수에 각각 저장
+                var year = parts[0].toInt()
+                val month = parts[1].toInt()
+                val day = parts[2].toInt()
+
+                // 2자리 연도 -> 4자리 연도로 변환
+                if (year < 100) year += 2000
+
+                try {
+                    // LocalDate로 유효성 검사 후 formatter로 변환
+                    val date = LocalDate.of(year, month, day)
+                    date.format(formatter)
+                } catch (e: Exception) {
+                    // 변환 실패 시, null 반환
+                    null
+                }
+            }.toList() // 리스트로 최종 결과 반환
     }
 
     override fun onDestroy() {
