@@ -27,9 +27,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.DataProcess
 import com.example.snapproject.MainActivity
+import com.example.snapproject.api.ApiRepository
+import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
 import com.google.firebase.auth.FirebaseAuth
@@ -37,6 +40,7 @@ import com.google.firebase.functions.FirebaseFunctions
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -351,7 +355,26 @@ class CameraFragment : Fragment() {
                 Log.d("croppedBitmap", "$croppedBitmap")
 
                 // 비트맵 이미지를 File(.png)로 저장
-                saveBitmapToFile(fullBitmap)
+                val imgFile = saveBitmapToFile(fullBitmap)
+
+                // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청, 응답 결과 표시
+                lifecycleScope.launch {
+                    when (val result = ApiRepository.postName(imgFile)) { // POST 요청
+                        is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
+                            Log.d("postNameResult", result.data.productName)
+                            isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
+                        }
+                        is ApiResult.Error -> { // 실패한 경우
+                            when(result.code) {
+                                400 -> ""
+                                415 -> ""
+                                500 -> ""
+                                else -> ""
+                            }
+                        }
+                    }
+                    isRequesting = false
+                }
             }
         }
 
