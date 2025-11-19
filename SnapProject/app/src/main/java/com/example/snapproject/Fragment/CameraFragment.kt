@@ -370,10 +370,16 @@ class CameraFragment : Fragment() {
         // OCR 수행
         txtRecognizer.process(image)
             .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
-                Log.d("firebaseMlKit", it.text)
+                Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
+                val dates = extractValidDates(it.text) // 소비기한 조건 체크
+                if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
+                    Log.d("ocrDateSuccess", "인식된 날짜: ${dates.first()}")
+                } else { // 소비기한이 인식되지 않은 경우
+                    Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
+                }
             }
             .addOnFailureListener { e ->
-                Log.e("firebaseMlKit", "${e.message}")
+                Log.e("ocrDateError", "${e.message}")
             }
     }
 
