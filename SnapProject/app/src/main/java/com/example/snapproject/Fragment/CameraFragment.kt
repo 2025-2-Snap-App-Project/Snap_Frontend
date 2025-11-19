@@ -10,7 +10,6 @@ import android.graphics.Bitmap
 import android.graphics.Camera
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -32,22 +31,11 @@ import com.example.snapproject.DataProcess
 import com.example.snapproject.MainActivity
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
-import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.functions.FirebaseFunctions
-import com.google.firebase.functions.functions
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.google.gson.JsonPrimitive
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -389,8 +377,9 @@ class CameraFragment : Fragment() {
         val dateRegex = "\\b(\\d{2}|\\d{4})[.\\-]\\s*(\\d{1,2})[.\\-]\\s*(\\d{1,2})\\b".toRegex()
 
         // 최종 결과 반환용 formatter
-        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-            .withResolverStyle(ResolverStyle.STRICT)
+        val formatter =
+            DateTimeFormatter.ofPattern("yyyy.MM.dd")
+                .withResolverStyle(ResolverStyle.STRICT)
 
         return dateRegex.findAll(text) // 정규식에 해당되는 모든 부분 찾기
             .mapNotNull {
@@ -405,16 +394,16 @@ class CameraFragment : Fragment() {
                 // 2자리 연도 -> 4자리 연도로 변환
                 if (year < 100) year += 2000
 
-                try { // LocalDate로 유효성 검사 후 formatter로 변환
+                try {
+                    // LocalDate로 유효성 검사 후 formatter로 변환
                     val date = LocalDate.of(year, month, day)
                     date.format(formatter)
-                } catch (e: Exception) { // 변환 실패 시, null 반환
+                } catch (e: Exception) {
+                    // 변환 실패 시, null 반환
                     null
                 }
             }.toList() // 리스트로 최종 결과 반환
-
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
