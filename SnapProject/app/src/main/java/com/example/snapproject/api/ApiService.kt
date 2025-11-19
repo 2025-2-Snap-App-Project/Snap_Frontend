@@ -1,11 +1,13 @@
 package com.example.snapproject.api
 
 import com.example.snapproject.model.AnalyzeResponse
+import com.example.snapproject.model.NameResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import java.io.File
 
 interface ApiService {
     // ----------------------------------------------------
@@ -18,4 +20,10 @@ interface ApiService {
     suspend fun postAnalyzeRaw(
         @Part images: List<MultipartBody.Part>,
     ): Response<AnalyzeResponse>
+
+    @Multipart
+    @POST("name")
+    suspend fun postNameRaw(
+        @Part image: MultipartBody.Part,
+    ): Response<NameResponse>
 }

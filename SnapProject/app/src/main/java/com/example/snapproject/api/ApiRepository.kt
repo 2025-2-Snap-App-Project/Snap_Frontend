@@ -1,6 +1,7 @@
 package com.example.snapproject.api
 
 import com.example.snapproject.model.AnalyzeResponse
+import com.example.snapproject.model.NameResponse
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -33,6 +34,19 @@ object ApiRepository {
                 apiService.postAnalyzeRaw(
                     imageParts,
                 )
+            }
+        return result
+    }
+
+    // 제품명 OCR 수행 요청
+    suspend fun postName(imageFile: File): ApiResult<NameResponse> {
+        val result =
+            apiSafeCall { // result -> 서버 요청한 뒤의 결과를 저장
+                // 서버로 보내줘야 하는 데이터 -> MultiPartBody로 변환
+                val imageParts = MultipartBody.Part.createFormData("images[]", imageFile.name, imageFile.asRequestBody("image/*".toMediaType()))
+
+                // ApiService 인터페이스에 선언된 함수 호출하여 POST 요청
+                apiService.postNameRaw(imageParts)
             }
         return result
     }
