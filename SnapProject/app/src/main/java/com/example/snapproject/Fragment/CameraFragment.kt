@@ -50,6 +50,8 @@ import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.Executors
 import android.util.Base64
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -67,6 +69,7 @@ class CameraFragment : Fragment() {
 
     private lateinit var dataProcess: DataProcess
 
+    private lateinit var auth: FirebaseAuth
     private lateinit var functions: FirebaseFunctions
     private var isNameDetected : Boolean = false
 
@@ -346,44 +349,31 @@ class CameraFragment : Fragment() {
 
             // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
             if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isNameDetected) { // 제품명을 1번만 detect하도록
-                var croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
-                Log.d("croppedBitmap", "$croppedBitmap")
+                auth = Firebase.auth
 
-                // 이미지 축소
-                croppedBitmap = scaleBitmapDown(croppedBitmap, 640)
+                // Google Auth 익명 로그인 진행
+                auth.signInAnonymously()
+                    .addOnCompleteListener(mActivity) { task ->
+                        if (task.isSuccessful) { // 익명 로그인 성공 시
+                            Log.d("googleAuth", "signInAnonymously:success")
+                            val user = auth.currentUser
 
-                // [비트맵 객체 -> base64로 인코딩된 문자열] 변환
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-                val imageBytes: ByteArray = byteArrayOutputStream.toByteArray()
-                val base64encoded = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
+                            var croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
+                            Log.d("croppedBitmap", "$croppedBitmap")
 
-                // Cloud Functions의 인스턴스 초기화
-                functions = Firebase.functions
+                            // 이미지 축소
+                            croppedBitmap = scaleBitmapDown(croppedBitmap, 640)
 
-                // Json 요청
-                val request = JsonObject()
-                val image = JsonObject()
-                image.add("content", JsonPrimitive(base64encoded))
-                request.add("image", image)
-                val feature = JsonObject()
-                feature.add("type", JsonPrimitive("TEXT_DETECTION"))
-                val features = JsonArray()
-                features.add(feature)
-                request.add("features", features)
+                            // [비트맵 객체 -> base64로 인코딩된 문자열] 변환
+                            val byteArrayOutputStream = ByteArrayOutputStream()
+                            croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                            val imageBytes: ByteArray = byteArrayOutputStream.toByteArray()
+                            val base64encoded = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
 
-                // annotateImage 함수 호출
-                annotateImage(request.toString())
-                    .addOnCompleteListener { task ->
-                        if (!task.isSuccessful) {
-                            Log.d("firebaseMlKit", "OCR 실패")
-                            isNameDetected = true
+                            firebaseFunction(base64encoded) // Firebase Functions 호출
+
                         } else {
-                            val annotation = task.result!!.asJsonArray[0].asJsonObject["fullTextAnnotation"].asJsonObject
-                            System.out.format("%nComplete annotation:")
-                            System.out.format("%n%s", annotation["text"].asString)
-                            Log.d("firebaseMlKit", "OCR 결과 : ${annotation["text"].asString}")
-                            isNameDetected = true
+                            Log.e("googleAuth", "signInAnonymously:failure", task.exception)
                         }
                     }
             }
