@@ -355,6 +355,15 @@ class CameraFragment : Fragment() {
 
                 // Bitmap 객체에서 InputImage 객체 생성
                 val image = InputImage.fromBitmap(croppedBitmap, 0)
+
+                // OCR 수행
+                txtRecognizer.process(image)
+                    .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
+                        Log.d("firebaseMlKit", it.text)
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("firebaseMlKit", "${e.message}")
+                    }
             }
         }
     }
