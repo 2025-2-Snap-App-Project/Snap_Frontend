@@ -44,6 +44,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
+import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import java.io.ByteArrayOutputStream
@@ -347,8 +348,13 @@ class CameraFragment : Fragment() {
             Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
             Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
 
-            // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
             if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isNameDetected) { // 제품명을 1번만 detect하도록
+                // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
+                val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
+                Log.d("croppedBitmap", "$croppedBitmap")
+
+                // Bitmap 객체에서 InputImage 객체 생성
+                val image = InputImage.fromBitmap(croppedBitmap, 0)
             }
         }
     }
