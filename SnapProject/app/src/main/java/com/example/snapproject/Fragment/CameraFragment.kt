@@ -50,6 +50,9 @@ import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.ResolverStyle
 import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.Executors
@@ -373,6 +376,39 @@ class CameraFragment : Fragment() {
                 Log.e("firebaseMlKit", "${e.message}")
             }
     }
+
+    // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수
+    private fun extractValidDates(text: String): List<String> {
+        // 날짜 정규식: 2자리 또는 4자리 연도, 점(.) 또는 하이픈(-), 월/일 1~2자리
+        val dateRegex = "\\b(\\d{2}|\\d{4})[.\\-]\\s*(\\d{1,2})[.\\-]\\s*(\\d{1,2})\\b".toRegex()
+
+        // 최종 결과 반환용 formatter
+        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+            .withResolverStyle(ResolverStyle.STRICT)
+
+        return dateRegex.findAll(text) // 정규식에 해당되는 모든 부분 찾기
+            .mapNotNull {
+                // 공백 제거 -> . or - 으로 split
+                val parts = it.value.replace(" ", "").split('.', '-')
+
+                // 연, 월, 일 변수에 각각 저장
+                var year = parts[0].toInt()
+                val month = parts[1].toInt()
+                val day = parts[2].toInt()
+
+                // 2자리 연도 -> 4자리 연도로 변환
+                if (year < 100) year += 2000
+
+                try { // LocalDate로 유효성 검사 후 formatter로 변환
+                    val date = LocalDate.of(year, month, day)
+                    date.format(formatter)
+                } catch (e: Exception) { // 변환 실패 시, null 반환
+                    null
+                }
+            }.toList() // 리스트로 최종 결과 반환
+
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
