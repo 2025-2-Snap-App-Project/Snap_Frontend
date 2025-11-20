@@ -408,6 +408,8 @@ class CameraFragment : Fragment() {
                 val dates = extractValidDates(it.text) // 소비기한 조건 체크
                 if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
                     Log.d("ocrDateSuccess", "인식된 날짜: ${dates.first()}")
+                    expirationDate = dates.first() // 인식된 소비기한을 변수에 저장
+                    expiryDateTTS() // 인식된 소비기한 TTS 출력
                 } else { // 소비기한이 인식되지 않은 경우
                     Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
                 }
@@ -415,6 +417,17 @@ class CameraFragment : Fragment() {
             .addOnFailureListener { e ->
                 Log.e("ocrDateError", "${e.message}")
             }
+    }
+
+    // 인식된 소비기한 TTS 출력
+    private fun expiryDateTTS() {
+        if (expirationDateTTSNum < 10) { // TTS로 음성 안내한 횟수가 10회 미만인지 체크
+            expirationDate?.let { MainActivity.tts.readText(it) } // 인식된 소비기한 TTS 출력
+            expirationDateTTSNum++ // TTS 횟수 1씩 증가
+            Log.d("expirationDateTTSNum", "$expirationDateTTSNum")
+        } else { // TTS로 음성 안내한 횟수가 10회라면 -> TTS 출력하지 않고 바로 리턴
+            return
+        }
     }
 
     // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수
