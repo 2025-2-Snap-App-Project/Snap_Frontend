@@ -388,6 +388,12 @@ class CameraFragment : Fragment() {
                 productName?.let { MainActivity.tts.readText(it) } // 제품명 TTS 출력
                 productNameTTSNum++ // 제품명 TTS 횟수 증가
             }
+
+            // "제품 라벨 인식됨" -> TTS 출력
+            if (results.firstOrNull()?.classIndex == 0 && productLableTTSNum < 10) { // 조건 : 제품 라벨이 인식됨 + 제품 라벨 TTS 횟수가 10미만
+                MainActivity.tts.readText("제품 라벨이 인식되었습니다.") // "제품 라벨 인식됨" -> TTS 출력
+                productLableTTSNum++ // 제품 라벨 TTS 횟수 증가
+            }
         }
 
         // 소비기한 OCR 수행
