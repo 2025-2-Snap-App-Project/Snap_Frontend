@@ -365,12 +365,7 @@ class CameraFragment : Fragment() {
                             isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
                         }
                         is ApiResult.Error -> { // 실패한 경우
-                            when(result.code) {
-                                400 -> ""
-                                415 -> ""
-                                500 -> ""
-                                else -> ""
-                            }
+                            null
                         }
                     }
                     isRequesting = false
