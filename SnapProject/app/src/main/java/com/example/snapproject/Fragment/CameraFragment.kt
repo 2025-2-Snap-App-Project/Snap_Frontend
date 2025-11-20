@@ -51,6 +51,7 @@ import java.time.format.ResolverStyle
 import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.Executors
+import androidx.core.graphics.createBitmap
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -67,6 +68,7 @@ class CameraFragment : Fragment() {
     private var camera: Camera? = null // 카메라 객체
     private lateinit var preview: Preview // 카메라 미리보기 preview
     private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
+    private var latestBitmap: Bitmap = createBitmap(1, 1) // 가장 최근 프레임 Bitmap을 저장할 변수
     private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
@@ -188,6 +190,65 @@ class CameraFragment : Fragment() {
         viewModel.yoloResult.observe(viewLifecycleOwner) { results ->
             binding.rectView.transformRect(results) // 실제 기기 화면 크기에 맞게 좌표값 조정
             binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+        }
+
+        // 화면에 YOLO가 추론한 결과물인 RectView가 새로 그려지면 -> YOLO 추론 bounding box 크기만큼 비트맵 이미지 생성 + 조건문에 따라 처리
+        viewModel.drawRect.observe(viewLifecycleOwner) { rectF ->
+            val fullBitmap = latestBitmap // 가장 최근 비트맵 이미지 가져옴 (현재 화면에 보이는 이미지)
+
+            // drawRect를 카메라 Bitmap 크기에 맞게 변환해줄 때 필요한 변수
+            val scaleX = fullBitmap.width.toFloat() / binding.previewCamera.width
+            val scaleY = fullBitmap.height.toFloat() / binding.previewCamera.height
+
+            // drawRect에 Scale 값을 곱해서 카메라 Bitmap 크기에 맞게 변환
+            val left = (rectF.left * scaleX).toInt()
+            val top = (rectF.top * scaleY).toInt()
+            val width = ((rectF.right - rectF.left) * scaleX).toInt()
+            val height = ((rectF.bottom - rectF.top) * scaleY).toInt()
+
+            Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
+            Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
+
+            // 제품명을 1번만 detect하도록 설정 + 중복 요청 방지
+            if (width > 0 && height > 0 && viewModel.classIndex.value == 1 && !isRequesting && !isNameDetected) {
+                isRequesting = true // 중복 요청 방지를 위한 변수 (현재 POST 요청 중)
+
+                // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
+                val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
+
+                // 비트맵 이미지를 File(.png)로 저장
+                val imgFile = saveBitmapToFile(fullBitmap)
+
+                // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청, 응답 결과 표시
+                lifecycleScope.launch {
+                    when (val result = ApiRepository.postName(imgFile)) { // POST 요청
+                        is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
+                            takePhoto() // 사진 촬영 및 이미지 파일 저장
+                            Log.d("postNameResult", result.data.productName)
+                            MainActivity.tts.readText(result.data.productName) // 제품명 TTS 출력
+                            productNameTTSNum++ // 제품명 TTS 횟수 증가
+                            productName = result.data.productName // 제품명 인식 결과 저장
+                            isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
+                        }
+                        is ApiResult.Error -> TODO()
+                    }
+                    isRequesting = false
+                }
+            }
+
+            // 제품명 TTS 출력
+            if (viewModel.classIndex.value == 1 && productNameTTSNum < 3 && isNameDetected) { // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 3 미만 + 제품명 OCR POST 요청 성공
+                takePhoto() // 사진 촬영 및 이미지 파일 저장
+                productName?.let { MainActivity.tts.readText(it) } // 제품명 TTS 출력
+                productNameTTSNum++ // 제품명 TTS 횟수 증가
+            }
+
+            // "제품 라벨 인식됨" -> TTS 출력
+            if (viewModel.classIndex.value == 0 && productLabelTTSNum < 3) { // 조건 : 제품 라벨이 인식됨 + 제품 라벨 TTS 횟수가 3 미만
+                takePhoto() // 사진 촬영 및 이미지 파일 저장
+                MainActivity.tts.readText("제품 라벨이 인식되었습니다.") // "제품 라벨 인식됨" -> TTS 출력
+                productLabelTTSNum++ // 제품 라벨 TTS 횟수 증가
+            }
         }
 
         // 버튼 클릭 이벤트 처리 코드를 여기에 추가해야(initView 함수 안이 X) onResume된 후에도 해당 코드가 정상 작동함.
@@ -350,72 +411,10 @@ class CameraFragment : Fragment() {
         // YOLO 추론 최종 결과 출력
         val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
         viewModel.updateYoloResultsRectF(results, binding.previewCamera.width, binding.previewCamera.height)
-
-        // 화면에 그려진 Rect 크기만큼 비트맵 이미지 생성
-        val drawRect = binding.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
-        val fullBitmap = imageProxy.toBitmap() // 전체 Preview에 대한 비트맵 이미지 생성
-
-        // drawRect를 카메라 Bitmap 크기에 맞게 변환해줄 때 필요한 변수
-        val scaleX = fullBitmap.width.toFloat() / binding.previewCamera.width
-        val scaleY = fullBitmap.height.toFloat() / binding.previewCamera.height
-
-        if (drawRect != null) { // drawRect가 화면에 표시된 상태라면
-            // drawRect에 Scale 값을 곱해서 카메라 Bitmap 크기에 맞게 변환
-            val left = (drawRect.left * scaleX).toInt()
-            val top = (drawRect.top * scaleY).toInt()
-            val width = ((drawRect.right - drawRect.left) * scaleX).toInt()
-            val height = ((drawRect.bottom - drawRect.top) * scaleY).toInt()
-
-            Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
-            Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
-
-            // 제품명을 1번만 detect하도록 설정 + 중복 요청 방지
-            if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isRequesting && !isNameDetected) {
-                isRequesting = true // 중복 요청 방지를 위한 변수 (현재 POST 요청 중)
-
-                // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
-                val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
-                Log.d("croppedBitmap", "$croppedBitmap")
-
-                // 비트맵 이미지를 File(.png)로 저장
-                val imgFile = saveBitmapToFile(fullBitmap)
-
-                // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청, 응답 결과 표시
-                lifecycleScope.launch {
-                    when (val result = ApiRepository.postName(imgFile)) { // POST 요청
-                        is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
-                            takePhoto() // 사진 촬영 및 이미지 파일 저장
-                            Log.d("postNameResult", result.data.productName)
-                            MainActivity.tts.readText(result.data.productName) // 제품명 TTS 출력
-                            productNameTTSNum++ // 제품명 TTS 횟수 증가
-                            productName = result.data.productName // 제품명 인식 결과 저장
-                            isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
-                        }
-                        is ApiResult.Error -> { // 실패한 경우
-                            null
-                        }
-                    }
-                    isRequesting = false
-                }
-            }
-
-            // 제품명 TTS 출력
-            if (results.firstOrNull()?.classIndex == 1 && productNameTTSNum < 3 && isNameDetected) { // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 3 미만 + 제품명 OCR POST 요청 성공
-                takePhoto() // 사진 촬영 및 이미지 파일 저장
-                productName?.let { MainActivity.tts.readText(it) } // 제품명 TTS 출력
-                productNameTTSNum++ // 제품명 TTS 횟수 증가
-            }
-
-            // "제품 라벨 인식됨" -> TTS 출력
-            if (results.firstOrNull()?.classIndex == 0 && productLabelTTSNum < 3) { // 조건 : 제품 라벨이 인식됨 + 제품 라벨 TTS 횟수가 3 미만
-                takePhoto() // 사진 촬영 및 이미지 파일 저장
-                MainActivity.tts.readText("제품 라벨이 인식되었습니다.") // "제품 라벨 인식됨" -> TTS 출력
-                productLabelTTSNum++ // 제품 라벨 TTS 횟수 증가
-            }
-        }
+        latestBitmap = imageProxy.toBitmap() // 현재 imageProxy를 비트맵 형태로 저장
 
         // 소비기한 OCR 수행
-        recognizeExpiryDate(fullBitmap)
+        recognizeExpiryDate(imageProxy.toBitmap())
     }
 
     // 비트맵 이미지를 File 타입으로 바꿔서 저장

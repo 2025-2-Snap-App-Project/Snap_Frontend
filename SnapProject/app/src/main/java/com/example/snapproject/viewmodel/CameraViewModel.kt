@@ -1,5 +1,6 @@
 package com.example.snapproject.viewmodel
 
+import android.graphics.RectF
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,9 +11,19 @@ class CameraViewModel: ViewModel() {
 
     // YoloResults(클래스 인덱스 값, 신뢰도 점수, RectF) ArrayList를 저장할 변수들
     private val _yoloResults = MutableLiveData<ArrayList<YoloResult>>()
-
     val yoloResult: LiveData<ArrayList<YoloResult>>
         get() = _yoloResults
+
+    // YoloResults의 classIndex 값을 저장할 변수들
+    private val _classIndex = MutableLiveData<Int>()
+    val classIndex: LiveData<Int>
+        get() = _classIndex
+
+    // YoloResults의 rectF를 저장할 변수들
+    private val _drawRect = MutableLiveData<RectF>()
+    val drawRect: LiveData<RectF>
+        get() = _drawRect
+
 
     // YoloResults의 RectF를 업데이트
     fun updateYoloResultsRectF(results: ArrayList<YoloResult>, previewWidth: Int, previewHeight: Int,) {
@@ -30,6 +41,8 @@ class CameraViewModel: ViewModel() {
             r.rectF.bottom *= scaleY
         }
         _yoloResults.postValue(results)
+        _classIndex.postValue(results.firstOrNull()?.classIndex) // classIndex 값 저장
+        _drawRect.postValue(results.firstOrNull()?.rectF) // rectF 값 저장
     }
 
 }
