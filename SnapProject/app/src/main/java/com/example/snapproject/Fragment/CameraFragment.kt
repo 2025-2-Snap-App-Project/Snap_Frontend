@@ -85,7 +85,7 @@ class CameraFragment : Fragment() {
     // TTS로 안내한 횟수를 저장할 변수
     private var productNameTTSNum: Int = 0 // 제품명 TTS 횟수
     private var expirationDateTTSNum: Int = 0 // 소비기한 TTS 횟수
-    private var productLableTTSNum: Int = 0 // 제품 라벨 TTS 횟수
+    private var productLabelTTSNum: Int = 0 // 제품 라벨 TTS 횟수
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -390,9 +390,9 @@ class CameraFragment : Fragment() {
             }
 
             // "제품 라벨 인식됨" -> TTS 출력
-            if (results.firstOrNull()?.classIndex == 0 && productLableTTSNum < 10) { // 조건 : 제품 라벨이 인식됨 + 제품 라벨 TTS 횟수가 10미만
+            if (results.firstOrNull()?.classIndex == 0 && productLabelTTSNum < 10) { // 조건 : 제품 라벨이 인식됨 + 제품 라벨 TTS 횟수가 10미만
                 MainActivity.tts.readText("제품 라벨이 인식되었습니다.") // "제품 라벨 인식됨" -> TTS 출력
-                productLableTTSNum++ // 제품 라벨 TTS 횟수 증가
+                productLabelTTSNum++ // 제품 라벨 TTS 횟수 증가
             }
         }
 
