@@ -1,6 +1,5 @@
 package com.example.snapproject.model
 
-
 import com.google.gson.annotations.SerializedName
 
 data class NameResponse(
@@ -8,5 +7,5 @@ data class NameResponse(
     @SerializedName("product_name")
     val productName: String,
     val status: Int,
-    val success: Boolean
+    val success: Boolean,
 )

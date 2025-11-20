@@ -43,7 +43,12 @@ object ApiRepository {
         val result =
             apiSafeCall { // result -> 서버 요청한 뒤의 결과를 저장
                 // 서버로 보내줘야 하는 데이터 -> MultiPartBody로 변환
-                val imageParts = MultipartBody.Part.createFormData("image", imageFile.name, imageFile.asRequestBody("image/*".toMediaType()))
+                val imageParts =
+                    MultipartBody.Part.createFormData(
+                        "image",
+                        imageFile.name,
+                        imageFile.asRequestBody("image/*".toMediaType()),
+                    )
 
                 // ApiService 인터페이스에 선언된 함수 호출하여 POST 요청
                 apiService.postNameRaw(imageParts)
