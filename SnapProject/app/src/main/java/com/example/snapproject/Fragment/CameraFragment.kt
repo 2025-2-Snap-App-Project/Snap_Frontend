@@ -26,6 +26,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.DataProcess
@@ -34,6 +35,7 @@ import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
+import com.example.snapproject.viewmodel.CameraViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.mlkit.vision.common.InputImage
@@ -53,6 +55,10 @@ import java.util.concurrent.Executors
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: CameraViewModel by lazy{
+        ViewModelProvider(this)[CameraViewModel::class.java]
+    }
 
     private lateinit var mContext: Context
     private lateinit var mActivity: MainActivity
@@ -178,6 +184,11 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
+
+        viewModel.yoloResult.observe(viewLifecycleOwner) { results ->
+            binding.rectView.transformRect(results) // 실제 기기 화면 크기에 맞게 좌표값 조정
+            binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+        }
 
         // 버튼 클릭 이벤트 처리 코드를 여기에 추가해야(initView 함수 안이 X) onResume된 후에도 해당 코드가 정상 작동함.
         binding.btnComplete.setOnClickListener {
@@ -338,8 +349,7 @@ class CameraFragment : Fragment() {
 
         // YOLO 추론 최종 결과 출력
         val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
-        binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
-        binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+        viewModel.updateYoloResultsRectF(results, binding.previewCamera.width, binding.previewCamera.height)
 
         // 화면에 그려진 Rect 크기만큼 비트맵 이미지 생성
         val drawRect = binding.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
