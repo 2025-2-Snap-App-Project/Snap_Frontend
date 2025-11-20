@@ -369,6 +369,7 @@ class CameraFragment : Fragment() {
                 lifecycleScope.launch {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
+                            takePhoto() // 사진 촬영 및 이미지 파일 저장
                             Log.d("postNameResult", result.data.productName)
                             MainActivity.tts.readText(result.data.productName) // 제품명 TTS 출력
                             productNameTTSNum++ // 제품명 TTS 횟수 증가
@@ -385,12 +386,14 @@ class CameraFragment : Fragment() {
 
             // 제품명 TTS 출력
             if (results.firstOrNull()?.classIndex == 1 && productNameTTSNum < 3 && isNameDetected) { // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 3 미만 + 제품명 OCR POST 요청 성공
+                takePhoto() // 사진 촬영 및 이미지 파일 저장
                 productName?.let { MainActivity.tts.readText(it) } // 제품명 TTS 출력
                 productNameTTSNum++ // 제품명 TTS 횟수 증가
             }
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (results.firstOrNull()?.classIndex == 0 && productLabelTTSNum < 3) { // 조건 : 제품 라벨이 인식됨 + 제품 라벨 TTS 횟수가 3 미만
+                takePhoto() // 사진 촬영 및 이미지 파일 저장
                 MainActivity.tts.readText("제품 라벨이 인식되었습니다.") // "제품 라벨 인식됨" -> TTS 출력
                 productLabelTTSNum++ // 제품 라벨 TTS 횟수 증가
             }
@@ -437,6 +440,7 @@ class CameraFragment : Fragment() {
     // 인식된 소비기한 TTS 출력
     private fun expiryDateTTS() {
         if (expirationDateTTSNum < 3) { // TTS로 음성 안내한 횟수가 3회 미만인지 체크
+            takePhoto() // 사진 촬영 및 이미지 파일 저장
             expirationDate?.let { MainActivity.tts.readText(it) } // 인식된 소비기한 TTS 출력
             expirationDateTTSNum++ // TTS 횟수 1씩 증가
             Log.d("expirationDateTTSNum", "$expirationDateTTSNum")
