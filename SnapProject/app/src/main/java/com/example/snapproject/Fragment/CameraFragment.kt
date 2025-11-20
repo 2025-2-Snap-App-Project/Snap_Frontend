@@ -78,6 +78,15 @@ class CameraFragment : Fragment() {
     private lateinit var ortEnvironment: OrtEnvironment
     private lateinit var session: OrtSession
 
+    // YOLO 추론 후, OCR 결과를 저장할 변수
+    private var productName: String? = null // 제품명 OCR 결과
+    private var expirationDate: String? = null // 소비기한 OCR 결과
+
+    // TTS로 안내한 횟수를 저장할 변수
+    private var productNameTTSNum: Int = 0 // 제품명 TTS 횟수
+    private var expirationDateTTSNum: Int = 0 // 소비기한 TTS 횟수
+    private var productLableTTSNum: Int = 0 // 제품 라벨 TTS 횟수
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
