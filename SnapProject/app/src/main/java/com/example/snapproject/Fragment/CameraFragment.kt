@@ -308,6 +308,12 @@ class CameraFragment : Fragment() {
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
+        // TTS 발화 횟수 3회 이상이면, 다음 화면으로 이동
+        if (productNameTTSNum >= 3 && expirationDateTTSNum >= 3 && productLabelTTSNum >= 3) {
+            val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+            findNavController().navigate(action)
+        }
+
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
         val bitmap = dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
