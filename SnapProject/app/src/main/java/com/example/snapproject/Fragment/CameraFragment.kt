@@ -298,7 +298,6 @@ class CameraFragment : Fragment() {
 
                 // 이미지 캡쳐 및 저장 성공
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    MainActivity.tts.readText("촬영 성공")
                     outputFileResults.savedUri?.let { uriArrayList.add(it.toString()) } // 이미지 저장 경로를 ArrayList에 추가
 
                     Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인
