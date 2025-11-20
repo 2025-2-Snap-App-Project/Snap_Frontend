@@ -370,6 +370,9 @@ class CameraFragment : Fragment() {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                             Log.d("postNameResult", result.data.productName)
+                            MainActivity.tts.readText(result.data.productName) // 제품명 TTS 출력
+                            productNameTTSNum++ // 제품명 TTS 횟수 증가
+                            productName = result.data.productName // 제품명 인식 결과 저장
                             isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
                         }
                         is ApiResult.Error -> { // 실패한 경우
@@ -378,6 +381,12 @@ class CameraFragment : Fragment() {
                     }
                     isRequesting = false
                 }
+            }
+
+            // 제품명 TTS 출력
+            if (results.firstOrNull()?.classIndex == 1 && productNameTTSNum < 10 && isNameDetected) { // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 10미만 + 제품명 OCR POST 요청 성공
+                productName?.let { MainActivity.tts.readText(it) } // 제품명 TTS 출력
+                productNameTTSNum++ // 제품명 TTS 횟수 증가
             }
         }
 
