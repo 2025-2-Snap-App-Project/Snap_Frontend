@@ -1,4 +1,4 @@
-package com.example.snapproject.model
+package com.example.snapproject
 
 import androidx.fragment.app.Fragment
 
