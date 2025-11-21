@@ -392,7 +392,8 @@ class CameraFragment : Fragment() {
             }
 
             // 제품명 TTS 출력
-            if (results.firstOrNull()?.classIndex == 1 && productNameTTSNum < 3 && isNameDetected) { // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 3 미만 + 제품명 OCR POST 요청 성공
+            if (results.firstOrNull()?.classIndex == 1 && productNameTTSNum < 3 && isNameDetected) {
+                // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 3 미만 + 제품명 OCR POST 요청 성공
                 takePhoto() // 사진 촬영 및 이미지 파일 저장
                 productName?.let { MainActivity.tts.readText(it) } // 제품명 TTS 출력
                 productNameTTSNum++ // 제품명 TTS 횟수 증가
