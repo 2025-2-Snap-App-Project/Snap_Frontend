@@ -1,5 +1,6 @@
 package com.example.snapproject.api
 
+import com.example.snapproject.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -7,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "" // 실제 서버 주소
+    private const val BASE_URL = BuildConfig.BASE_URL // 실제 서버 주소
 
     // HttpLoggingInterceptor 인스턴스 생성 & 레벨 설정
     // "okhttp.OkHttpClient"로 로그 검색
