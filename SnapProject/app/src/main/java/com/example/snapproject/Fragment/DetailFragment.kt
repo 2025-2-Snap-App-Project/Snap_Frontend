@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.DetailIngredientsDialog
-import com.example.snapproject.DetailRecyclerViewAdapter
+import com.example.snapproject.adapter.DetailRecyclerViewAdapter
 import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentDetailBinding

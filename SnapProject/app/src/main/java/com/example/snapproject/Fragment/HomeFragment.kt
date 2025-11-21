@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
-import com.example.snapproject.HomeViewPagerAdapter
+import com.example.snapproject.adapter.HomeViewPagerAdapter
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentHomeBinding
 import com.example.snapproject.setTextColorAsLinearGradient
