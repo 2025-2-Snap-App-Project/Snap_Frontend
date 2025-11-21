@@ -41,10 +41,6 @@ interface ProductDao {
     @Query("SELECT COUNT(*) FROM ProductTable WHERE expirationDate > :sevenDaysLater")
     fun getCountPlenty(sevenDaysLater: String): Int
 
-    // 선택한 제품 ID (1개 이상)에 해당하는 레코드 일괄 삭제
-    @Query("DELETE FROM ProductTable WHERE productId IN (:itemIds)")
-    fun deleteList(itemIds: List<Int>)
-
     // 선택한 제품 ID에 해당하는 레코드 하나 삭제
     @Query("DELETE FROM ProductTable WHERE productId = :itemId")
     fun deleteProduct(itemId: Int)
