@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.ListRecyclerViewAdapter
 import com.example.snapproject.MainActivity
 import com.example.snapproject.ProductListHelper
-import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentListBinding
 import com.example.snapproject.model.ListItemData
 import com.example.snapproject.readText
@@ -62,9 +61,6 @@ class ListFragment : Fragment() {
 
         binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> 홈 화면으로 이동
             findNavController().popBackStack()
-        }
-        binding.btnDelete.setOnClickListener { // 휴지통 버튼 클릭 -> 소비기한 리스트 삭제 화면으로 이동
-            findNavController().navigate(R.id.action_listFragment_to_deleteFragment2)
         }
     }
 

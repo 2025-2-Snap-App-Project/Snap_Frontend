@@ -108,24 +108,6 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         </androidx.recyclerview.widget.RecyclerView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnDelete"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="15dp"
-            android:contentDescription="제품 삭제 버튼. 제품 삭제 화면으로 이동합니다."
-            app:cardBackgroundColor="@color/main_blue"
-            app:cardCornerRadius="100dp"
-            app:strokeColor="@android:color/transparent">
-
-            <ImageView
-                android:layout_width="30.15dp"
-                android:layout_height="30.15dp"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_trash" />
-        </com.google.android.material.card.MaterialCardView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </LinearLayout>
