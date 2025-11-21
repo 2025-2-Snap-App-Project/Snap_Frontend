@@ -33,6 +33,7 @@ import com.example.snapproject.MainActivity
 import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentCameraBinding
+import com.example.snapproject.navigateSafe
 import com.example.snapproject.readText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
@@ -315,7 +316,7 @@ class CameraFragment : Fragment() {
             if (productNameTTSNum >= 3 && expirationDateTTSNum >= 3 && productLabelTTSNum >= 3) {
                 val action =
                     CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
-                findNavController().navigate(action)
+                findNavController().navigateSafe(resId = action.actionId, args = action.arguments)
             }
         }
 
