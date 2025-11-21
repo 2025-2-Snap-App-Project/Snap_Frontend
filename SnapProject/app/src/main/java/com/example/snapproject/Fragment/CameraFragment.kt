@@ -308,6 +308,8 @@ class CameraFragment : Fragment() {
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
+        val b = binding ?: return // 화면 전환 시, NullPointer 에러 방지를 위해 b 변수를 대신 사용
+
         // TTS 발화 횟수 3회 이상이면, 다음 화면으로 이동
         if (productNameTTSNum >= 3 && expirationDateTTSNum >= 3 && productLabelTTSNum >= 3) {
             val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
@@ -338,16 +340,16 @@ class CameraFragment : Fragment() {
 
         // YOLO 추론 최종 결과 출력
         val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
-        binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
-        binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+        b.rectView.transformRect(results, b.previewCamera.width, b.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
+        b.rectView.invalidate() // 최종 결과를 화면에 그려줌
 
         // 화면에 그려진 Rect 크기만큼 비트맵 이미지 생성
-        val drawRect = binding.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
+        val drawRect = b.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
         val fullBitmap = imageProxy.toBitmap() // 전체 Preview에 대한 비트맵 이미지 생성
 
         // drawRect를 카메라 Bitmap 크기에 맞게 변환해줄 때 필요한 변수
-        val scaleX = fullBitmap.width.toFloat() / binding.previewCamera.width
-        val scaleY = fullBitmap.height.toFloat() / binding.previewCamera.height
+        val scaleX = fullBitmap.width.toFloat() / b.previewCamera.width
+        val scaleY = fullBitmap.height.toFloat() / b.previewCamera.height
 
         if (drawRect != null) { // drawRect가 화면에 표시된 상태라면
             // drawRect에 Scale 값을 곱해서 카메라 Bitmap 크기에 맞게 변환
