@@ -1,4 +1,4 @@
-package com.example.snapproject
+package com.example.snapproject.yolo
 
 import android.content.Context
 import android.graphics.Bitmap
