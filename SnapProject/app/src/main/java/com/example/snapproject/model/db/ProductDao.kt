@@ -45,6 +45,10 @@ interface ProductDao {
     @Query("DELETE FROM ProductTable WHERE productId IN (:itemIds)")
     fun deleteList(itemIds: List<Int>)
 
+    // 선택한 제품 ID에 해당하는 레코드 하나 삭제
+    @Query("DELETE FROM ProductTable WHERE productId = :itemId")
+    fun deleteProduct(itemId: Int)
+
     // 특정 제품의 상세 정보 불러오기
     @Query("SELECT * FROM ProductTable WHERE productId = :itemId")
     fun getDetail(itemId: Int): Product
