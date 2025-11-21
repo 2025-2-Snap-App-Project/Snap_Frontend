@@ -55,17 +55,6 @@
         <action
             android:id="@+id/action_listFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
-        <action
-            android:id="@+id/action_listFragment_to_deleteFragment2"
-            app:destination="@id/deleteFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/deleteFragment"
-        android:name="com.example.snapproject.Fragment.DeleteFragment"
-        android:label="DeleteFragment">
-        <action
-            android:id="@+id/action_deleteFragment_to_listFragment2"
-            app:destination="@id/listFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
