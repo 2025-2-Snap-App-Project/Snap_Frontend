@@ -205,7 +205,6 @@ class CameraFragment : Fragment() {
             if (!hasPermissions(mContext)) {
                 requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
             } else {
-                load() // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
                 setUpCamera()
             }
         }
@@ -319,6 +318,8 @@ class CameraFragment : Fragment() {
                 findNavController().navigateSafe(resId = action.actionId, args = action.arguments)
             }
         }
+
+        load() // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
 
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
