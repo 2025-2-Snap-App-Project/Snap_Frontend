@@ -298,7 +298,6 @@ class CameraFragment : Fragment() {
 
                 // 이미지 캡쳐 및 저장 성공
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    MainActivity.tts.readText("촬영 성공")
                     outputFileResults.savedUri?.let { uriArrayList.add(it.toString()) } // 이미지 저장 경로를 ArrayList에 추가
 
                     Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인
@@ -309,6 +308,14 @@ class CameraFragment : Fragment() {
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
+        val b = binding ?: return // 화면 전환 시, NullPointer 에러 방지를 위해 b 변수를 대신 사용
+
+        // TTS 발화 횟수 3회 이상이면, 다음 화면으로 이동
+        if (productNameTTSNum >= 3 && expirationDateTTSNum >= 3 && productLabelTTSNum >= 3) {
+            val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+            findNavController().navigate(action)
+        }
+
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
         val bitmap = dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
@@ -333,16 +340,16 @@ class CameraFragment : Fragment() {
 
         // YOLO 추론 최종 결과 출력
         val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
-        binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
-        binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+        b.rectView.transformRect(results, b.previewCamera.width, b.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
+        b.rectView.invalidate() // 최종 결과를 화면에 그려줌
 
         // 화면에 그려진 Rect 크기만큼 비트맵 이미지 생성
-        val drawRect = binding.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
+        val drawRect = b.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
         val fullBitmap = imageProxy.toBitmap() // 전체 Preview에 대한 비트맵 이미지 생성
 
         // drawRect를 카메라 Bitmap 크기에 맞게 변환해줄 때 필요한 변수
-        val scaleX = fullBitmap.width.toFloat() / binding.previewCamera.width
-        val scaleY = fullBitmap.height.toFloat() / binding.previewCamera.height
+        val scaleX = fullBitmap.width.toFloat() / b.previewCamera.width
+        val scaleY = fullBitmap.height.toFloat() / b.previewCamera.height
 
         if (drawRect != null) { // drawRect가 화면에 표시된 상태라면
             // drawRect에 Scale 값을 곱해서 카메라 Bitmap 크기에 맞게 변환
@@ -369,6 +376,7 @@ class CameraFragment : Fragment() {
                 lifecycleScope.launch {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
+                            takePhoto() // 사진 촬영 및 이미지 파일 저장
                             Log.d("postNameResult", result.data.productName)
                             MainActivity.tts.readText(result.data.productName) // 제품명 TTS 출력
                             productNameTTSNum++ // 제품명 TTS 횟수 증가
@@ -384,13 +392,16 @@ class CameraFragment : Fragment() {
             }
 
             // 제품명 TTS 출력
-            if (results.firstOrNull()?.classIndex == 1 && productNameTTSNum < 3 && isNameDetected) { // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 3 미만 + 제품명 OCR POST 요청 성공
+            if (results.firstOrNull()?.classIndex == 1 && productNameTTSNum < 3 && isNameDetected) {
+                // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 3 미만 + 제품명 OCR POST 요청 성공
+                takePhoto() // 사진 촬영 및 이미지 파일 저장
                 productName?.let { MainActivity.tts.readText(it) } // 제품명 TTS 출력
                 productNameTTSNum++ // 제품명 TTS 횟수 증가
             }
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (results.firstOrNull()?.classIndex == 0 && productLabelTTSNum < 3) { // 조건 : 제품 라벨이 인식됨 + 제품 라벨 TTS 횟수가 3 미만
+                takePhoto() // 사진 촬영 및 이미지 파일 저장
                 MainActivity.tts.readText("제품 라벨이 인식되었습니다.") // "제품 라벨 인식됨" -> TTS 출력
                 productLabelTTSNum++ // 제품 라벨 TTS 횟수 증가
             }
@@ -437,6 +448,7 @@ class CameraFragment : Fragment() {
     // 인식된 소비기한 TTS 출력
     private fun expiryDateTTS() {
         if (expirationDateTTSNum < 3) { // TTS로 음성 안내한 횟수가 3회 미만인지 체크
+            takePhoto() // 사진 촬영 및 이미지 파일 저장
             expirationDate?.let { MainActivity.tts.readText(it) } // 인식된 소비기한 TTS 출력
             expirationDateTTSNum++ // TTS 횟수 1씩 증가
             Log.d("expirationDateTTSNum", "$expirationDateTTSNum")
