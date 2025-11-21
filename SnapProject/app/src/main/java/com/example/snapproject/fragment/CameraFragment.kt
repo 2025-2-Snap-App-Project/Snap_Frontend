@@ -1,4 +1,4 @@
-package com.example.snapproject.Fragment
+package com.example.snapproject.fragment
 
 import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment

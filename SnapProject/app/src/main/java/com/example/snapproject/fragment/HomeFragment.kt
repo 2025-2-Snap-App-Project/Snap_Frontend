@@ -1,4 +1,4 @@
-package com.example.snapproject.Fragment
+package com.example.snapproject.fragment
 
 import android.content.Intent
 import android.os.Bundle
