@@ -116,14 +116,16 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         }
         binding.btnStoreOrDelete.setOnClickListener { // (보관하기 or 제품 삭제하기) 버튼 클릭 이벤트 처리
             if (prevPage == "list") { // [소비기한 리스트 -> 제품 상세 설명]으로 화면 이동한 경우
-                try { // 해당 제품 삭제 후, 이전 화면으로 이동
+                try {
+                    // 해당 제품 삭제 후, 이전 화면으로 이동
                     val productDB = ProductDatabase.getInstance(requireContext())
                     productDB?.productDao()?.deleteProduct(itemId)
                     MainActivity.tts.readText("제품 삭제 성공")
                     findNavController().popBackStack() // 소비기한 리스트 화면으로 이동
-                } catch(e: Exception) { // 제품 삭제 실패 시 TTS 출력
+                } catch (e: Exception) {
+                    // 제품 삭제 실패 시 TTS 출력
                     MainActivity.tts.readText("제품 삭제에 실패했습니다. 다시 시도해주세요.")
-                    Log.e("deleteProduct","${e.message}")
+                    Log.e("deleteProduct", "${e.message}")
                 }
             } else { // [촬영하기 -> 제품 상세 설명]으로 화면 이동한 경우
                 // 보관하기(녹음) 화면으로 이동
