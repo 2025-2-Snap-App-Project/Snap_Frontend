@@ -33,6 +33,7 @@ import com.example.snapproject.MainActivity
 import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentCameraBinding
+import com.example.snapproject.navigateSafe
 import com.example.snapproject.readText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
@@ -137,12 +138,11 @@ class CameraFragment : Fragment() {
                             )
                     }
                 if (noAskAgain) { // 사용자가 다시 묻지 않음을 선택한 경우 -> 앱 설정 화면으로 이동
-                    MainActivity.tts.readText("앱 설정에서 카메라 권한을 허용해주세요.") {
-                        val intent =
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                .setData("package:${mContext.packageName}".toUri())
-                        settingPermissionLauncher.launch(intent)
-                    }
+                    MainActivity.tts.readText("앱 설정에서 카메라 권한을 허용해주세요.")
+                    val intent =
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            .setData("package:${mContext.packageName}".toUri())
+                    settingPermissionLauncher.launch(intent)
                 } else { // 사용자가 한 번만 거부한 경우
                     MainActivity.tts.readText("카메라 권한이 필요합니다.") {
                         findNavController().popBackStack() // 홈 화면 이동
@@ -204,7 +204,6 @@ class CameraFragment : Fragment() {
             if (!hasPermissions(mContext)) {
                 requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
             } else {
-                load() // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
                 setUpCamera()
             }
         }
@@ -311,10 +310,15 @@ class CameraFragment : Fragment() {
         val b = binding ?: return // 화면 전환 시, NullPointer 에러 방지를 위해 b 변수를 대신 사용
 
         // TTS 발화 횟수 3회 이상이면, 다음 화면으로 이동
-        if (productNameTTSNum >= 3 && expirationDateTTSNum >= 3 && productLabelTTSNum >= 3) {
-            val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
-            findNavController().navigate(action)
+        mActivity.runOnUiThread { // IllegalStateException 에러 방지 - UI 작업은 메인 스레드에서 수행
+            if (productNameTTSNum >= 3 && expirationDateTTSNum >= 3 && productLabelTTSNum >= 3) {
+                val action =
+                    CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+                findNavController().navigateSafe(resId = action.actionId, args = action.arguments)
+            }
         }
+
+        load() // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
 
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 

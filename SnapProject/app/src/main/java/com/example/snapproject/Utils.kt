@@ -4,12 +4,17 @@ import android.content.Context
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.widget.TextView
+import androidx.annotation.IdRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.toColorInt
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigator
 
 // TextView의 ** 사이에 텍스트 스타일(컬러, 폰트)를 적용하는 함수
 fun applyStyleBetweenAsterisks(
@@ -55,4 +60,18 @@ fun TextView.setTextColorAsLinearGradient(colors: IntArray) {
             null,
             Shader.TileMode.CLAMP,
         )
+}
+
+// navigate() 대신 사용
+fun NavController.navigateSafe(
+    @IdRes resId: Int,
+    args: Bundle? = null,
+    navOptions: NavOptions? = null,
+    navExtras: Navigator.Extras? = null,
+) {
+    val action = currentDestination?.getAction(resId) ?: graph.getAction(resId)
+    // [현재 fragment의 id != 이동할 fragment의 id]일 때만, 화면 이동
+    if (action != null && currentDestination?.id != action.destinationId) {
+        navigate(resId, args, navOptions, navExtras)
+    }
 }
