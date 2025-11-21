@@ -1,7 +1,9 @@
-package com.example.snapproject
+package com.example.snapproject.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.snapproject.DetailViewHolderFactory
+import com.example.snapproject.ViewType
 import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.viewholder.DetailViewHolder
 

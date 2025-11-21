@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/startFragment"
-        android:name="com.example.snapproject.Fragment.StartFragment"
+        android:name="com.example.snapproject.fragment.StartFragment"
         android:label="StartFragment">
         <action
             android:id="@+id/action_startFragment_to_homeFragment"
@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.snapproject.Fragment.HomeFragment"
+        android:name="com.example.snapproject.fragment.HomeFragment"
         android:label="HomeFragment">
         <action
             android:id="@+id/action_homeFragment_to_cameraFragment"
@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/cameraFragment"
-        android:name="com.example.snapproject.Fragment.CameraFragment"
+        android:name="com.example.snapproject.fragment.CameraFragment"
         android:label="CameraFragment">
         <action
             android:id="@+id/action_cameraFragment_to_loadingFragment"
@@ -36,7 +36,7 @@
     </fragment>
     <fragment
         android:id="@+id/loadingFragment"
-        android:name="com.example.snapproject.Fragment.LoadingFragment"
+        android:name="com.example.snapproject.fragment.LoadingFragment"
         android:label="LoadingFragment">
         <argument
             android:name="uriArrLst"
@@ -50,26 +50,15 @@
     </fragment>
     <fragment
         android:id="@+id/listFragment"
-        android:name="com.example.snapproject.Fragment.ListFragment"
+        android:name="com.example.snapproject.fragment.ListFragment"
         android:label="ListFragment">
         <action
             android:id="@+id/action_listFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
-        <action
-            android:id="@+id/action_listFragment_to_deleteFragment2"
-            app:destination="@id/deleteFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/deleteFragment"
-        android:name="com.example.snapproject.Fragment.DeleteFragment"
-        android:label="DeleteFragment">
-        <action
-            android:id="@+id/action_deleteFragment_to_listFragment2"
-            app:destination="@id/listFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
-        android:name="com.example.snapproject.Fragment.DetailFragment"
+        android:name="com.example.snapproject.fragment.DetailFragment"
         android:label="DetailFragment">
         <argument
             android:name="prevPage"
@@ -88,7 +77,7 @@
     </fragment>
     <fragment
         android:id="@+id/storeRecordFragment"
-        android:name="com.example.snapproject.Fragment.StoreRecordFragment"
+        android:name="com.example.snapproject.fragment.StoreRecordFragment"
         android:label="StoreRecordFragment">
         <argument
             android:name="prevPage"

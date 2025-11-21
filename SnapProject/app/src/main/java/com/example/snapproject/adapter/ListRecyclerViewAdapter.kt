@@ -1,4 +1,4 @@
-package com.example.snapproject
+package com.example.snapproject.adapter
 
 import android.content.Context
 import android.view.LayoutInflater

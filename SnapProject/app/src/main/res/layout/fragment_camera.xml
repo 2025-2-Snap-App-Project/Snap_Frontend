@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment.CameraFragment">
+    tools:context=".fragment.CameraFragment">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/previewCamera"
@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"/>
 
-    <com.example.snapproject.RectView
+    <com.example.snapproject.yolo.RectView
         android:id="@+id/rectView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

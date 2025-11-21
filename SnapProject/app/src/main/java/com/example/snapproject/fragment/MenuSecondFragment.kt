@@ -1,4 +1,4 @@
-package com.example.snapproject.Fragment
+package com.example.snapproject.fragment
 
 import android.content.Context
 import android.os.Bundle
@@ -8,16 +8,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.snapproject.OnChildButtonClickListener
 import com.example.snapproject.R
-import com.example.snapproject.databinding.FragmentMenuFirstBinding
+import com.example.snapproject.databinding.FragmentMenuSecondBinding
 
-class MenuFirstFragment : Fragment() {
-    private var _binding: FragmentMenuFirstBinding? = null
+class MenuSecondFragment : Fragment() {
+    private var _binding: FragmentMenuSecondBinding? = null
     private val binding get() = _binding!!
 
     private var listener: OnChildButtonClickListener? = null // 버튼 클릭 리스너
 
     companion object {
-        fun newInstance() = MenuFirstFragment()
+        fun newInstance() = MenuSecondFragment()
     }
 
     override fun onCreateView(
@@ -26,7 +26,7 @@ class MenuFirstFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         // 뷰 바인딩
-        _binding = FragmentMenuFirstBinding.inflate(inflater, container, false)
+        _binding = FragmentMenuSecondBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -48,9 +48,9 @@ class MenuFirstFragment : Fragment() {
 
     private fun initView() =
         with(binding) {
-            // MainActivity의 listner 호출 (촬영하기 버튼 클릭 -> CameraFragment로 화면 전환)
-            btnCamera.setOnClickListener {
-                listener?.onChildButtonClicked(R.id.action_homeFragment_to_cameraFragment)
+            // MainActivity의 listner 호출 (소비기한 버튼 클릭 -> ListFragment로 화면 전환)
+            btnDate.setOnClickListener {
+                listener?.onChildButtonClicked(R.id.action_homeFragment_to_listFragment)
             }
         }
 
