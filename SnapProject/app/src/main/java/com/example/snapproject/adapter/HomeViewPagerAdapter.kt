@@ -2,9 +2,9 @@ package com.example.snapproject.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.snapproject.HomeMenuTab
 import com.example.snapproject.fragment.MenuFirstFragment
 import com.example.snapproject.fragment.MenuSecondFragment
-import com.example.snapproject.HomeMenuTab
 
 class HomeViewPagerAdapter(fragment: Fragment) :
     FragmentStateAdapter(fragment) {

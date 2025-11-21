@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.snapproject.adapter.ListRecyclerViewAdapter
 import com.example.snapproject.MainActivity
 import com.example.snapproject.ProductListHelper
+import com.example.snapproject.adapter.ListRecyclerViewAdapter
 import com.example.snapproject.databinding.FragmentListBinding
 import com.example.snapproject.model.ListItemData
 import com.example.snapproject.readText

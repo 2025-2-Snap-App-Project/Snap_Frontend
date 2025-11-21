@@ -28,13 +28,13 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.snapproject.yolo.DataProcess
 import com.example.snapproject.MainActivity
 import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.navigateSafe
 import com.example.snapproject.readText
+import com.example.snapproject.yolo.DataProcess
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.mlkit.vision.common.InputImage
