@@ -138,12 +138,11 @@ class CameraFragment : Fragment() {
                             )
                     }
                 if (noAskAgain) { // 사용자가 다시 묻지 않음을 선택한 경우 -> 앱 설정 화면으로 이동
-                    MainActivity.tts.readText("앱 설정에서 카메라 권한을 허용해주세요.") {
-                        val intent =
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                .setData("package:${mContext.packageName}".toUri())
-                        settingPermissionLauncher.launch(intent)
-                    }
+                    MainActivity.tts.readText("앱 설정에서 카메라 권한을 허용해주세요.")
+                    val intent =
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            .setData("package:${mContext.packageName}".toUri())
+                    settingPermissionLauncher.launch(intent)
                 } else { // 사용자가 한 번만 거부한 경우
                     MainActivity.tts.readText("카메라 권한이 필요합니다.") {
                         findNavController().popBackStack() // 홈 화면 이동
