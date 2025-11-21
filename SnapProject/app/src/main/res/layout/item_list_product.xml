@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    app:cardBackgroundColor="@color/sub_white"
+    app:cardBackgroundColor="@color/black"
     app:cardCornerRadius="10dp"
     app:cardElevation="2dp"
     app:cardUseCompatPadding="true"
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/pretendard_bold"
                 android:text="제품명"
-                android:textColor="@color/dark_gray"
+                android:textColor="@color/sub_white"
                 android:textSize="20sp" />
 
             <TextView
@@ -42,13 +42,6 @@
                 android:textColor="@color/light_gray_1"
                 android:textSize="13sp" />
         </LinearLayout>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:scaleX="-1"
-            app:srcCompat="@drawable/ic_back" />
     </FrameLayout>
 
 
