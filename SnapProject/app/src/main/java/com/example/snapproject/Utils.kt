@@ -67,7 +67,7 @@ fun NavController.navigateSafe(
     @IdRes resId: Int,
     args: Bundle? = null,
     navOptions: NavOptions? = null,
-    navExtras: Navigator.Extras? = null
+    navExtras: Navigator.Extras? = null,
 ) {
     val action = currentDestination?.getAction(resId) ?: graph.getAction(resId)
     // [현재 fragment의 id != 이동할 fragment의 id]일 때만, 화면 이동
