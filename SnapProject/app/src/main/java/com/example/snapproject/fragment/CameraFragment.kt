@@ -69,7 +69,6 @@ class CameraFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var functions: FirebaseFunctions
-    private var isNameDetected: Boolean = false
     private var isRequesting = false // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
 
     // TextRecognizer 인스턴스 생성
@@ -82,8 +81,13 @@ class CameraFragment : Fragment() {
     // YOLO 추론 후, OCR 결과를 저장할 변수
     private var productName: String? = null // 제품명 OCR 결과
     private var expirationDate: String? = null // 소비기한 OCR 결과
-
     private var productLabelTxt: String = "제품 라벨이 인식되었습니다."
+
+    // 인식 여부를 저장할 변수
+    private var isNameDetected: Boolean = false
+    private var isDatedDetected: Boolean = false
+    private var isLabelDetected: Boolean = false
+
 
     // TTS로 안내한 횟수를 저장할 변수
     private var productNameTTSNum: Int = 0 // 제품명 TTS 횟수
@@ -312,10 +316,11 @@ class CameraFragment : Fragment() {
     private fun imageProcess(imageProxy: ImageProxy) {
         val b = binding ?: return // 화면 전환 시, NullPointer 에러 방지를 위해 b 변수를 대신 사용
 
-        // TTS 발화 횟수 3회 이상이면, 다음 화면으로 이동
+        // 제품명, 소비기한, 라벨이 모두 인식되었다면, 다음 화면으로 이동
         mActivity.runOnUiThread { // IllegalStateException 에러 방지 - UI 작업은 메인 스레드에서 수행
-            if (productNameTTSNum >= 3 && expirationDateTTSNum >= 3 && productLabelTTSNum >= 3) {
-                MainActivity.tts.readText("제품 스캔이 완료되었습니다. 촬영 완료 버튼을 눌러주세요.", requireContext())
+            if (isNameDetected && isDatedDetected && isLabelDetected) {
+                val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+                findNavController().navigate(action)
             }
         }
 
@@ -424,16 +429,14 @@ class CameraFragment : Fragment() {
 
     // 인식된 소비기한 TTS 출력
     private fun expiryDateTTS() {
-        if (isExpirationSpeaking) return
-        if (expirationDateTTSNum >= 3) return
+        if (isExpirationSpeaking || isDatedDetected) return
 
         isExpirationSpeaking = true
 
         expirationDate?.let {
             MainActivity.tts.readText(it, requireContext()) {
                 takePhoto()
-                expirationDateTTSNum++
-                Log.d("TTSNum", "소비기한 TTS 횟수 : $expirationDateTTSNum")
+                isDatedDetected = true
                 isExpirationSpeaking = false
             }
         }
@@ -441,54 +444,37 @@ class CameraFragment : Fragment() {
 
     // 인식된 제품명 이미지 서버로 POST 요청 + TTS 출력
     private fun productNamePostAndTTS(imgFile: File) {
-        if (isRequesting || isProductNameSpeaking || productNameTTSNum >= 3) return
+        if (isRequesting || isProductNameSpeaking || isNameDetected) return
         isRequesting = true
         isProductNameSpeaking = true
 
-        if (!isNameDetected) {
-            // 서버 요청 + TTS 발화
-            lifecycleScope.launch {
-                when (val result = ApiRepository.postName(imgFile)) { // POST 요청
-                    is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
-                        productName = result.data.productName // 제품명 인식 결과 저장
-                        MainActivity.tts.readText(productName!!, requireContext()) {
-                            productNameTTSNum++
-                            isNameDetected = true
-                            isProductNameSpeaking = false
-                            takePhoto()
-                            Log.d("TTSNum", "제품명 TTS 횟수 : $productNameTTSNum")
-                        }
-                    }
-
-                    is ApiResult.Error -> {
-                        Log.e("productNameTTS", "서버 요청 실패")
-                        isProductNameSpeaking = false
+        // 서버 요청 + TTS 발화
+        lifecycleScope.launch {
+            when (val result = ApiRepository.postName(imgFile)) { // POST 요청
+                is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
+                    productName = result.data.productName // 제품명 인식 결과 저장
+                    MainActivity.tts.readText(productName!!, requireContext()) {
+                        takePhoto()
+                        isNameDetected = true
                     }
                 }
-            }
-        } else { // 서버 요청 완료 후 기존 productName 발화
-            productName?.let { text ->
-                MainActivity.tts.readText(text, requireContext()) {
-                    productNameTTSNum++
-                    isProductNameSpeaking = false
-                    takePhoto()
-                    Log.d("TTSNum", "제품명 TTS 횟수 : $productNameTTSNum")
+                is ApiResult.Error -> {
+                    Log.e("productNameTTS", "서버 요청 실패")
                 }
             }
+            isProductNameSpeaking = false
         }
     }
 
     // 인식된 라벨 TTS 출력
     private fun productLabelTTS() {
-        if (isLabelSpeaking) return
-        if (productLabelTTSNum >= 3) return
+        if (isLabelSpeaking || isLabelDetected) return
 
         isLabelSpeaking = true
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
             takePhoto()
-            productLabelTTSNum++
-            Log.d("TTSNum", "라벨 TTS 횟수 : $productLabelTTSNum")
+            isLabelDetected = true
             isLabelSpeaking = false
         }
     }
