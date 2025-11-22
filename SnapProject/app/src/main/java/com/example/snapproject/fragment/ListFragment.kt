@@ -231,7 +231,7 @@ class ListFragment : Fragment() {
             ForegroundColorSpan(
                 "#2276FF".toColorInt(),
             )
-        tvBuilder.setSpan(colorBlueSpan, startIdx, tvData.length-4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        tvBuilder.setSpan(colorBlueSpan, startIdx, tvData.length - 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         binding.tvItemNum.text = tvBuilder
     }
 
