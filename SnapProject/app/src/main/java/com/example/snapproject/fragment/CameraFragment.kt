@@ -104,7 +104,7 @@ class CameraFragment : Fragment() {
     private val settingPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (!hasPermissions(mContext)) { // 사용자가 앱 설정에서도 권한 허용을 해주지 않은 경우
-                MainActivity.tts.readText("카메라 권한을 허용해야 앱 사용이 가능합니다.") {
+                MainActivity.tts.readText("카메라 권한을 허용해야 앱 사용이 가능합니다.", requireContext()) {
                     findNavController().popBackStack() // 홈 화면 이동
                 }
             }
@@ -138,13 +138,13 @@ class CameraFragment : Fragment() {
                             )
                     }
                 if (noAskAgain) { // 사용자가 다시 묻지 않음을 선택한 경우 -> 앱 설정 화면으로 이동
-                    MainActivity.tts.readText("앱 설정에서 카메라 권한을 허용해주세요.")
+                    MainActivity.tts.readText("앱 설정에서 카메라 권한을 허용해주세요.", requireContext())
                     val intent =
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                             .setData("package:${mContext.packageName}".toUri())
                     settingPermissionLauncher.launch(intent)
                 } else { // 사용자가 한 번만 거부한 경우
-                    MainActivity.tts.readText("카메라 권한이 필요합니다.") {
+                    MainActivity.tts.readText("카메라 권한이 필요합니다.", requireContext()) {
                         findNavController().popBackStack() // 홈 화면 이동
                     }
                 }
@@ -370,12 +370,14 @@ class CameraFragment : Fragment() {
                 lifecycleScope.launch {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
-                            takePhoto() // 사진 촬영 및 이미지 파일 저장
                             Log.d("postNameResult", result.data.productName)
-                            MainActivity.tts.readText(result.data.productName) // 제품명 TTS 출력
-                            productNameTTSNum++ // 제품명 TTS 횟수 증가
-                            productName = result.data.productName // 제품명 인식 결과 저장
-                            isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
+                            MainActivity.tts.readText(result.data.productName, requireContext()) { // 제품명 TTS 출력
+                                takePhoto() // 사진 촬영 및 이미지 파일 저장
+                                productNameTTSNum++ // 제품명 TTS 횟수 증가
+                                Log.d("TTSNum", "제품명 : $productNameTTSNum")
+                                productName = result.data.productName // 제품명 인식 결과 저장
+                                isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
+                            }
                         }
                         is ApiResult.Error -> { // 실패한 경우
                             null
@@ -388,16 +390,22 @@ class CameraFragment : Fragment() {
             // 제품명 TTS 출력
             if (results.firstOrNull()?.classIndex == 1 && productNameTTSNum < 3 && isNameDetected) {
                 // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 3 미만 + 제품명 OCR POST 요청 성공
-                takePhoto() // 사진 촬영 및 이미지 파일 저장
-                productName?.let { MainActivity.tts.readText(it) } // 제품명 TTS 출력
-                productNameTTSNum++ // 제품명 TTS 횟수 증가
+                productName?.let {
+                    MainActivity.tts.readText(it, requireContext()) { // 제품명 TTS 출력
+                        takePhoto() // 사진 촬영 및 이미지 파일 저장
+                        productNameTTSNum++ // 제품명 TTS 횟수 증가
+                        Log.d("TTSNum", "제품명 : $productNameTTSNum")
+                    }
+                }
             }
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (results.firstOrNull()?.classIndex == 0 && productLabelTTSNum < 3) { // 조건 : 제품 라벨이 인식됨 + 제품 라벨 TTS 횟수가 3 미만
-                takePhoto() // 사진 촬영 및 이미지 파일 저장
-                MainActivity.tts.readText("제품 라벨이 인식되었습니다.") // "제품 라벨 인식됨" -> TTS 출력
-                productLabelTTSNum++ // 제품 라벨 TTS 횟수 증가
+                MainActivity.tts.readText("제품 라벨이 인식되었습니다.", requireContext()) { // "제품 라벨 인식됨" -> TTS 출력
+                    takePhoto() // 사진 촬영 및 이미지 파일 저장
+                    productLabelTTSNum++ // 제품 라벨 TTS 횟수 증가
+                    Log.d("TTSNum", "제품 라벨 : $productLabelTTSNum")
+                }
             }
         }
 
@@ -442,10 +450,11 @@ class CameraFragment : Fragment() {
     // 인식된 소비기한 TTS 출력
     private fun expiryDateTTS() {
         if (expirationDateTTSNum < 3) { // TTS로 음성 안내한 횟수가 3회 미만인지 체크
-            takePhoto() // 사진 촬영 및 이미지 파일 저장
-            expirationDate?.let { MainActivity.tts.readText(it) } // 인식된 소비기한 TTS 출력
-            expirationDateTTSNum++ // TTS 횟수 1씩 증가
-            Log.d("expirationDateTTSNum", "$expirationDateTTSNum")
+            expirationDate?.let { MainActivity.tts.readText(it, requireContext()) { // 인식된 소비기한 TTS 출력
+                takePhoto() // 사진 촬영 및 이미지 파일 저장
+                expirationDateTTSNum++ // TTS 횟수 1씩 증가
+                Log.d("TTSNum", "소비기한 : $expirationDateTTSNum")
+            } }
         } else { // TTS로 음성 안내한 횟수가 10회라면 -> TTS 출력하지 않고 바로 리턴
             return
         }

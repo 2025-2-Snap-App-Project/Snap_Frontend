@@ -53,7 +53,7 @@ class StoreRecordFragment : Fragment() {
     private val settingPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (!hasPermissions(mContext)) { // 사용자가 앱 설정에서도 권한 허용을 해주지 않은 경우
-                MainActivity.tts.readText("오디오 녹음 권한을 허용해야 앱 사용이 가능합니다.") {
+                MainActivity.tts.readText("오디오 녹음 권한을 허용해야 앱 사용이 가능합니다.", requireContext()) {
                     findNavController().popBackStack() // 홈 화면 이동
                 }
             }
@@ -87,14 +87,14 @@ class StoreRecordFragment : Fragment() {
                             )
                     }
                 if (noAskAgain) { // 사용자가 다시 묻지 않음을 선택한 경우 -> 앱 설정 화면으로 이동
-                    MainActivity.tts.readText("앱 설정에서 오디오 녹음 권한을 허용해주세요.") {
+                    MainActivity.tts.readText("앱 설정에서 오디오 녹음 권한을 허용해주세요.", requireContext()) {
                         val intent =
                             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                                 .setData("package:${mContext.packageName}".toUri())
                         settingPermissionLauncher.launch(intent)
                     }
                 } else { // 사용자가 한 번만 거부한 경우
-                    MainActivity.tts.readText("오디오 녹음 권한이 필요합니다.") {
+                    MainActivity.tts.readText("오디오 녹음 권한이 필요합니다.", requireContext()) {
                         findNavController().popBackStack() // 제품 상세 설명 화면으로 이동
                     }
                 }
@@ -107,7 +107,7 @@ class StoreRecordFragment : Fragment() {
             binding.storeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
 
             // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            MainActivity.tts.readText("화면 중앙의 음성 녹음 버튼을 눌러, 제품 보관 장소를 음성으로 입력해주세요.") {
+            MainActivity.tts.readText("화면 중앙의 음성 녹음 버튼을 눌러, 제품 보관 장소를 음성으로 입력해주세요.", requireContext()) {
                 binding.storeLayout.post { binding.storeLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
             }
         }
@@ -162,7 +162,7 @@ class StoreRecordFragment : Fragment() {
                     insertStorage(storageLocation, productName, expirationDate, summary, ingredients) // 테이블에 신규 제품 Insert
                     findNavController().popBackStack(R.id.homeFragment, false)
                 } else { // 누락된 정보가 있다면
-                    MainActivity.tts.readText("제품 정보를 저장할 수 없습니다!")
+                    MainActivity.tts.readText("제품 정보를 저장할 수 없습니다!", requireContext())
                 }
             }
             if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
@@ -245,7 +245,7 @@ class StoreRecordFragment : Fragment() {
             // 에러 발생 시
             override fun onError(error: Int) {
                 binding.edtTxtStore.hint = "음성 인식 오류.\n다시 시도해주세요."
-                MainActivity.tts.readText("음성 인식 오류 발생. 다시 시도해주세요.")
+                MainActivity.tts.readText("음성 인식 오류 발생. 다시 시도해주세요.", requireContext())
             }
 
             // 음성 인식 종료
@@ -253,7 +253,7 @@ class StoreRecordFragment : Fragment() {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 for (i in matches!!.indices) binding.edtTxtStore.setText('"' + matches[i] + '"') // TextView에 음성 인식 결과 반영
                 storageLocation = matches[0] // 입력한 보관 장소 -> 별도의 변수에 저장
-                MainActivity.tts.readText("음성 인식 결과는 ${storageLocation}입니다.")
+                MainActivity.tts.readText("음성 인식 결과는 ${storageLocation}입니다.", requireContext())
             }
 
             override fun onPartialResults(partialResults: Bundle?) {

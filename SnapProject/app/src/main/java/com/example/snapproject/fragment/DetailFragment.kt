@@ -77,7 +77,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                     dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
                 }
             } else {
-                MainActivity.tts.readText("제품 상세 정보가 누락되었습니다.")
+                MainActivity.tts.readText("제품 상세 정보가 누락되었습니다.", requireContext())
             }
         }
 
@@ -103,7 +103,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                     dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
                 }
             } else { // DB에서 불러온 정보가 null이라면
-                MainActivity.tts.readText("제품 상세 정보를 불러올 수 없습니다!")
+                MainActivity.tts.readText("제품 상세 정보를 불러올 수 없습니다!", requireContext())
             }
         }
 
@@ -120,11 +120,11 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                     // 해당 제품 삭제 후, 이전 화면으로 이동
                     val productDB = ProductDatabase.getInstance(requireContext())
                     productDB?.productDao()?.deleteProduct(itemId)
-                    MainActivity.tts.readText("제품 삭제 성공")
+                    MainActivity.tts.readText("제품 삭제 성공", requireContext())
                     findNavController().popBackStack() // 소비기한 리스트 화면으로 이동
                 } catch (e: Exception) {
                     // 제품 삭제 실패 시 TTS 출력
-                    MainActivity.tts.readText("제품 삭제에 실패했습니다. 다시 시도해주세요.")
+                    MainActivity.tts.readText("제품 삭제에 실패했습니다. 다시 시도해주세요.", requireContext())
                     Log.e("deleteProduct", "${e.message}")
                 }
             } else { // [촬영하기 -> 제품 상세 설명]으로 화면 이동한 경우
@@ -162,13 +162,13 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                 dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
                 dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
             } else {
-                MainActivity.tts.readText("원재료명 정보가 인식되지 않았습니다.")
+                MainActivity.tts.readText("원재료명 정보가 인식되지 않았습니다.", requireContext())
             }
         }
 
         binding.btnReplay.setOnClickListener { // 설명 다시 듣기 버튼 클릭 -> 제품 상세 설명 다시 들려줌
             val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
-            MainActivity.tts.readText("제품에 대한 전체 설명입니다. $itemTexts")
+            MainActivity.tts.readText("제품에 대한 전체 설명입니다. $itemTexts", requireContext())
         }
     }
 
@@ -183,7 +183,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
 
             // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            MainActivity.tts.readText("제품 상세 설명 화면입니다. 오른쪽으로 드래그하여 제품에 대한 설명을 하나씩 확인해보세요.") {
+            MainActivity.tts.readText("제품 상세 설명 화면입니다. 오른쪽으로 드래그하여 제품에 대한 설명을 하나씩 확인해보세요.", requireContext()) {
                 binding.detailLayout.post { binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
             }
         }
