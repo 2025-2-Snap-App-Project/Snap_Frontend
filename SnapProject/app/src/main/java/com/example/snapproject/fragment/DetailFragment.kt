@@ -82,7 +82,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         }
 
         if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
-            binding.tvStore.text = "제품 삭제하기" // 버튼 내부 텍스트 수정
+            binding.tvStoreOrDelete.text = "제품 삭제하기" // 버튼 내부 텍스트 수정
 
             // DB에서 해당 제품에 대한 상세 정보 불러오기
             val productDB = ProductDatabase.getInstance(requireContext())

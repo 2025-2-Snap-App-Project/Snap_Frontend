@@ -178,16 +178,6 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
-
-        // 버튼 클릭 이벤트 처리 코드를 여기에 추가해야(initView 함수 안이 X) onResume된 후에도 해당 코드가 정상 작동함.
-        binding.btnComplete.setOnClickListener {
-            val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
-            findNavController().navigate(action)
-        }
-
-        binding.btnCapture.setOnClickListener { // 하단의 원형 버튼 클릭 시
-            takePhoto() // 사진 촬영 및 이미지 파일 저장
-        }
     }
 
     // 시스템 설정에서 권한 허용해 준 뒤, 다시 돌아왔을 때 카메라 세팅 필요

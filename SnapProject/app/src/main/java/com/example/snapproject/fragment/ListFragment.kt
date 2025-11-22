@@ -1,9 +1,13 @@
 package com.example.snapproject.fragment
 
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -127,6 +131,7 @@ class ListFragment : Fragment() {
             // 제품 개수를 UI에 반영
             binding.tvItemNum.text =
                 "소비기한이 지난\n제품이 ${ProductListHelper.getCountGone(requireContext(), todayStr)}개입니다."
+            setTvItemNumColor(13) // 텍스트뷰의 "N개" 부분만 다른 색으로 바꾸기
         }
 
         // 탭이 선택될 때마다, 해당 날짜에 맞는 제품 목록 보여줌
@@ -153,6 +158,7 @@ class ListFragment : Fragment() {
                                         todayStr,
                                     )
                                 }개입니다."
+                                setTvItemNumColor(13) // 텍스트뷰의 "N개" 부분만 다른 색으로 바꾸기
                             }
 
                             1 -> { // 날짜 임박 (7일 이하) 제품 목록 보여줌
@@ -179,6 +185,7 @@ class ListFragment : Fragment() {
                                         sevenDaysLaterStr,
                                     )
                                 }개입니다."
+                                setTvItemNumColor(14) // 텍스트뷰의 "N개" 부분만 다른 색으로 바꾸기
                             }
 
                             2 -> { // 날짜 여유 (7일 초과) 제품 목록 보여줌
@@ -203,6 +210,7 @@ class ListFragment : Fragment() {
                                         sevenDaysLaterStr,
                                     )
                                 }개입니다."
+                                setTvItemNumColor(16) // 텍스트뷰의 "N개" 부분만 다른 색으로 바꾸기
                             }
                         }
                     }
@@ -213,6 +221,18 @@ class ListFragment : Fragment() {
                 override fun onTabReselected(tab: TabLayout.Tab?) {}
             },
         )
+    }
+
+    // 텍스트뷰에서 "N개" 부분만 파란색으로 바꿔주는 함수
+    private fun setTvItemNumColor(startIdx: Int) {
+        val tvData: String = binding.tvItemNum.text.toString()
+        val tvBuilder = SpannableStringBuilder(tvData)
+        val colorBlueSpan =
+            ForegroundColorSpan(
+                "#2276FF".toColorInt(),
+            )
+        tvBuilder.setSpan(colorBlueSpan, startIdx, tvData.length - 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        binding.tvItemNum.text = tvBuilder
     }
 
     override fun onDestroy() {
