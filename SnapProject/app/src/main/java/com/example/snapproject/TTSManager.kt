@@ -68,7 +68,7 @@ fun TextToSpeech?.readText(
         )
 
         // 기존 발화 완료한 뒤, 입력으로 들어온 text에 대해 발화 시작
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+        tts.speak(text, TextToSpeech.QUEUE_ADD, null, utteranceId)
         Log.d("TextToSpeech", "TTS가 읽음")
     }
 }
