@@ -451,13 +451,14 @@ class CameraFragment : Fragment() {
                     MainActivity.tts.readText(productName!!, requireContext()) {
                         takePhoto()
                         isNameDetected = true
+                        isProductNameSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
                     }
                 }
                 is ApiResult.Error -> {
                     Log.e("productNameTTS", "서버 요청 실패")
+                    isProductNameSpeaking = false // 서버 요청 실패한 경우에도 false로 바꿔주기
                 }
             }
-            isProductNameSpeaking = false
         }
     }
 
