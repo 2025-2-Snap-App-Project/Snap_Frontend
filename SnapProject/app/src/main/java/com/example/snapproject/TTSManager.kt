@@ -24,37 +24,7 @@ fun initTTS(context: Context): TextToSpeech {
     return tts
 }
 
-// TalkBack이 켜져있을 때, 입력된 String을 읽어주는 함수
-// 입력으로 들어오는 onDone은 발화가 끝난 뒤에 실행할 콜백 함수
 fun TextToSpeech?.readText(
-    msg: String,
-    context: Context,
-    onDone: (() -> Unit)? = null,
-) {
-    // 접근성 관리자 체크
-    val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-    val isAccessibilityEnabled = accessibilityManager.isEnabled
-
-    if (isAccessibilityEnabled) { // 접근성 서비스가 활성화되어 있으면, AccessibilityEvent TYPE_ANNOUNCEMENT 로 보냄
-        try { // TextToSpeech 대신 TalkBack를 발화 수단으로 사용
-            // TalkBack에 event 전달 (읽어야 하는 메시지 전달)
-            val event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT).apply {
-                className = context.javaClass.name
-                packageName = context.packageName
-                text.add(msg)
-            }
-            accessibilityManager.sendAccessibilityEvent(event)
-        } catch (e: Exception) { // TalkBack이 event를 전달받는 데 실패한 경우
-            Log.e("TextToSpeech", "Accessibility announcement 실패, fallback to TTS: ${e.message}")
-            this.readTextWithAudioFocus(msg, context, onDone) // TTS 사용
-        }
-    } else { // TalkBack이 꺼져 있는 경우 -> TTS 사용
-        this.readTextWithAudioFocus(msg, context, onDone)
-    }
-}
-
-// TalkBack이 꺼져있을 때, 입력된 String을 읽어주는 함수
-fun TextToSpeech?.readTextWithAudioFocus(
     text: String,
     context: Context,
     onDone: (() -> Unit)? = null,
