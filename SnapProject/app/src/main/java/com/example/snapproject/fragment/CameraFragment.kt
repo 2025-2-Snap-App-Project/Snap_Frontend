@@ -186,6 +186,11 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
+
+        binding.btnComplete.setOnClickListener { // 촬영 완료 버튼 클릭 시, 다음 화면으로 이동
+            val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+            findNavController().navigate(action)
+        }
     }
 
     // 시스템 설정에서 권한 허용해 준 뒤, 다시 돌아왔을 때 카메라 세팅 필요
