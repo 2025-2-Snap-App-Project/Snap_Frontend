@@ -18,7 +18,7 @@ fun initTTS(context: Context): TextToSpeech {
             if (it == TextToSpeech.SUCCESS) {
                 val result = tts!!.setLanguage(Locale.KOREAN)
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.e("TextToSpeech", "해당 언어는 지원되지 않습니다.")
+                    Log.e("SnapTextToSpeech", "해당 언어는 지원되지 않습니다.")
                     return@TextToSpeech
                 }
             }
@@ -48,7 +48,7 @@ fun TextToSpeech?.readText(
 
             audioManager.requestAudioFocus(audioFocusRequest)
         } catch (e: Exception) {
-            Log.e("TextToSpeech", "requestAudioFocus 실패: ${e.message}")
+            Log.e("SnapTextToSpeech", "requestAudioFocus 실패: ${e.message}")
         }
 
         // 발화 진행 상태를 감지하는 리스너
@@ -61,7 +61,7 @@ fun TextToSpeech?.readText(
                     try {
                         audioManager.abandonAudioFocus(null)
                     } catch (e: Exception) {
-                        Log.e("TextToSpeech", "abandonAudioFocus 실패: ${e.message}")
+                        Log.e("SnapTextToSpeech", "abandonAudioFocus 실패: ${e.message}")
                     }
                     onDone?.invoke()
                 }
@@ -76,6 +76,6 @@ fun TextToSpeech?.readText(
 
         // 기존 발화 완료한 뒤, 입력으로 들어온 text에 대해 발화 시작
         tts.speak(text, TextToSpeech.QUEUE_ADD, null, utteranceId)
-        Log.d("TextToSpeech", "TTS가 읽음")
+        Log.d("SnapTextToSpeech", "TTS가 읽음")
     }
 }
