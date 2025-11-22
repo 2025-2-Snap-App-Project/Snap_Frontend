@@ -83,10 +83,18 @@ class CameraFragment : Fragment() {
     private var productName: String? = null // 제품명 OCR 결과
     private var expirationDate: String? = null // 소비기한 OCR 결과
 
+    private var productLabelTxt: String = "제품 라벨이 인식되었습니다."
+
     // TTS로 안내한 횟수를 저장할 변수
     private var productNameTTSNum: Int = 0 // 제품명 TTS 횟수
     private var expirationDateTTSNum: Int = 0 // 소비기한 TTS 횟수
     private var productLabelTTSNum: Int = 0 // 제품 라벨 TTS 횟수
+
+
+    // TTS 중복 실행 방지 플래그
+    private var isProductNameSpeaking = false
+    private var isLabelSpeaking = false
+    private var isExpirationSpeaking = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -371,13 +379,8 @@ class CameraFragment : Fragment() {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                             Log.d("postNameResult", result.data.productName)
-                            MainActivity.tts.readText(result.data.productName, requireContext()) { // 제품명 TTS 출력
-                                takePhoto() // 사진 촬영 및 이미지 파일 저장
-                                productNameTTSNum++ // 제품명 TTS 횟수 증가
-                                Log.d("TTSNum", "제품명 : $productNameTTSNum")
-                                productName = result.data.productName // 제품명 인식 결과 저장
-                                isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
-                            }
+                            productName = result.data.productName // 제품명 인식 결과 저장
+                            productNameTTS()
                         }
                         is ApiResult.Error -> { // 실패한 경우
                             null
@@ -388,24 +391,13 @@ class CameraFragment : Fragment() {
             }
 
             // 제품명 TTS 출력
-            if (results.firstOrNull()?.classIndex == 1 && productNameTTSNum < 3 && isNameDetected) {
-                // 조건 : 제품명이 인식됨 + 제품명 TTS 횟수가 3 미만 + 제품명 OCR POST 요청 성공
-                productName?.let {
-                    MainActivity.tts.readText(it, requireContext()) { // 제품명 TTS 출력
-                        takePhoto() // 사진 촬영 및 이미지 파일 저장
-                        productNameTTSNum++ // 제품명 TTS 횟수 증가
-                        Log.d("TTSNum", "제품명 : $productNameTTSNum")
-                    }
-                }
+            if (results.firstOrNull()?.classIndex == 1 && isNameDetected) {
+                productNameTTS()
             }
 
             // "제품 라벨 인식됨" -> TTS 출력
-            if (results.firstOrNull()?.classIndex == 0 && productLabelTTSNum < 3) { // 조건 : 제품 라벨이 인식됨 + 제품 라벨 TTS 횟수가 3 미만
-                MainActivity.tts.readText("제품 라벨이 인식되었습니다.", requireContext()) { // "제품 라벨 인식됨" -> TTS 출력
-                    takePhoto() // 사진 촬영 및 이미지 파일 저장
-                    productLabelTTSNum++ // 제품 라벨 TTS 횟수 증가
-                    Log.d("TTSNum", "제품 라벨 : $productLabelTTSNum")
-                }
+            if (results.firstOrNull()?.classIndex == 0) {
+                productLabelTTS()
             }
         }
 
@@ -449,16 +441,54 @@ class CameraFragment : Fragment() {
 
     // 인식된 소비기한 TTS 출력
     private fun expiryDateTTS() {
-        if (expirationDateTTSNum < 3) { // TTS로 음성 안내한 횟수가 3회 미만인지 체크
-            expirationDate?.let { MainActivity.tts.readText(it, requireContext()) { // 인식된 소비기한 TTS 출력
-                takePhoto() // 사진 촬영 및 이미지 파일 저장
-                expirationDateTTSNum++ // TTS 횟수 1씩 증가
-                Log.d("TTSNum", "소비기한 : $expirationDateTTSNum")
-            } }
-        } else { // TTS로 음성 안내한 횟수가 10회라면 -> TTS 출력하지 않고 바로 리턴
-            return
+        if (isExpirationSpeaking) return
+        if (expirationDateTTSNum >= 3) return
+
+        isExpirationSpeaking = true
+
+        expirationDate?.let {
+            MainActivity.tts.readText(it, requireContext()) {
+                takePhoto()
+                expirationDateTTSNum++
+                Log.d("TTSNum", "소비기한 TTS 횟수 : $expirationDateTTSNum")
+                isExpirationSpeaking = false
+            }
         }
     }
+
+    // 인식된 제품명 TTS 출력
+    private fun productNameTTS() {
+        if (isProductNameSpeaking) return
+        if (productNameTTSNum >= 3) return
+
+        isProductNameSpeaking = true
+
+        productName?.let {
+            MainActivity.tts.readText(it, requireContext()) {
+                takePhoto()
+                productNameTTSNum++
+                Log.d("TTSNum", "제품명 TTS 횟수 : $productNameTTSNum")
+                isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
+                isProductNameSpeaking = false
+            }
+        }
+    }
+
+    // 인식된 라벨 TTS 출력
+    private fun productLabelTTS() {
+        if (isLabelSpeaking) return
+        if (productLabelTTSNum >= 3) return
+
+        isLabelSpeaking = true
+
+        MainActivity.tts.readText(productLabelTxt, requireContext()) {
+            takePhoto()
+            productLabelTTSNum++
+            Log.d("TTSNum", "라벨 TTS 횟수 : $productLabelTTSNum")
+            isLabelSpeaking = false
+        }
+    }
+
 
     // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수
     private fun extractValidDates(text: String): List<String> {
