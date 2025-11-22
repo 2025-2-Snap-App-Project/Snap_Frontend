@@ -366,10 +366,7 @@ class CameraFragment : Fragment() {
             Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
             Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
 
-            // 제품명을 1번만 detect하도록 설정 + 중복 요청 방지
-            if (width > 0 && height > 0 && results.firstOrNull()?.classIndex == 1 && !isRequesting && !isNameDetected) {
-                isRequesting = true // 중복 요청 방지를 위한 변수 (현재 POST 요청 중)
-
+            if (results.firstOrNull()?.classIndex == 1) {
                 // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
                 val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
                 Log.d("croppedBitmap", "$croppedBitmap")
@@ -377,25 +374,8 @@ class CameraFragment : Fragment() {
                 // 비트맵 이미지를 File(.png)로 저장
                 val imgFile = saveBitmapToFile(fullBitmap)
 
-                // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청, 응답 결과 표시
-                lifecycleScope.launch {
-                    when (val result = ApiRepository.postName(imgFile)) { // POST 요청
-                        is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
-                            Log.d("postNameResult", result.data.productName)
-                            productName = result.data.productName // 제품명 인식 결과 저장
-                            productNameTTS()
-                        }
-                        is ApiResult.Error -> { // 실패한 경우
-                            null
-                        }
-                    }
-                    isRequesting = false
-                }
-            }
-
-            // 제품명 TTS 출력
-            if (results.firstOrNull()?.classIndex == 1 && isNameDetected) {
-                productNameTTS()
+                // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
+                productNamePostAndTTS(imgFile)
             }
 
             // "제품 라벨 인식됨" -> TTS 출력
@@ -459,20 +439,41 @@ class CameraFragment : Fragment() {
         }
     }
 
-    // 인식된 제품명 TTS 출력
-    private fun productNameTTS() {
-        if (isProductNameSpeaking) return
-        if (productNameTTSNum >= 3) return
-
+    // 인식된 제품명 이미지 서버로 POST 요청 + TTS 출력
+    private fun productNamePostAndTTS(imgFile: File) {
+        if (isRequesting || isProductNameSpeaking || productNameTTSNum >= 3) return
+        isRequesting = true
         isProductNameSpeaking = true
 
-        productName?.let {
-            MainActivity.tts.readText(it, requireContext()) {
-                takePhoto()
-                productNameTTSNum++
-                Log.d("TTSNum", "제품명 TTS 횟수 : $productNameTTSNum")
-                isNameDetected = true // 제품명이 인식되었으므로, true로 상태 변경
-                isProductNameSpeaking = false
+        if (!isNameDetected) {
+            // 서버 요청 + TTS 발화
+            lifecycleScope.launch {
+                when (val result = ApiRepository.postName(imgFile)) { // POST 요청
+                    is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
+                        productName = result.data.productName // 제품명 인식 결과 저장
+                        MainActivity.tts.readText(productName!!, requireContext()) {
+                            productNameTTSNum++
+                            isNameDetected = true
+                            isProductNameSpeaking = false
+                            takePhoto()
+                            Log.d("TTSNum", "제품명 TTS 횟수 : $productNameTTSNum")
+                        }
+                    }
+
+                    is ApiResult.Error -> {
+                        Log.e("productNameTTS", "서버 요청 실패")
+                        isProductNameSpeaking = false
+                    }
+                }
+            }
+        } else { // 서버 요청 완료 후 기존 productName 발화
+            productName?.let { text ->
+                MainActivity.tts.readText(text, requireContext()) {
+                    productNameTTSNum++
+                    isProductNameSpeaking = false
+                    takePhoto()
+                    Log.d("TTSNum", "제품명 TTS 횟수 : $productNameTTSNum")
+                }
             }
         }
     }
