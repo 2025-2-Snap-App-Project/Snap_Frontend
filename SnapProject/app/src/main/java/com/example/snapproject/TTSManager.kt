@@ -1,6 +1,8 @@
 package com.example.snapproject
 
 import android.content.Context
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -35,11 +37,16 @@ fun TextToSpeech?.readText(
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         try { // TTS가 Audio 포커스를 가져옴
-            audioManager.requestAudioFocus(
-                null,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
-            )
+            val audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build())
+                .setOnAudioFocusChangeListener { }
+                .build()
+
+            audioManager.requestAudioFocus(audioFocusRequest)
         } catch (e: Exception) {
             Log.e("TextToSpeech", "requestAudioFocus 실패: ${e.message}")
         }
