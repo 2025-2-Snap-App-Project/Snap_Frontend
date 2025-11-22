@@ -310,9 +310,7 @@ class CameraFragment : Fragment() {
         // TTS 발화 횟수 3회 이상이면, 다음 화면으로 이동
         mActivity.runOnUiThread { // IllegalStateException 에러 방지 - UI 작업은 메인 스레드에서 수행
             if (productNameTTSNum >= 3 && expirationDateTTSNum >= 3 && productLabelTTSNum >= 3) {
-                val action =
-                    CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
-                findNavController().navigateSafe(resId = action.actionId, args = action.arguments)
+                MainActivity.tts.readText("제품 스캔이 완료되었습니다. 촬영 완료 버튼을 눌러주세요.", requireContext())
             }
         }
 
