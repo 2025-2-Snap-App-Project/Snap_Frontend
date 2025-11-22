@@ -17,29 +17,4 @@
         android:id="@+id/rectView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/btnComplete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="31dp"
-        android:contentDescription="촬영 완료 버튼. 이 버튼을 눌러 촬영을 종료할 수 있습니다."
-        app:cardBackgroundColor="@color/main_blue"
-        app:cardCornerRadius="40dp"
-        app:contentPaddingBottom="20dp"
-        app:contentPaddingLeft="44dp"
-        app:contentPaddingRight="44dp"
-        app:contentPaddingTop="20dp"
-        app:strokeColor="@android:color/transparent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:fontFamily="@font/pretendard_bold"
-            android:text="촬영 완료"
-            android:textColor="@color/main_white"
-            android:textSize="20sp" />
-    </com.google.android.material.card.MaterialCardView>
 </FrameLayout>
