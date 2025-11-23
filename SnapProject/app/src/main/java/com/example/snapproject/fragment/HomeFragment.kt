@@ -16,6 +16,7 @@ import com.example.snapproject.R
 import com.example.snapproject.adapter.HomeViewPagerAdapter
 import com.example.snapproject.databinding.FragmentHomeBinding
 import com.example.snapproject.setTextColorAsLinearGradient
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -47,6 +48,9 @@ class HomeFragment : Fragment() {
 
         binding.btnTalkBack.setOnClickListener { // TalkBack 설정 버튼 클릭 시
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) // "시스템 설정 - 접근성"으로 이동
+        }
+        binding.btnOssLicense.setOnClickListener {
+            startActivity(Intent(context, OssLicensesMenuActivity::class.java))
         }
     }
 
