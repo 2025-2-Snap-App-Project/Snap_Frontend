@@ -8,6 +8,7 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 var properties = Properties()
@@ -87,4 +88,5 @@ dependencies {
     implementation(libs.firebase.functions)
     implementation(libs.gson)
     implementation(libs.firebase.auth)
+    implementation(libs.play.services.oss.licenses)
 }
