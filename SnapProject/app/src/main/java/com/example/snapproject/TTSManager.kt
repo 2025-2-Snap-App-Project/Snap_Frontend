@@ -6,8 +6,6 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityManager
 import java.util.Locale
 
 // TTS 초기화 함수
@@ -36,15 +34,18 @@ fun TextToSpeech?.readText(
 
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        try { // TTS가 Audio 포커스를 가져옴
-            val audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-                .setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                        .build())
-                .setOnAudioFocusChangeListener { }
-                .build()
+        try {
+            // TTS가 Audio 포커스를 가져옴
+            val audioFocusRequest =
+                AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+                    .setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                            .build(),
+                    )
+                    .setOnAudioFocusChangeListener { }
+                    .build()
 
             audioManager.requestAudioFocus(audioFocusRequest)
         } catch (e: Exception) {
@@ -69,7 +70,8 @@ fun TextToSpeech?.readText(
                 override fun onError(utteranceId: String?) {
                     try {
                         audioManager.abandonAudioFocus(null)
-                    } catch (e: Exception) { }
+                    } catch (e: Exception) {
+                    }
                 }
             },
         )

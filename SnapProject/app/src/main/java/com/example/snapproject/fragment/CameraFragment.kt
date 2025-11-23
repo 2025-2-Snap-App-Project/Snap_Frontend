@@ -32,7 +32,6 @@ import com.example.snapproject.MainActivity
 import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentCameraBinding
-import com.example.snapproject.navigateSafe
 import com.example.snapproject.readText
 import com.example.snapproject.yolo.DataProcess
 import com.google.firebase.auth.FirebaseAuth
@@ -90,12 +89,10 @@ class CameraFragment : Fragment() {
     private var isDatedDetected: Boolean = false
     private var isLabelDetected: Boolean = false
 
-
     // TTS로 안내한 횟수를 저장할 변수
     private var productNameTTSNum: Int = 0 // 제품명 TTS 횟수
     private var expirationDateTTSNum: Int = 0 // 소비기한 TTS 횟수
     private var productLabelTTSNum: Int = 0 // 제품 라벨 TTS 횟수
-
 
     // TTS 중복 실행 방지 플래그
     private var isProductNameSpeaking = false
@@ -475,7 +472,6 @@ class CameraFragment : Fragment() {
             isLabelSpeaking = false
         }
     }
-
 
     // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수
     private fun extractValidDates(text: String): List<String> {
