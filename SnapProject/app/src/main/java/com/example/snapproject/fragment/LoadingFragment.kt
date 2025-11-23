@@ -39,7 +39,7 @@ class LoadingFragment : Fragment() {
             binding.loadingLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
 
             // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            MainActivity.tts.readText("이미지 분석 진행 중입니다. 잠시만 기다려주세요.") {
+            MainActivity.tts.readText("이미지 분석 진행 중입니다. 잠시만 기다려주세요.", requireContext()) {
                 binding.loadingLayout.post { binding.loadingLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
             }
         }
@@ -91,10 +91,10 @@ class LoadingFragment : Fragment() {
 
                     is ApiResult.Error -> { // 서버 통신 실패 시
                         when (result.code) {
-                            400 -> MainActivity.tts.readText("이미지 누락. 다시 이미지 분석을 시도합니다.")
-                            415 -> MainActivity.tts.readText("지원되지 않은 이미지 형식. 다시 이미지 분석을 시도합니다.")
-                            500 -> MainActivity.tts.readText("서버 오류 발생. 다시 이미지 분석을 시도합니다.")
-                            else -> MainActivity.tts.readText("알 수 없는 오류 발생. 다시 이미지 분석을 시도합니다.")
+                            400 -> MainActivity.tts.readText("이미지 누락. 다시 이미지 분석을 시도합니다.", requireContext())
+                            415 -> MainActivity.tts.readText("지원되지 않은 이미지 형식. 다시 이미지 분석을 시도합니다.", requireContext())
+                            500 -> MainActivity.tts.readText("서버 오류 발생. 다시 이미지 분석을 시도합니다.", requireContext())
+                            else -> MainActivity.tts.readText("알 수 없는 오류 발생. 다시 이미지 분석을 시도합니다.", requireContext())
                         }
                         Log.e(
                             "LoadingFragment",

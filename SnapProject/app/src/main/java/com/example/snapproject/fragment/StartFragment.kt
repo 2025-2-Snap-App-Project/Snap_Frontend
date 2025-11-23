@@ -45,7 +45,7 @@ class StartFragment : Fragment() {
         initView()
 
         Handler(Looper.getMainLooper()).postDelayed({
-            MainActivity.tts?.readText("TalkBack을 키고 앱을 사용해주세요.")
+            MainActivity.tts?.readText("TalkBack을 키고 앱을 사용해주세요.", requireContext())
         }, 500)
 
         binding.btnStart.setOnClickListener { // "시작하기" 버튼 클릭 -> 홈 화면으로 이동
