@@ -314,6 +314,10 @@ class CameraFragment : Fragment() {
         // 제품명, 소비기한, 라벨이 모두 인식되었다면, 다음 화면으로 이동
         mActivity.runOnUiThread { // IllegalStateException 에러 방지 - UI 작업은 메인 스레드에서 수행
             if (isNameDetected && isDatedDetected && isLabelDetected) {
+                // 카메라 자원 해제
+                cameraProvider?.unbindAll()
+                cameraExecutor.shutdownNow()
+
                 val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
                 findNavController().navigate(action)
             }
