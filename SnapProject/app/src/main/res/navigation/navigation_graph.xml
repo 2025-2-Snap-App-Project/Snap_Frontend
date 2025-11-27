@@ -23,6 +23,15 @@
         <action
             android:id="@+id/action_homeFragment_to_listFragment"
             app:destination="@id/listFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_licenseFragment"
+            app:destination="@id/licenseFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/licenseFragment"
+        android:name="com.example.snapproject.fragment.LicenseFragment"
+        android:label="LicenseFragment">
     </fragment>
 
     <fragment
