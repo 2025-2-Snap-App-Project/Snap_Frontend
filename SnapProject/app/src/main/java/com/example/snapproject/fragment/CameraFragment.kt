@@ -64,6 +64,7 @@ class CameraFragment : Fragment() {
     private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
     private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
     private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private lateinit var imageAnalyzer: ImageAnalysis
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
     private lateinit var dataProcess: DataProcess
@@ -95,9 +96,7 @@ class CameraFragment : Fragment() {
     private var productLabelTTSNum: Int = 0 // 제품 라벨 TTS 횟수
 
     // TTS 중복 실행 방지 플래그
-    private var isProductNameSpeaking = false
-    private var isLabelSpeaking = false
-    private var isExpirationSpeaking = false
+    private var isSpeaking = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -249,7 +248,7 @@ class CameraFragment : Fragment() {
         imageCapture = ImageCapture.Builder().build()
 
         // 이미지 분석을 위한 ImageAnalysis 객체 생성 및 세팅
-        val imageAnalyzer =
+        imageAnalyzer =
             ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
@@ -278,10 +277,13 @@ class CameraFragment : Fragment() {
     }
 
     // 카메라 캡쳐 및 이미지 파일 Cache 디렉터리에 저장
-    private fun takePhoto() {
+    private fun takePhoto(
+        category: String,
+        onImgSaved: (() -> Unit),
+    ) { // 이미지 저장 완료 후 할 작업들을 파라미터로 입력
         val mImageCapture = imageCapture ?: return
 
-        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
+        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
         val imgFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
 
         // 캡쳐 이미지 -> 이미지 파일 변경 시, 사용할 옵션 설정 (저장 위치 등)
@@ -300,6 +302,7 @@ class CameraFragment : Fragment() {
                 // 이미지 캡쳐 및 저장 성공
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     outputFileResults.savedUri?.let { uriArrayList.add(it.toString()) } // 이미지 저장 경로를 ArrayList에 추가
+                    onImgSaved.invoke() // 이미지 저장 끝난 뒤에, 입력으로 들어온 작업 수행
 
                     Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인
                 }
@@ -310,18 +313,6 @@ class CameraFragment : Fragment() {
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
         val b = binding ?: return // 화면 전환 시, NullPointer 에러 방지를 위해 b 변수를 대신 사용
-
-        // 제품명, 소비기한, 라벨이 모두 인식되었다면, 다음 화면으로 이동
-        mActivity.runOnUiThread { // IllegalStateException 에러 방지 - UI 작업은 메인 스레드에서 수행
-            if (isNameDetected && isDatedDetected && isLabelDetected) {
-                // 카메라 자원 해제
-                cameraProvider?.unbindAll()
-                cameraExecutor.shutdownNow()
-
-                val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
-                findNavController().navigate(action)
-            }
-        }
 
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
@@ -426,24 +417,27 @@ class CameraFragment : Fragment() {
 
     // 인식된 소비기한 TTS 출력
     private fun expiryDateTTS() {
-        if (isExpirationSpeaking || isDatedDetected) return
+        if (isSpeaking || isDatedDetected) return
 
-        isExpirationSpeaking = true
+        isSpeaking = true
 
         expirationDate?.let {
             MainActivity.tts.readText(it, requireContext()) {
-                takePhoto()
-                isDatedDetected = true
-                isExpirationSpeaking = false
+                takePhoto("date") {
+                    isDatedDetected = true
+                    checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                    Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
+                    isSpeaking = false
+                }
             }
         }
     }
 
     // 인식된 제품명 이미지 서버로 POST 요청 + TTS 출력
     private fun productNamePostAndTTS(imgFile: File) {
-        if (isRequesting || isProductNameSpeaking || isNameDetected) return
+        if (isRequesting || isSpeaking || isNameDetected) return
         isRequesting = true
-        isProductNameSpeaking = true
+        isSpeaking = true
 
         // 서버 요청 + TTS 발화
         lifecycleScope.launch {
@@ -451,14 +445,17 @@ class CameraFragment : Fragment() {
                 is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                     productName = result.data.productName // 제품명 인식 결과 저장
                     MainActivity.tts.readText(productName!!, requireContext()) {
-                        takePhoto()
-                        isNameDetected = true
-                        isProductNameSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
+                        takePhoto("name") {
+                            isNameDetected = true
+                            checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                            Log.d("CameraFragment", "isNameDetected: $isNameDetected")
+                            isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
+                        }
                     }
                 }
                 is ApiResult.Error -> {
                     Log.e("productNameTTS", "서버 요청 실패")
-                    isProductNameSpeaking = false // 서버 요청 실패한 경우에도 false로 바꿔주기
+                    isSpeaking = false // 서버 요청 실패한 경우에도 false로 바꿔주기
                 }
             }
         }
@@ -466,14 +463,31 @@ class CameraFragment : Fragment() {
 
     // 인식된 라벨 TTS 출력
     private fun productLabelTTS() {
-        if (isLabelSpeaking || isLabelDetected) return
+        if (isSpeaking || isLabelDetected) return
 
-        isLabelSpeaking = true
+        isSpeaking = true
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
-            takePhoto()
-            isLabelDetected = true
-            isLabelSpeaking = false
+            takePhoto("label") {
+                isLabelDetected = true
+                checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
+                isSpeaking = false
+            }
+        }
+    }
+
+    // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크하는 함수
+    private fun checkAllDetected() {
+        // 3개 다 인식되었다면, 다음 화면으로 이동
+        if (isNameDetected && isDatedDetected && isLabelDetected) {
+            // 카메라 자원 해제
+            cameraProvider?.unbindAll()
+            cameraExecutor.shutdownNow()
+
+            val action =
+                CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+            findNavController().navigate(action)
         }
     }
 
