@@ -313,18 +313,6 @@ class CameraFragment : Fragment() {
     private fun imageProcess(imageProxy: ImageProxy) {
         val b = binding ?: return // 화면 전환 시, NullPointer 에러 방지를 위해 b 변수를 대신 사용
 
-        // 제품명, 소비기한, 라벨이 모두 인식되었다면, 다음 화면으로 이동
-        mActivity.runOnUiThread { // IllegalStateException 에러 방지 - UI 작업은 메인 스레드에서 수행
-            if (isNameDetected && isDatedDetected && isLabelDetected) {
-                // 카메라 자원 해제
-                cameraProvider?.unbindAll()
-                cameraExecutor.shutdownNow()
-
-                val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
-                findNavController().navigate(action)
-            }
-        }
-
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
         val bitmap = dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
@@ -436,7 +424,8 @@ class CameraFragment : Fragment() {
             MainActivity.tts.readText(it, requireContext()) {
                 takePhoto("date") {
                     isDatedDetected = true
-                    Log.d("isDetected", "isDatedDetected: $isDatedDetected")
+                    checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                    Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
                     isExpirationSpeaking = false
                 }
             }
@@ -457,7 +446,8 @@ class CameraFragment : Fragment() {
                     MainActivity.tts.readText(productName!!, requireContext()) {
                         takePhoto("name") {
                             isNameDetected = true
-                            Log.d("isDetected", "isNameDetected: $isNameDetected")
+                            checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                            Log.d("CameraFragment", "isNameDetected: $isNameDetected")
                             isProductNameSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
                         }
                     }
@@ -479,7 +469,8 @@ class CameraFragment : Fragment() {
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
             takePhoto("label") {
                 isLabelDetected = true
-                Log.d("isDetected", "isLabelDetected: $isLabelDetected")
+                checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
                 isLabelSpeaking = false
             }
         }
