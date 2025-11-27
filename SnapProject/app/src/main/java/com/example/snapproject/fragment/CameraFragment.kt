@@ -338,12 +338,12 @@ class CameraFragment : Fragment() {
 
             if (results.firstOrNull()?.classIndex == 1) {
                 // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
-                productNamePostAndTTS(imgFile)
+                productNamePostAndTTS(imgFile, drawRectBitmap)
             }
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (results.firstOrNull()?.classIndex == 0) {
-                productLabelTTS()
+                productLabelTTS(drawRectBitmap)
             }
         }
 
@@ -457,7 +457,7 @@ class CameraFragment : Fragment() {
                 if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
                     Log.d("ocrDateSuccess", "인식된 날짜: ${dates.first()}")
                     expirationDate = dates.first() // 인식된 소비기한을 변수에 저장
-                    expiryDateTTS() // 인식된 소비기한 TTS 출력
+                    expiryDateTTS(bitmap) // 인식된 소비기한 TTS 출력
                 } else { // 소비기한이 인식되지 않은 경우
                     Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
                 }
@@ -468,25 +468,25 @@ class CameraFragment : Fragment() {
     }
 
     // 인식된 소비기한 TTS 출력
-    private fun expiryDateTTS() {
+    private fun expiryDateTTS(bitmap: Bitmap) {
         if (isSpeaking || isDatedDetected) return
 
         isSpeaking = true
 
         expirationDate?.let {
             MainActivity.tts.readText(it, requireContext()) {
-                takePhoto("date") {
-                    isDatedDetected = true
-                    checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                    Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
-                    isSpeaking = false
-                }
+                val uri = saveImgFile("date", bitmap)
+                addUriArrayList(uri)
+                isDatedDetected = true
+                Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
+                checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                isSpeaking = false
             }
         }
     }
 
     // 인식된 제품명 이미지 서버로 POST 요청 + TTS 출력
-    private fun productNamePostAndTTS(imgFile: File) {
+    private fun productNamePostAndTTS(imgFile: File, bitmap: Bitmap) {
         if (isRequesting || isSpeaking || isNameDetected) return
         isRequesting = true
         isSpeaking = true
@@ -497,12 +497,12 @@ class CameraFragment : Fragment() {
                 is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                     productName = result.data.productName // 제품명 인식 결과 저장
                     MainActivity.tts.readText(productName!!, requireContext()) {
-                        takePhoto("name") {
-                            isNameDetected = true
-                            checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                            Log.d("CameraFragment", "isNameDetected: $isNameDetected")
-                            isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
-                        }
+                        val uri = saveImgFile("name", bitmap)
+                        addUriArrayList(uri)
+                        isNameDetected = true
+                        Log.d("CameraFragment", "isNameDetected: $isNameDetected")
+                        checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                        isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
                     }
                 }
                 is ApiResult.Error -> {
@@ -514,18 +514,18 @@ class CameraFragment : Fragment() {
     }
 
     // 인식된 라벨 TTS 출력
-    private fun productLabelTTS() {
+    private fun productLabelTTS(bitmap: Bitmap) {
         if (isSpeaking || isLabelDetected) return
 
         isSpeaking = true
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
-            takePhoto("label") {
-                isLabelDetected = true
-                checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
-                isSpeaking = false
-            }
+            val uri = saveImgFile("label", bitmap)
+            addUriArrayList(uri)
+            isLabelDetected = true
+            Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
+            checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+            isSpeaking = false
         }
     }
 
