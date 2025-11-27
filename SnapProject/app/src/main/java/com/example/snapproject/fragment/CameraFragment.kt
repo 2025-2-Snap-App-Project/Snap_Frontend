@@ -96,9 +96,7 @@ class CameraFragment : Fragment() {
     private var productLabelTTSNum: Int = 0 // 제품 라벨 TTS 횟수
 
     // TTS 중복 실행 방지 플래그
-    private var isProductNameSpeaking = false
-    private var isLabelSpeaking = false
-    private var isExpirationSpeaking = false
+    private var isSpeaking = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -416,9 +414,9 @@ class CameraFragment : Fragment() {
 
     // 인식된 소비기한 TTS 출력
     private fun expiryDateTTS() {
-        if (isExpirationSpeaking || isDatedDetected) return
+        if (isSpeaking || isDatedDetected) return
 
-        isExpirationSpeaking = true
+        isSpeaking = true
 
         expirationDate?.let {
             MainActivity.tts.readText(it, requireContext()) {
@@ -426,7 +424,7 @@ class CameraFragment : Fragment() {
                     isDatedDetected = true
                     checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
                     Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
-                    isExpirationSpeaking = false
+                    isSpeaking = false
                 }
             }
         }
@@ -434,9 +432,9 @@ class CameraFragment : Fragment() {
 
     // 인식된 제품명 이미지 서버로 POST 요청 + TTS 출력
     private fun productNamePostAndTTS(imgFile: File) {
-        if (isRequesting || isProductNameSpeaking || isNameDetected) return
+        if (isRequesting || isSpeaking || isNameDetected) return
         isRequesting = true
-        isProductNameSpeaking = true
+        isSpeaking = true
 
         // 서버 요청 + TTS 발화
         lifecycleScope.launch {
@@ -448,13 +446,13 @@ class CameraFragment : Fragment() {
                             isNameDetected = true
                             checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
                             Log.d("CameraFragment", "isNameDetected: $isNameDetected")
-                            isProductNameSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
+                            isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
                         }
                     }
                 }
                 is ApiResult.Error -> {
                     Log.e("productNameTTS", "서버 요청 실패")
-                    isProductNameSpeaking = false // 서버 요청 실패한 경우에도 false로 바꿔주기
+                    isSpeaking = false // 서버 요청 실패한 경우에도 false로 바꿔주기
                 }
             }
         }
@@ -462,16 +460,16 @@ class CameraFragment : Fragment() {
 
     // 인식된 라벨 TTS 출력
     private fun productLabelTTS() {
-        if (isLabelSpeaking || isLabelDetected) return
+        if (isSpeaking || isLabelDetected) return
 
-        isLabelSpeaking = true
+        isSpeaking = true
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
             takePhoto("label") {
                 isLabelDetected = true
                 checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
                 Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
-                isLabelSpeaking = false
+                isSpeaking = false
             }
         }
     }
