@@ -393,6 +393,36 @@ class CameraFragment : Fragment() {
         // 회전된 비트맵 반환
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
+
+    // 현재 스크린 크기만큼 비트맵 생성
+    private fun createScreenBitmap(fullBitmap: Bitmap): Bitmap {
+        // PreviewView의 가로 세로 비율 계산
+        val screenW = binding.previewCamera.width
+        val screenH = binding.previewCamera.height
+        val screenRatio = screenW.toFloat() / screenH.toFloat()
+
+        // 원본 비트맵의 가로 세로 비율 계산
+        val imgW = fullBitmap.width
+        val imgH = fullBitmap.height
+        val imgRatio = imgW.toFloat() / imgH.toFloat()
+
+        var cropW = imgW
+        var cropH = imgH
+
+        if (imgRatio > screenRatio) { // 이미지가 가로로 더 넓음 → 좌우를 잘라야 함
+            cropW = (imgH * screenRatio).toInt()
+        } else { // 이미지가 세로로 더 김 → 위아래를 잘라야 함
+            cropH = (imgW / screenRatio).toInt()
+        }
+
+        // 중앙에서 crop
+        val left = (imgW - cropW) / 2
+        val top = (imgH - cropH) / 2
+
+        val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, cropW, cropH)
+        return croppedBitmap
+    }
+
     // 비트맵 이미지를 File 타입으로 바꿔서 저장
     private fun saveBitmapToFile(bitmap: Bitmap): File {
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
