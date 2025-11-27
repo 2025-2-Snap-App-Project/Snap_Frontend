@@ -472,13 +472,13 @@ class CameraFragment : Fragment() {
         if (isSpeaking || isDatedDetected) return
 
         isSpeaking = true
+        isDatedDetected = true
+        Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
 
         expirationDate?.let {
             MainActivity.tts.readText(it, requireContext()) {
                 val uri = saveImgFile("date", bitmap)
                 addUriArrayList(uri)
-                isDatedDetected = true
-                Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
                 checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
                 isSpeaking = false
             }
@@ -496,11 +496,12 @@ class CameraFragment : Fragment() {
             when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                 is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                     productName = result.data.productName // 제품명 인식 결과 저장
+                    isNameDetected = true
+                    Log.d("CameraFragment", "isNameDetected: $isNameDetected")
+
                     MainActivity.tts.readText(productName!!, requireContext()) {
                         val uri = saveImgFile("name", bitmap)
                         addUriArrayList(uri)
-                        isNameDetected = true
-                        Log.d("CameraFragment", "isNameDetected: $isNameDetected")
                         checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
                         isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
                     }
@@ -518,12 +519,12 @@ class CameraFragment : Fragment() {
         if (isSpeaking || isLabelDetected) return
 
         isSpeaking = true
+        isLabelDetected = true
+        Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
             val uri = saveImgFile("label", bitmap)
             addUriArrayList(uri)
-            isLabelDetected = true
-            Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
             checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
             isSpeaking = false
         }
