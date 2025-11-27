@@ -282,7 +282,7 @@ class CameraFragment : Fragment() {
     private fun takePhoto(category: String, onImgSaved: (() -> Unit)) { // 이미지 저장 완료 후 할 작업들을 파라미터로 입력
         val mImageCapture = imageCapture ?: return
 
-        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-$category", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
+        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis())+"-$category" // 파일명 설정
         val imgFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
 
         // 캡쳐 이미지 -> 이미지 파일 변경 시, 사용할 옵션 설정 (저장 위치 등)
