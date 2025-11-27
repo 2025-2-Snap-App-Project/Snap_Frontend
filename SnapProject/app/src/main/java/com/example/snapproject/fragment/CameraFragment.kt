@@ -89,9 +89,9 @@ class CameraFragment : Fragment() {
     private var productLabelTxt: String = "제품 라벨이 인식되었습니다."
 
     // 인식 여부를 저장할 변수
-    private var isNameDetected: Boolean = false
-    private var isDatedDetected: Boolean = false
-    private var isLabelDetected: Boolean = false
+    @Volatile private var isNameDetected: Boolean = false
+    @Volatile private var isDatedDetected: Boolean = false
+    @Volatile private var isLabelDetected: Boolean = false
 
     // TTS로 안내한 횟수를 저장할 변수
     private var productNameTTSNum: Int = 0 // 제품명 TTS 횟수
@@ -477,10 +477,12 @@ class CameraFragment : Fragment() {
 
         expirationDate?.let {
             MainActivity.tts.readText(it, requireContext()) {
-                val uri = saveImgFile("date", bitmap)
-                addUriArrayList(uri)
-                checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                isSpeaking = false
+                requireActivity().runOnUiThread {
+                    val uri = saveImgFile("date", bitmap)
+                    addUriArrayList(uri)
+                    checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                    isSpeaking = false
+                }
             }
         }
     }
@@ -500,10 +502,12 @@ class CameraFragment : Fragment() {
                     Log.d("CameraFragment", "isNameDetected: $isNameDetected")
 
                     MainActivity.tts.readText(productName!!, requireContext()) {
-                        val uri = saveImgFile("name", bitmap)
-                        addUriArrayList(uri)
-                        checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                        isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
+                        requireActivity().runOnUiThread {
+                            val uri = saveImgFile("name", bitmap)
+                            addUriArrayList(uri)
+                            checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                            isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
+                        }
                     }
                 }
                 is ApiResult.Error -> {
@@ -523,10 +527,12 @@ class CameraFragment : Fragment() {
         Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
-            val uri = saveImgFile("label", bitmap)
-            addUriArrayList(uri)
-            checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-            isSpeaking = false
+            requireActivity().runOnUiThread {
+                val uri = saveImgFile("label", bitmap)
+                addUriArrayList(uri)
+                checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
+                isSpeaking = false
+            }
         }
     }
 
