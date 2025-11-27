@@ -23,6 +23,24 @@
         <action
             android:id="@+id/action_homeFragment_to_listFragment"
             app:destination="@id/listFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_licenseFragment"
+            app:destination="@id/licenseFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/licenseFragment"
+        android:name="com.example.snapproject.fragment.LicenseFragment"
+        android:label="LicenseFragment">
+        <action
+            android:id="@+id/action_licenseFragment_to_iconAssetFragment"
+            app:destination="@id/iconAssetFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/iconAssetFragment"
+        android:name="com.example.snapproject.fragment.IconAssetFragment"
+        android:label="IconAssetFragment">
     </fragment>
 
     <fragment

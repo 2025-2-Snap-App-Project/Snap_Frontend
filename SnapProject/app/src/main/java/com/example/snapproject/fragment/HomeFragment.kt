@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.snapproject.R
 import com.example.snapproject.adapter.HomeViewPagerAdapter
 import com.example.snapproject.databinding.FragmentHomeBinding
@@ -47,6 +48,11 @@ class HomeFragment : Fragment() {
 
         binding.btnTalkBack.setOnClickListener { // TalkBack 설정 버튼 클릭 시
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) // "시스템 설정 - 접근성"으로 이동
+        }
+        binding.btnAppInfo.setOnClickListener { // 앱 정보 확인 버튼 클릭 시
+            // 라이선스를 확인할 수 있는 화면으로 이동
+            val action = HomeFragmentDirections.actionHomeFragmentToLicenseFragment()
+            findNavController().navigate(action)
         }
     }
 

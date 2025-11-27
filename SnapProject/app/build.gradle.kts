@@ -1,6 +1,12 @@
 import java.io.FileInputStream
 import java.util.Properties
 
+val keystoreProperties = Properties()
+val keystoreFile = rootProject.file("keystore.properties")
+if (keystoreFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystoreFile))
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,12 +14,21 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 var properties = Properties()
 properties.load(FileInputStream("local.properties"))
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties["storeFile"]?.toString() ?: error("Missing storeFile"))
+            storePassword = keystoreProperties["storePassword"]?.toString() ?: error("Missing storePassword")
+            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: error("Missing keyAlias")
+            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: error("Missing keyPassword")
+        }
+    }
     namespace = "com.example.snapproject"
     compileSdk = 35
 
@@ -27,6 +42,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "BASE_URL", properties.getProperty("base.url"))
+        signingConfig = signingConfigs.getByName("release")
     }
     buildFeatures {
         viewBinding = true
@@ -87,4 +103,5 @@ dependencies {
     implementation(libs.firebase.functions)
     implementation(libs.gson)
     implementation(libs.firebase.auth)
+    implementation(libs.play.services.oss.licenses)
 }
