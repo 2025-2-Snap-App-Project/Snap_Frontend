@@ -3,10 +3,10 @@ package com.example.snapproject.fragment
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentIconAssetBinding
 

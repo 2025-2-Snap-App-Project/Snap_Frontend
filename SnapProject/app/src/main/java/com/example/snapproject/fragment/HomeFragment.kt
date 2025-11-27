@@ -17,7 +17,6 @@ import com.example.snapproject.R
 import com.example.snapproject.adapter.HomeViewPagerAdapter
 import com.example.snapproject.databinding.FragmentHomeBinding
 import com.example.snapproject.setTextColorAsLinearGradient
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
