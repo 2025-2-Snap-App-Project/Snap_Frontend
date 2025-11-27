@@ -70,15 +70,15 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
-            android:id="@+id/btnOssLicense"
+            android:id="@+id/btnAppInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="17dp"
             android:layout_marginBottom="14dp"
-            android:contentDescription="오픈소스 라이선스 확인 버튼. 관련 화면으로 이동합니다."
+            android:contentDescription="앱 정보 확인 버튼. 관련 화면으로 이동합니다."
             android:fontFamily="@font/pretendard_bold"
-            android:text="@string/home_open_source_license"
+            android:text="@string/home_app_info"
             android:textColor="@color/dark_gray_2"
             android:textSize="13sp" />
     </LinearLayout>
