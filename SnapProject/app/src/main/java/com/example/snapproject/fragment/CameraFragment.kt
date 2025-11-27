@@ -485,6 +485,20 @@ class CameraFragment : Fragment() {
         }
     }
 
+    // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크하는 함수
+    private fun checkAllDetected() {
+        // 3개 다 인식되었다면, 다음 화면으로 이동
+        if (isNameDetected && isDatedDetected && isLabelDetected) {
+            // 카메라 자원 해제
+            cameraProvider?.unbindAll()
+            cameraExecutor.shutdownNow()
+
+            val action =
+                CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+            findNavController().navigate(action)
+        }
+    }
+
     // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수
     private fun extractValidDates(text: String): List<String> {
         // 날짜 정규식: 2자리 또는 4자리 연도, 점(.) 또는 하이픈(-), 월/일 1~2자리
