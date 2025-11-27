@@ -64,6 +64,7 @@ class CameraFragment : Fragment() {
     private var cameraFacing = CameraSelector.LENS_FACING_BACK // 후면 카메라를 기본값으로 설정
     private var imageCapture: ImageCapture? = null // 이미지 캡쳐를 위한 변수
     private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private lateinit var imageAnalyzer: ImageAnalysis
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
     private lateinit var dataProcess: DataProcess
@@ -249,7 +250,7 @@ class CameraFragment : Fragment() {
         imageCapture = ImageCapture.Builder().build()
 
         // 이미지 분석을 위한 ImageAnalysis 객체 생성 및 세팅
-        val imageAnalyzer =
+        imageAnalyzer =
             ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
