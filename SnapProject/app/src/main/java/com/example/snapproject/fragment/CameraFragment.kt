@@ -381,6 +381,18 @@ class CameraFragment : Fragment() {
         recognizeExpiryDate(fullBitmap)
     }
 
+    // 회전된 비트맵 생성
+    private fun imageToRotatedBitmap(
+        bitmap: Bitmap,
+        degrees: Int,
+    ): Bitmap {
+        // Matrix 객체에 매개변수로 받은 회전 각도 적용
+        val matrix = android.graphics.Matrix()
+        matrix.postRotate(degrees.toFloat())
+
+        // 회전된 비트맵 반환
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
     // 비트맵 이미지를 File 타입으로 바꿔서 저장
     private fun saveBitmapToFile(bitmap: Bitmap): File {
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
