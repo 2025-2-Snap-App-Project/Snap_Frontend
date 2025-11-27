@@ -278,7 +278,7 @@ class CameraFragment : Fragment() {
     }
 
     // 카메라 캡쳐 및 이미지 파일 Cache 디렉터리에 저장
-    private fun takePhoto() {
+    private fun takePhoto(onImgSaved: (() -> Unit)) { // 이미지 저장 완료 후 할 작업들을 파라미터로 입력
         val mImageCapture = imageCapture ?: return
 
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
@@ -300,6 +300,7 @@ class CameraFragment : Fragment() {
                 // 이미지 캡쳐 및 저장 성공
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     outputFileResults.savedUri?.let { uriArrayList.add(it.toString()) } // 이미지 저장 경로를 ArrayList에 추가
+                    onImgSaved.invoke() // 이미지 저장 끝난 뒤에, 입력으로 들어온 작업 수행
 
                     Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인
                 }
@@ -432,9 +433,10 @@ class CameraFragment : Fragment() {
 
         expirationDate?.let {
             MainActivity.tts.readText(it, requireContext()) {
-                takePhoto()
-                isDatedDetected = true
-                isExpirationSpeaking = false
+                takePhoto {
+                    isDatedDetected = true
+                    isExpirationSpeaking = false
+                }
             }
         }
     }
@@ -451,9 +453,10 @@ class CameraFragment : Fragment() {
                 is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                     productName = result.data.productName // 제품명 인식 결과 저장
                     MainActivity.tts.readText(productName!!, requireContext()) {
-                        takePhoto()
-                        isNameDetected = true
-                        isProductNameSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
+                        takePhoto {
+                            isNameDetected = true
+                            isProductNameSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
+                        }
                     }
                 }
                 is ApiResult.Error -> {
@@ -471,9 +474,10 @@ class CameraFragment : Fragment() {
         isLabelSpeaking = true
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
-            takePhoto()
-            isLabelDetected = true
-            isLabelSpeaking = false
+            takePhoto {
+                isLabelDetected = true
+                isLabelSpeaking = false
+            }
         }
     }
 
