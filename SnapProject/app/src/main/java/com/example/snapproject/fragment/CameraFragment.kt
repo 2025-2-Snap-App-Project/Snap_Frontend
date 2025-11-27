@@ -436,6 +436,7 @@ class CameraFragment : Fragment() {
             MainActivity.tts.readText(it, requireContext()) {
                 takePhoto {
                     isDatedDetected = true
+                    Log.d("isDetected", "isDatedDetected: $isDatedDetected")
                     isExpirationSpeaking = false
                 }
             }
@@ -456,6 +457,7 @@ class CameraFragment : Fragment() {
                     MainActivity.tts.readText(productName!!, requireContext()) {
                         takePhoto {
                             isNameDetected = true
+                            Log.d("isDetected", "isNameDetected: $isNameDetected")
                             isProductNameSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
                         }
                     }
@@ -477,6 +479,7 @@ class CameraFragment : Fragment() {
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
             takePhoto {
                 isLabelDetected = true
+                Log.d("isDetected", "isLabelDetected: $isLabelDetected")
                 isLabelSpeaking = false
             }
         }
