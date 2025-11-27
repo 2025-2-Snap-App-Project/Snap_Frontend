@@ -64,6 +64,10 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         val itemId = args.itemId // 현재 제품의 ID 가져오기 (Safe Args)
 
         if (prevPage == "loading") { // 이전 화면이 로딩 화면인 경우
+            // TalkBack의 contentDescription 설정
+            binding.btnBack.contentDescription="이전 버튼. 홈 화면으로 다시 이동합니다."
+            binding.btnStoreOrDelete.contentDescription="제품 보관하기 버튼. 보관하기 화면으로 이동합니다."
+
             // SafeArgs로 받은 서버 응답 결과를 각각 변수에 저장
             val itemName = String.format(resources.getString(R.string.detail_item_name), response?.data?.productName)
             val itemDate = String.format(resources.getString(R.string.detail_item_date), response?.data?.expirationDate)
@@ -83,6 +87,10 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
         if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
             binding.tvStoreOrDelete.text = "제품 삭제하기" // 버튼 내부 텍스트 수정
+
+            // TalkBack의 contentDescription 설정
+            binding.btnBack.contentDescription="이전 버튼. 소비기한 리스트 화면으로 다시 이동합니다."
+            binding.btnStoreOrDelete.contentDescription="제품 삭제 버튼. 해당 제품을 삭제하고 소비기한 리스트 화면으로 다시 이동합니다."
 
             // DB에서 해당 제품에 대한 상세 정보 불러오기
             val productDB = ProductDatabase.getInstance(requireContext())
