@@ -3,12 +3,14 @@ package com.example.snapproject.fragment
 import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
+import android.R.attr.bitmap
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Camera
 import android.graphics.RectF
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -277,38 +279,21 @@ class CameraFragment : Fragment() {
         }
     }
 
-    // 카메라 캡쳐 및 이미지 파일 Cache 디렉터리에 저장
-    private fun takePhoto(
-        category: String,
-        onImgSaved: (() -> Unit),
-    ) { // 이미지 저장 완료 후 할 작업들을 파라미터로 입력
-        val mImageCapture = imageCapture ?: return
-
+    // 비트맵을 캐시 디렉터리에 이미지 파일 형태로 저장하는 함수
+    private fun saveImgFile(category: String, bitmap: Bitmap): Uri {
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
         val imgFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
+        imgFile.createNewFile() // 파일 생성
+        val outputStream = FileOutputStream(imgFile)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // 이미지 저장
+        outputStream.close()
+        Log.d("CameraFragment", "저장된 파일 경로 : ${imgFile.toUri()}") // 이미지 저장 경로 확인
+        return imgFile.toUri()
+    }
 
-        // 캡쳐 이미지 -> 이미지 파일 변경 시, 사용할 옵션 설정 (저장 위치 등)
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(imgFile).build()
-
-        // 사진 촬영
-        mImageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(requireContext()),
-            object : ImageCapture.OnImageSavedCallback {
-                // 이미지 캡쳐 및 저장 실패
-                override fun onError(exc: ImageCaptureException) {
-                    Log.d("CameraFragment", "촬영 실패 : ${exc.message}", exc)
-                }
-
-                // 이미지 캡쳐 및 저장 성공
-                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    outputFileResults.savedUri?.let { uriArrayList.add(it.toString()) } // 이미지 저장 경로를 ArrayList에 추가
-                    onImgSaved.invoke() // 이미지 저장 끝난 뒤에, 입력으로 들어온 작업 수행
-
-                    Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인
-                }
-            },
-        )
+    // 저장된 이미지 파일 경로를 ArrayList에 추가
+    private fun addUriArrayList(uri: Uri) {
+        uriArrayList.add(uri.toString())
     }
 
     // 이미지 처리 함수
