@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Camera
+import android.graphics.RectF
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -421,6 +422,46 @@ class CameraFragment : Fragment() {
 
         val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, cropW, cropH)
         return croppedBitmap
+    }
+
+    // RectView 크기만큼 비트맵 생성
+    private fun createRectBitmap(screenBitmap: Bitmap, drawRect: RectF): Bitmap {
+        // screenBitmap의 실제 크기
+        val imgW = screenBitmap.width
+        val imgH = screenBitmap.height
+
+        // PreviewView 실제 화면에서의 크기
+        val viewW = binding.previewCamera.width
+        val viewH = binding.previewCamera.height
+
+        // 화면 Rect → 비트맵 좌표 변환 시 곱해줄 값
+        val scaleX = imgW.toFloat() / viewW.toFloat()
+        val scaleY = imgH.toFloat() / viewH.toFloat()
+
+        // 화면 Rect → 비트맵 좌표로 변환
+        val left = (drawRect.left * scaleX).toInt()
+        val top = (drawRect.top * scaleY).toInt()
+        val right = (drawRect.right * scaleX).toInt()
+        val bottom = (drawRect.bottom * scaleY).toInt()
+
+        // 좌표와 크기가 비트맵을 벗어나지 않도록 강제로 제한
+        val cropLeft = left.coerceIn(0, imgW - 1)
+        val cropTop = top.coerceIn(0, imgH - 1)
+        val cropWidth = (right - left).coerceAtLeast(1).coerceAtMost(imgW - cropLeft)
+        val cropHeight = (bottom - top).coerceAtLeast(1).coerceAtMost(imgH - cropTop)
+
+        Log.d("bitmapSize", "left=$cropLeft top=$cropTop width=$cropWidth height=$cropHeight")
+
+        // 최종 rect 비트맵 생성
+        val rectBitmap = Bitmap.createBitmap(
+            screenBitmap,
+            cropLeft,
+            cropTop,
+            cropWidth,
+            cropHeight
+        )
+
+        return rectBitmap
     }
 
     // 비트맵 이미지를 File 타입으로 바꿔서 저장
