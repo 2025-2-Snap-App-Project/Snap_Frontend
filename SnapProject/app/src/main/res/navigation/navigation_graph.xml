@@ -32,6 +32,15 @@
         android:id="@+id/licenseFragment"
         android:name="com.example.snapproject.fragment.LicenseFragment"
         android:label="LicenseFragment">
+        <action
+            android:id="@+id/action_licenseFragment_to_iconAssetFragment"
+            app:destination="@id/iconAssetFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/iconAssetFragment"
+        android:name="com.example.snapproject.fragment.IconAssetFragment"
+        android:label="IconAssetFragment">
     </fragment>
 
     <fragment
