@@ -589,6 +589,7 @@ class CameraFragment : Fragment() {
 
         cameraProvider?.unbindAll()
         cameraExecutor.shutdownNow()
+        imageAnalyzer.clearAnalyzer()
         _binding = null
     }
 
