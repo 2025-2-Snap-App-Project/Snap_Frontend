@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SnapProject</string>
+    <string name="app_name">Snap</string>
     <string name="home_app_info"><u>앱 정보 확인</u></string>
     <string name="detail_more_info"><u>더 자세한 정보 확인</u></string>
     <string name="appbar_scrolling_view_behavior" translatable="false">
