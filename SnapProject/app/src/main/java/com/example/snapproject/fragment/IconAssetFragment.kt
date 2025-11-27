@@ -1,10 +1,13 @@
 package com.example.snapproject.fragment
 
 import android.os.Bundle
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentIconAssetBinding
 
 class IconAssetFragment : Fragment() {
@@ -33,5 +36,15 @@ class IconAssetFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 아이콘 출처 표기
+        binding.tvCamLicense.text = Html.fromHtml(getString(R.string.icon_asset_license_camera), Html.FROM_HTML_MODE_LEGACY)
+        binding.tvCamLicense.movementMethod = LinkMovementMethod.getInstance()
+
+        binding.tvCalLicense.text = Html.fromHtml(getString(R.string.icon_asset_license_calendar), Html.FROM_HTML_MODE_LEGACY)
+        binding.tvCalLicense.movementMethod = LinkMovementMethod.getInstance()
+
+        binding.tvMicroLicense.text = Html.fromHtml(getString(R.string.icon_asset_license_microphone), Html.FROM_HTML_MODE_LEGACY)
+        binding.tvMicroLicense.movementMethod = LinkMovementMethod.getInstance()
     }
 }
