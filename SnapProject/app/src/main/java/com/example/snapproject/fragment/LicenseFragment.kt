@@ -1,11 +1,13 @@
 package com.example.snapproject.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.snapproject.databinding.FragmentLicenseBinding
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 
 
 class LicenseFragment : Fragment() {
@@ -35,6 +37,8 @@ class LicenseFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        binding.btnOssLicense.setOnClickListener { // Open Source Licenses 버튼 클릭 시
+            startActivity(Intent(context, OssLicensesMenuActivity::class.java)) // 오픈소스 라이선스 목록 액티비티 보여줌
+        }
     }
 }
