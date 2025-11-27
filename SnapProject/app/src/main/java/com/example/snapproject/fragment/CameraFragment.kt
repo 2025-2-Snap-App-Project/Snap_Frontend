@@ -279,10 +279,10 @@ class CameraFragment : Fragment() {
     }
 
     // 카메라 캡쳐 및 이미지 파일 Cache 디렉터리에 저장
-    private fun takePhoto(onImgSaved: (() -> Unit)) { // 이미지 저장 완료 후 할 작업들을 파라미터로 입력
+    private fun takePhoto(category: String, onImgSaved: (() -> Unit)) { // 이미지 저장 완료 후 할 작업들을 파라미터로 입력
         val mImageCapture = imageCapture ?: return
 
-        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
+        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-$category", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
         val imgFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
 
         // 캡쳐 이미지 -> 이미지 파일 변경 시, 사용할 옵션 설정 (저장 위치 등)
@@ -434,7 +434,7 @@ class CameraFragment : Fragment() {
 
         expirationDate?.let {
             MainActivity.tts.readText(it, requireContext()) {
-                takePhoto {
+                takePhoto("date") {
                     isDatedDetected = true
                     Log.d("isDetected", "isDatedDetected: $isDatedDetected")
                     isExpirationSpeaking = false
@@ -455,7 +455,7 @@ class CameraFragment : Fragment() {
                 is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                     productName = result.data.productName // 제품명 인식 결과 저장
                     MainActivity.tts.readText(productName!!, requireContext()) {
-                        takePhoto {
+                        takePhoto("name") {
                             isNameDetected = true
                             Log.d("isDetected", "isNameDetected: $isNameDetected")
                             isProductNameSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
@@ -477,7 +477,7 @@ class CameraFragment : Fragment() {
         isLabelSpeaking = true
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
-            takePhoto {
+            takePhoto("label") {
                 isLabelDetected = true
                 Log.d("isDetected", "isLabelDetected: $isLabelDetected")
                 isLabelSpeaking = false
