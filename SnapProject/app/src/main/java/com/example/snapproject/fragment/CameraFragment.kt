@@ -342,32 +342,16 @@ class CameraFragment : Fragment() {
         b.rectView.transformRect(results, b.previewCamera.width, b.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
         b.rectView.invalidate() // 최종 결과를 화면에 그려줌
 
-        // 화면에 그려진 Rect 크기만큼 비트맵 이미지 생성
         val drawRect = b.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
-        val fullBitmap = imageProxy.toBitmap() // 전체 Preview에 대한 비트맵 이미지 생성
-
-        // drawRect를 카메라 Bitmap 크기에 맞게 변환해줄 때 필요한 변수
-        val scaleX = fullBitmap.width.toFloat() / b.previewCamera.width
-        val scaleY = fullBitmap.height.toFloat() / b.previewCamera.height
+        val fullBitmap = imageProxy.toBitmap() // 원본 imageProxy를 비트맵으로
+        val fullRotatedBitmap = imageToRotatedBitmap(imageProxy.toBitmap(), rotation) // 원본 imageProxy를 회전된 비트맵으로
+        val screenBitmap = createScreenBitmap(fullRotatedBitmap) // 현재 스크린에 보이는 만큼 비트맵 생성
 
         if (drawRect != null) { // drawRect가 화면에 표시된 상태라면
-            // drawRect에 Scale 값을 곱해서 카메라 Bitmap 크기에 맞게 변환
-            val left = (drawRect.left * scaleX).toInt()
-            val top = (drawRect.top * scaleY).toInt()
-            val width = ((drawRect.right - drawRect.left) * scaleX).toInt()
-            val height = ((drawRect.bottom - drawRect.top) * scaleY).toInt()
-
-            Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
-            Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
+            val drawRectBitmap = createRectBitmap(screenBitmap, drawRect) // RectView 크기만큼 비트맵 생성
+            val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
 
             if (results.firstOrNull()?.classIndex == 1) {
-                // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
-                val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
-                Log.d("croppedBitmap", "$croppedBitmap")
-
-                // 비트맵 이미지를 File(.png)로 저장
-                val imgFile = saveBitmapToFile(fullBitmap)
-
                 // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
                 productNamePostAndTTS(imgFile)
             }
