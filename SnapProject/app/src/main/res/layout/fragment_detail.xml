@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="26dp"
+        android:contentDescription="제품 상세 설명 화면입니다. 하단에 있는 버튼을 눌러서 제품에 대한 설명을 하나씩 확인해보세요."
         android:fontFamily="@font/pretendard_black"
         android:gravity="center"
         android:text="제품 상세 설명"
