@@ -46,6 +46,12 @@ class HomeFragment : Fragment() {
 
         initView()
 
+        binding.btnCamera.setOnClickListener { // 카메라 버튼 클릭 시
+            findNavController().navigate(R.id.action_homeFragment_to_cameraFragment)
+        }
+        binding.btnDate.setOnClickListener { // 소비기한 버튼 클릭 시
+            findNavController().navigate(R.id.action_homeFragment_to_listFragment)
+        }
         binding.btnAccess.setOnClickListener { // TalkBack 설정 버튼 클릭 시
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) // "시스템 설정 - 접근성"으로 이동
         }
