@@ -21,7 +21,7 @@
         android:textSize="32sp" />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/btnDate"
+        android:id="@+id/btnCamera"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -61,7 +61,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/btnCamera"
+        android:id="@+id/btnDate"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
