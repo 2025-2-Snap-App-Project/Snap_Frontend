@@ -44,6 +44,9 @@ class IconAssetFragment : Fragment() {
         binding.tvCalLicense.text = Html.fromHtml(getString(R.string.icon_asset_license_calendar), Html.FROM_HTML_MODE_LEGACY)
         binding.tvCalLicense.movementMethod = LinkMovementMethod.getInstance()
 
+        binding.tvAccessLicense.text = Html.fromHtml(getString(R.string.icon_asset_license_message), Html.FROM_HTML_MODE_LEGACY)
+        binding.tvAccessLicense.movementMethod = LinkMovementMethod.getInstance()
+
         binding.tvMicroLicense.text = Html.fromHtml(getString(R.string.icon_asset_license_microphone), Html.FROM_HTML_MODE_LEGACY)
         binding.tvMicroLicense.movementMethod = LinkMovementMethod.getInstance()
     }

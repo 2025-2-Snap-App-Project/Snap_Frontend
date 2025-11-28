@@ -30,6 +30,13 @@
         android:textSize="15sp" />
 
     <TextView
+        android:id="@+id/tvAccessLicense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/pretendard_regular"
+        android:textSize="15sp" />
+
+    <TextView
         android:id="@+id/tvMicroLicense"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
