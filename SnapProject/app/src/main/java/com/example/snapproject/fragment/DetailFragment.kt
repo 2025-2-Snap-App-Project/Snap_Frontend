@@ -119,6 +119,18 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
         initView()
 
+        // 제품 기본 정보 버튼 클릭 이벤트 처리
+        binding.btnBasicInfo.setOnClickListener {
+            for (info in basicInfoArrLst)
+            MainActivity.tts.readText(info, requireContext())
+        }
+
+        // 제품 요약 설명 버튼 클릭 이벤트 처리
+        binding.btnSummaryInfo.setOnClickListener {
+            for (info in summaryInfoArrLst)
+                MainActivity.tts.readText(info, requireContext())
+        }
+
         binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> "홈 화면" or "소비기한 리스트" 화면으로 이동
             findNavController().popBackStack()
         }

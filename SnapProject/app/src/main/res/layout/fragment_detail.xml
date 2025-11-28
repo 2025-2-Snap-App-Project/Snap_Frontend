@@ -32,6 +32,7 @@
         android:columnCount="2">
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnBasicInfo"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             app:cardBackgroundColor="@color/main_blue">
@@ -47,6 +48,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnSummaryInfo"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:layout_marginStart="10dp"
