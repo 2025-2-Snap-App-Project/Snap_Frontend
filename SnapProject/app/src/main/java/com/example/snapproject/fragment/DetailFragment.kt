@@ -9,7 +9,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.DetailIngredientsDialog
 import com.example.snapproject.MainActivity
 import com.example.snapproject.R
@@ -17,10 +16,6 @@ import com.example.snapproject.adapter.DetailRecyclerViewAdapter
 import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.model.db.ProductDatabase
-import com.example.snapproject.model.viewobject.DetailDateViewObject
-import com.example.snapproject.model.viewobject.DetailNameViewObject
-import com.example.snapproject.model.viewobject.DetailStorageViewObject
-import com.example.snapproject.model.viewobject.DetailSummaryViewObject
 import com.example.snapproject.readText
 
 class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDialogListener {
@@ -29,8 +24,8 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
     private lateinit var recyclerViewAdapter: DetailRecyclerViewAdapter // RecyclerView 어댑터
 
     // ArrayList 변수 (제품 기본 정보, 제품 요약 설명)
-    private lateinit var basicInfoArrLst : ArrayList<String>
-    private lateinit var summaryInfoArrLst : ArrayList<String>
+    private lateinit var basicInfoArrLst: ArrayList<String>
+    private lateinit var summaryInfoArrLst: ArrayList<String>
 
     companion object {
         fun newInstance() = DetailFragment()
@@ -112,7 +107,6 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                 // 제품 기본 정보, 제품 요약 설명 ArrayList 각각 초기화
                 basicInfoArrLst = arrayListOf(itemName, itemDate, itemStorage)
                 summaryInfoArrLst = itemSummary as ArrayList<String>
-
             } else { // DB에서 불러온 정보가 null이라면
                 MainActivity.tts.readText("제품 상세 정보를 불러올 수 없습니다!", requireContext())
             }
@@ -125,7 +119,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         // 제품 기본 정보 버튼 클릭 이벤트 처리
         binding.btnBasicInfo.setOnClickListener {
             for (info in basicInfoArrLst)
-            MainActivity.tts.readText(info, requireContext())
+                MainActivity.tts.readText(info, requireContext())
         }
 
         // 제품 요약 설명 버튼 클릭 이벤트 처리
