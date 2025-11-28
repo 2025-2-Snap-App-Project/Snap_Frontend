@@ -3,11 +3,13 @@ package com.example.snapproject.fragment
 import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
+import android.R.attr.bitmap
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Camera
+import android.graphics.RectF
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -15,10 +17,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -86,9 +88,11 @@ class CameraFragment : Fragment() {
     private var productLabelTxt: String = "제품 라벨이 인식되었습니다."
 
     // 인식 여부를 저장할 변수
-    private var isNameDetected: Boolean = false
-    private var isDatedDetected: Boolean = false
-    private var isLabelDetected: Boolean = false
+    @Volatile private var isNameDetected: Boolean = false
+
+    @Volatile private var isDatedDetected: Boolean = false
+
+    @Volatile private var isLabelDetected: Boolean = false
 
     // TTS로 안내한 횟수를 저장할 변수
     private var productNameTTSNum: Int = 0 // 제품명 TTS 횟수
@@ -276,43 +280,29 @@ class CameraFragment : Fragment() {
         }
     }
 
-    // 카메라 캡쳐 및 이미지 파일 Cache 디렉터리에 저장
-    private fun takePhoto(
+    // 비트맵을 캐시 디렉터리에 이미지 파일 형태로 저장하는 함수
+    private fun saveImgFile(
         category: String,
-        onImgSaved: (() -> Unit),
-    ) { // 이미지 저장 완료 후 할 작업들을 파라미터로 입력
-        val mImageCapture = imageCapture ?: return
-
+        bitmap: Bitmap,
+    ): Uri {
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
         val imgFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
+        imgFile.createNewFile() // 파일 생성
+        val outputStream = FileOutputStream(imgFile)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // 이미지 저장
+        outputStream.close()
+        Log.d("CameraFragment", "저장된 파일 경로 : ${imgFile.toUri()}") // 이미지 저장 경로 확인
+        return imgFile.toUri()
+    }
 
-        // 캡쳐 이미지 -> 이미지 파일 변경 시, 사용할 옵션 설정 (저장 위치 등)
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(imgFile).build()
-
-        // 사진 촬영
-        mImageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(requireContext()),
-            object : ImageCapture.OnImageSavedCallback {
-                // 이미지 캡쳐 및 저장 실패
-                override fun onError(exc: ImageCaptureException) {
-                    Log.d("CameraFragment", "촬영 실패 : ${exc.message}", exc)
-                }
-
-                // 이미지 캡쳐 및 저장 성공
-                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    outputFileResults.savedUri?.let { uriArrayList.add(it.toString()) } // 이미지 저장 경로를 ArrayList에 추가
-                    onImgSaved.invoke() // 이미지 저장 끝난 뒤에, 입력으로 들어온 작업 수행
-
-                    Log.d("CameraFragment", "저장된 파일 경로 : ${outputFileResults.savedUri}") // 이미지 저장 경로 확인
-                }
-            },
-        )
+    // 저장된 이미지 파일 경로를 ArrayList에 추가
+    private fun addUriArrayList(uri: Uri) {
+        uriArrayList.add(uri.toString())
     }
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
-        val b = binding ?: return // 화면 전환 시, NullPointer 에러 방지를 위해 b 변수를 대신 사용
+        binding ?: return // binding이 null이면 바로 리턴 (다음 화면 이돋 시 발생하는 NullPointerException 에러 방지)
 
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
@@ -338,47 +328,117 @@ class CameraFragment : Fragment() {
 
         // YOLO 추론 최종 결과 출력
         val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
-        b.rectView.transformRect(results, b.previewCamera.width, b.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
-        b.rectView.invalidate() // 최종 결과를 화면에 그려줌
+        binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
+        binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
 
-        // 화면에 그려진 Rect 크기만큼 비트맵 이미지 생성
-        val drawRect = b.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
-        val fullBitmap = imageProxy.toBitmap() // 전체 Preview에 대한 비트맵 이미지 생성
-
-        // drawRect를 카메라 Bitmap 크기에 맞게 변환해줄 때 필요한 변수
-        val scaleX = fullBitmap.width.toFloat() / b.previewCamera.width
-        val scaleY = fullBitmap.height.toFloat() / b.previewCamera.height
+        val drawRect = binding.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
+        val fullBitmap = imageProxy.toBitmap() // 원본 imageProxy를 비트맵으로
+        val fullRotatedBitmap = imageToRotatedBitmap(imageProxy.toBitmap(), rotation) // 원본 imageProxy를 회전된 비트맵으로
+        val screenBitmap = createScreenBitmap(fullRotatedBitmap) // 현재 스크린에 보이는 만큼 비트맵 생성
 
         if (drawRect != null) { // drawRect가 화면에 표시된 상태라면
-            // drawRect에 Scale 값을 곱해서 카메라 Bitmap 크기에 맞게 변환
-            val left = (drawRect.left * scaleX).toInt()
-            val top = (drawRect.top * scaleY).toInt()
-            val width = ((drawRect.right - drawRect.left) * scaleX).toInt()
-            val height = ((drawRect.bottom - drawRect.top) * scaleY).toInt()
-
-            Log.d("croppedImg", "left: $left, top: $top, width: $width, height: $height")
-            Log.d("bitmapImg", "${fullBitmap.width}, ${fullBitmap.height}")
+            val drawRectBitmap = createRectBitmap(screenBitmap, drawRect) // RectView 크기만큼 비트맵 생성
+            val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
 
             if (results.firstOrNull()?.classIndex == 1) {
-                // RectView (YOLO 추론 결과 그림) 크기만큼 bitmap 이미지 생성
-                val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, width, height)
-                Log.d("croppedBitmap", "$croppedBitmap")
-
-                // 비트맵 이미지를 File(.png)로 저장
-                val imgFile = saveBitmapToFile(fullBitmap)
-
                 // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
-                productNamePostAndTTS(imgFile)
+                productNamePostAndTTS(imgFile, drawRectBitmap)
             }
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (results.firstOrNull()?.classIndex == 0) {
-                productLabelTTS()
+                productLabelTTS(drawRectBitmap)
             }
         }
 
         // 소비기한 OCR 수행
         recognizeExpiryDate(fullBitmap)
+    }
+
+    // 회전된 비트맵 생성
+    private fun imageToRotatedBitmap(
+        bitmap: Bitmap,
+        degrees: Int,
+    ): Bitmap {
+        // Matrix 객체에 매개변수로 받은 회전 각도 적용
+        val matrix = android.graphics.Matrix()
+        matrix.postRotate(degrees.toFloat())
+
+        // 회전된 비트맵 반환
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    // 현재 스크린 크기만큼 비트맵 생성
+    private fun createScreenBitmap(fullBitmap: Bitmap): Bitmap {
+        // PreviewView의 가로 세로 비율 계산
+        val screenW = binding.previewCamera.width
+        val screenH = binding.previewCamera.height
+        val screenRatio = screenW.toFloat() / screenH.toFloat()
+
+        // 원본 비트맵의 가로 세로 비율 계산
+        val imgW = fullBitmap.width
+        val imgH = fullBitmap.height
+        val imgRatio = imgW.toFloat() / imgH.toFloat()
+
+        var cropW = imgW
+        var cropH = imgH
+
+        if (imgRatio > screenRatio) { // 이미지가 가로로 더 넓음 → 좌우를 잘라야 함
+            cropW = (imgH * screenRatio).toInt()
+        } else { // 이미지가 세로로 더 김 → 위아래를 잘라야 함
+            cropH = (imgW / screenRatio).toInt()
+        }
+
+        // 중앙에서 crop
+        val left = (imgW - cropW) / 2
+        val top = (imgH - cropH) / 2
+
+        val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, cropW, cropH)
+        return croppedBitmap
+    }
+
+    // RectView 크기만큼 비트맵 생성
+    private fun createRectBitmap(
+        screenBitmap: Bitmap,
+        drawRect: RectF,
+    ): Bitmap {
+        // screenBitmap의 실제 크기
+        val imgW = screenBitmap.width
+        val imgH = screenBitmap.height
+
+        // PreviewView 실제 화면에서의 크기
+        val viewW = binding.previewCamera.width
+        val viewH = binding.previewCamera.height
+
+        // 화면 Rect → 비트맵 좌표 변환 시 곱해줄 값
+        val scaleX = imgW.toFloat() / viewW.toFloat()
+        val scaleY = imgH.toFloat() / viewH.toFloat()
+
+        // 화면 Rect → 비트맵 좌표로 변환
+        val left = (drawRect.left * scaleX).toInt()
+        val top = (drawRect.top * scaleY).toInt()
+        val right = (drawRect.right * scaleX).toInt()
+        val bottom = (drawRect.bottom * scaleY).toInt()
+
+        // 좌표와 크기가 비트맵을 벗어나지 않도록 강제로 제한
+        val cropLeft = left.coerceIn(0, imgW - 1)
+        val cropTop = top.coerceIn(0, imgH - 1)
+        val cropWidth = (right - left).coerceAtLeast(1).coerceAtMost(imgW - cropLeft)
+        val cropHeight = (bottom - top).coerceAtLeast(1).coerceAtMost(imgH - cropTop)
+
+        Log.d("bitmapSize", "left=$cropLeft top=$cropTop width=$cropWidth height=$cropHeight")
+
+        // 최종 rect 비트맵 생성
+        val rectBitmap =
+            Bitmap.createBitmap(
+                screenBitmap,
+                cropLeft,
+                cropTop,
+                cropWidth,
+                cropHeight,
+            )
+
+        return rectBitmap
     }
 
     // 비트맵 이미지를 File 타입으로 바꿔서 저장
@@ -405,7 +465,7 @@ class CameraFragment : Fragment() {
                 if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
                     Log.d("ocrDateSuccess", "인식된 날짜: ${dates.first()}")
                     expirationDate = dates.first() // 인식된 소비기한을 변수에 저장
-                    expiryDateTTS() // 인식된 소비기한 TTS 출력
+                    expiryDateTTS(bitmap) // 인식된 소비기한 TTS 출력
                 } else { // 소비기한이 인식되지 않은 경우
                     Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
                 }
@@ -416,17 +476,19 @@ class CameraFragment : Fragment() {
     }
 
     // 인식된 소비기한 TTS 출력
-    private fun expiryDateTTS() {
+    private fun expiryDateTTS(bitmap: Bitmap) {
         if (isSpeaking || isDatedDetected) return
 
         isSpeaking = true
+        isDatedDetected = true
+        Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
 
         expirationDate?.let {
             MainActivity.tts.readText(it, requireContext()) {
-                takePhoto("date") {
-                    isDatedDetected = true
+                requireActivity().runOnUiThread {
+                    val uri = saveImgFile("date", bitmap)
+                    addUriArrayList(uri)
                     checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                    Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
                     isSpeaking = false
                 }
             }
@@ -434,7 +496,10 @@ class CameraFragment : Fragment() {
     }
 
     // 인식된 제품명 이미지 서버로 POST 요청 + TTS 출력
-    private fun productNamePostAndTTS(imgFile: File) {
+    private fun productNamePostAndTTS(
+        imgFile: File,
+        bitmap: Bitmap,
+    ) {
         if (isRequesting || isSpeaking || isNameDetected) return
         isRequesting = true
         isSpeaking = true
@@ -444,11 +509,14 @@ class CameraFragment : Fragment() {
             when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                 is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                     productName = result.data.productName // 제품명 인식 결과 저장
+                    isNameDetected = true
+                    Log.d("CameraFragment", "isNameDetected: $isNameDetected")
+
                     MainActivity.tts.readText(productName!!, requireContext()) {
-                        takePhoto("name") {
-                            isNameDetected = true
+                        requireActivity().runOnUiThread {
+                            val uri = saveImgFile("name", bitmap)
+                            addUriArrayList(uri)
                             checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                            Log.d("CameraFragment", "isNameDetected: $isNameDetected")
                             isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
                         }
                     }
@@ -462,16 +530,18 @@ class CameraFragment : Fragment() {
     }
 
     // 인식된 라벨 TTS 출력
-    private fun productLabelTTS() {
+    private fun productLabelTTS(bitmap: Bitmap) {
         if (isSpeaking || isLabelDetected) return
 
         isSpeaking = true
+        isLabelDetected = true
+        Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
-            takePhoto("label") {
-                isLabelDetected = true
+            requireActivity().runOnUiThread {
+                val uri = saveImgFile("label", bitmap)
+                addUriArrayList(uri)
                 checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
                 isSpeaking = false
             }
         }
@@ -503,8 +573,8 @@ class CameraFragment : Fragment() {
 
         return dateRegex.findAll(text) // 정규식에 해당되는 모든 부분 찾기
             .mapNotNull {
-                // 공백 제거 -> . or - 으로 split
-                val parts = it.value.replace(" ", "").split('.', '-')
+                // 모든 종류의 공백 제거 -> . or - 으로 split
+                val parts = it.value.replace(Regex("\\s+"), "").split('.', '-')
 
                 // 연, 월, 일 변수에 각각 저장
                 var year = parts[0].toInt()
@@ -530,6 +600,7 @@ class CameraFragment : Fragment() {
 
         cameraProvider?.unbindAll()
         cameraExecutor.shutdownNow()
+        imageAnalyzer.clearAnalyzer()
         _binding = null
     }
 
