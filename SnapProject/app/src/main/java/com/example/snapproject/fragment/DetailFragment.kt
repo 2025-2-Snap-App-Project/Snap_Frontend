@@ -90,6 +90,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
         if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
             binding.tvStoreOrDelete.text = "제품 삭제하기" // 버튼 내부 텍스트 수정
+            binding.tvBack.text = "이전 화면으로 이동"
 
             // TalkBack의 contentDescription 설정
             binding.btnBack.contentDescription = "이전 버튼. 소비기한 리스트 화면으로 다시 이동합니다."

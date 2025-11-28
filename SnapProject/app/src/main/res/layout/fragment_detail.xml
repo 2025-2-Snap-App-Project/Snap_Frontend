@@ -124,11 +124,12 @@
         app:strokeColor="@android:color/transparent">
 
         <TextView
+            android:id="@+id/tvBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/pretendard_bold"
-            android:text="이전 화면으로 이동"
+            android:text="홈으로 돌아가기"
             android:textColor="@color/sub_white"
             android:textSize="20sp" />
     </com.google.android.material.card.MaterialCardView>
