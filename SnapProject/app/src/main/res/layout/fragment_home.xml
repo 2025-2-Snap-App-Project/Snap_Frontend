@@ -20,39 +20,132 @@
         android:text="SNAP"
         android:textSize="32sp" />
 
-    <TextView
-        android:id="@+id/tvWelcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="47dp"
-        android:layout_marginTop="53dp"
-        android:bufferType="spannable"
-        android:fontFamily="@font/pretendard_bold"
-        android:lineSpacingExtra="5sp"
-        android:text="안녕하세요, 사용자님!\n두 손가락으로 화면 중앙을 넘겨보세요."
-        android:textSize="16sp" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPagerMenu"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnCamera"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="39.12dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:layout_marginStart="27dp"
+        android:layout_marginEnd="27dp"
+        android:layout_marginTop="45dp"
+        app:cardBackgroundColor="@color/main_blue"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:cardCornerRadius="20dp"
+        app:strokeColor="@color/main_blue">
 
-    <LinearLayout
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingStart="27dp"
+            android:paddingEnd="27dp"
+            android:contentDescription="">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/pretendard_black"
+                android:text="카메라"
+                android:textColor="@color/main_white"
+                android:textSize="32sp" />
+
+            <ImageView
+                android:layout_width="102dp"
+                android:layout_height="102dp"
+                android:layout_gravity="end"
+                app:srcCompat="@drawable/ic_camera" />
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnDate"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:layout_marginStart="27dp"
+        android:layout_marginEnd="27dp"
+        app:cardBackgroundColor="@color/main_blue"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="20dp"
+        app:cardUseCompatPadding="true"
+        app:strokeColor="@color/main_blue">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingStart="27dp"
+            android:paddingEnd="27dp"
+            android:contentDescription="">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/pretendard_black"
+                android:text="소비기한"
+                android:textColor="@color/main_white"
+                android:textSize="32sp" />
+
+            <ImageView
+                android:layout_width="102dp"
+                android:layout_height="102dp"
+                android:layout_gravity="end"
+                app:srcCompat="@drawable/ic_date" />
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnAccess"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:layout_marginStart="27dp"
+        android:layout_marginEnd="27dp"
+        app:cardBackgroundColor="@color/main_blue"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="20dp"
+        app:cardUseCompatPadding="true"
+        app:strokeColor="@color/main_blue">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingStart="27dp"
+            android:paddingEnd="27dp"
+            android:contentDescription="">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/pretendard_black"
+                android:text="접근성"
+                android:textColor="@color/main_white"
+                android:textSize="32sp" />
+
+            <ImageView
+                android:layout_width="102dp"
+                android:layout_height="102dp"
+                android:layout_gravity="end"
+                app:srcCompat="@drawable/ic_access" />
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnTalkBack"
+            android:id="@+id/btnAppInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="31dp"
             android:layout_marginTop="33dp"
             android:layout_marginEnd="31dp"
+            android:layout_marginBottom="33dp"
             android:contentDescription="TalkBack 접근성 설정 버튼. 시스템 설정 화면으로 이동합니다.."
             app:cardBackgroundColor="@color/main_white"
             app:cardCornerRadius="10dp"
@@ -64,23 +157,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="TalkBack 설정"
+                android:text="앱 정보 확인"
                 android:textColor="@color/main_blue"
                 android:textSize="14sp" />
         </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:id="@+id/btnAppInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="17dp"
-            android:layout_marginBottom="14dp"
-            android:contentDescription="앱 정보 확인 버튼. 관련 화면으로 이동합니다."
-            android:fontFamily="@font/pretendard_bold"
-            android:text="@string/home_app_info"
-            android:textColor="@color/dark_gray_2"
-            android:textSize="13sp" />
-    </LinearLayout>
 
 </LinearLayout>
