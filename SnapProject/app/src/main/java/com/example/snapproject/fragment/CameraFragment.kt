@@ -8,7 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Camera
+import androidx.camera.core.Camera
 import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
