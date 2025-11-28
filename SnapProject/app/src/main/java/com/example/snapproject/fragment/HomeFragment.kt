@@ -46,7 +46,7 @@ class HomeFragment : Fragment() {
 
         initView()
 
-        binding.btnTalkBack.setOnClickListener { // TalkBack 설정 버튼 클릭 시
+        binding.btnAccess.setOnClickListener { // TalkBack 설정 버튼 클릭 시
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) // "시스템 설정 - 접근성"으로 이동
         }
         binding.btnAppInfo.setOnClickListener { // 앱 정보 확인 버튼 클릭 시
