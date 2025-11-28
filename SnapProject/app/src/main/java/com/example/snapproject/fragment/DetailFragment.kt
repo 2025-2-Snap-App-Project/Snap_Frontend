@@ -177,10 +177,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
             // 원재료명 다이얼로그 show
             if (txtIngredients != null) { // 원재료명 정보가 null이 아니라면
-                val dialog =
-                    DetailIngredientsDialog(txtIngredients) // DetailIngredientsDialog 인스턴스화 (원재료명도 같이 입력으로 넣어줌)
-                dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
-                dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
+                MainActivity.tts.readText("제품 원재료명 정보입니다. $txtIngredients", requireContext())
             } else {
                 MainActivity.tts.readText("원재료명 정보가 인식되지 않았습니다.", requireContext())
             }
