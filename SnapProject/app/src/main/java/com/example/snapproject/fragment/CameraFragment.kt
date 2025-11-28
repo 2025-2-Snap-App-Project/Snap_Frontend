@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import androidx.camera.core.Camera
 import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
@@ -18,10 +17,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -90,7 +89,9 @@ class CameraFragment : Fragment() {
 
     // 인식 여부를 저장할 변수
     @Volatile private var isNameDetected: Boolean = false
+
     @Volatile private var isDatedDetected: Boolean = false
+
     @Volatile private var isLabelDetected: Boolean = false
 
     // TTS로 안내한 횟수를 저장할 변수
@@ -280,7 +281,10 @@ class CameraFragment : Fragment() {
     }
 
     // 비트맵을 캐시 디렉터리에 이미지 파일 형태로 저장하는 함수
-    private fun saveImgFile(category: String, bitmap: Bitmap): Uri {
+    private fun saveImgFile(
+        category: String,
+        bitmap: Bitmap,
+    ): Uri {
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
         val imgFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
         imgFile.createNewFile() // 파일 생성
@@ -394,7 +398,10 @@ class CameraFragment : Fragment() {
     }
 
     // RectView 크기만큼 비트맵 생성
-    private fun createRectBitmap(screenBitmap: Bitmap, drawRect: RectF): Bitmap {
+    private fun createRectBitmap(
+        screenBitmap: Bitmap,
+        drawRect: RectF,
+    ): Bitmap {
         // screenBitmap의 실제 크기
         val imgW = screenBitmap.width
         val imgH = screenBitmap.height
@@ -422,13 +429,14 @@ class CameraFragment : Fragment() {
         Log.d("bitmapSize", "left=$cropLeft top=$cropTop width=$cropWidth height=$cropHeight")
 
         // 최종 rect 비트맵 생성
-        val rectBitmap = Bitmap.createBitmap(
-            screenBitmap,
-            cropLeft,
-            cropTop,
-            cropWidth,
-            cropHeight
-        )
+        val rectBitmap =
+            Bitmap.createBitmap(
+                screenBitmap,
+                cropLeft,
+                cropTop,
+                cropWidth,
+                cropHeight,
+            )
 
         return rectBitmap
     }
@@ -488,7 +496,10 @@ class CameraFragment : Fragment() {
     }
 
     // 인식된 제품명 이미지 서버로 POST 요청 + TTS 출력
-    private fun productNamePostAndTTS(imgFile: File, bitmap: Bitmap) {
+    private fun productNamePostAndTTS(
+        imgFile: File,
+        bitmap: Bitmap,
+    ) {
         if (isRequesting || isSpeaking || isNameDetected) return
         isRequesting = true
         isSpeaking = true
