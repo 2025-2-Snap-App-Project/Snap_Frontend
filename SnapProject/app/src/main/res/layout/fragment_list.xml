@@ -9,35 +9,18 @@
     android:orientation="vertical"
     tools:context=".fragment.CameraFragment">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="이전 버튼. 홈 화면으로 다시 이동합니다."
-            app:cardBackgroundColor="@android:color/transparent"
-            app:contentPadding="30dp"
-            app:strokeColor="@android:color/transparent">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_back" />
-        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="27dp"
+            android:layout_marginBottom="17dp"
             android:fontFamily="@font/pretendard_black"
             android:gravity="center"
             android:text="소비기한 확인"
             android:textColor="@color/dark_gray"
             android:textSize="20sp" />
-    </FrameLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutCategory"
@@ -109,5 +92,25 @@
 
         </androidx.recyclerview.widget.RecyclerView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="홈으로 돌아가기 버튼. 홈 화면으로 다시 이동합니다."
+        app:cardBackgroundColor="@color/main_blue"
+        app:cardCornerRadius="0dp"
+        app:contentPadding="20dp"
+        app:strokeColor="@android:color/transparent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/pretendard_bold"
+            android:text="홈으로 돌아가기"
+            android:textColor="@color/sub_white"
+            android:textSize="20sp" />
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
