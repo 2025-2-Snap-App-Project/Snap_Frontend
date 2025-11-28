@@ -173,11 +173,6 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                 MainActivity.tts.readText("원재료명 정보가 인식되지 않았습니다.", requireContext())
             }
         }
-
-        binding.btnReplay.setOnClickListener { // 설명 다시 듣기 버튼 클릭 -> 제품 상세 설명 다시 들려줌
-            val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
-            MainActivity.tts.readText("제품에 대한 전체 설명입니다. $itemTexts", requireContext())
-        }
     }
 
     private fun initView() =
