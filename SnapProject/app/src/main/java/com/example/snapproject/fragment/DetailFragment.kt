@@ -9,7 +9,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.snapproject.DetailIngredientsDialog
 import com.example.snapproject.MainActivity
 import com.example.snapproject.R
@@ -17,16 +16,16 @@ import com.example.snapproject.adapter.DetailRecyclerViewAdapter
 import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.model.db.ProductDatabase
-import com.example.snapproject.model.viewobject.DetailDateViewObject
-import com.example.snapproject.model.viewobject.DetailNameViewObject
-import com.example.snapproject.model.viewobject.DetailStorageViewObject
-import com.example.snapproject.model.viewobject.DetailSummaryViewObject
 import com.example.snapproject.readText
 
 class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDialogListener {
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerViewAdapter: DetailRecyclerViewAdapter // RecyclerView 어댑터
+
+    // ArrayList 변수 (제품 기본 정보, 제품 요약 설명)
+    private lateinit var basicInfoArrLst: ArrayList<String>
+    private lateinit var summaryInfoArrLst: ArrayList<String>
 
     companion object {
         fun newInstance() = DetailFragment()
@@ -65,21 +64,21 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
         if (prevPage == "loading") { // 이전 화면이 로딩 화면인 경우
             // TalkBack의 contentDescription 설정
-            binding.btnBack.contentDescription = "이전 버튼. 홈 화면으로 다시 이동합니다."
+            binding.btnBasicInfo.contentDescription = "제품명, 소비기한 정보 듣기 버튼"
+            binding.btnBack.contentDescription = "홈으로 돌아가기 버튼. 홈 화면으로 다시 이동합니다."
             binding.btnStoreOrDelete.contentDescription = "제품 보관하기 버튼. 보관하기 화면으로 이동합니다."
 
             // SafeArgs로 받은 서버 응답 결과를 각각 변수에 저장
             val itemName = String.format(resources.getString(R.string.detail_item_name), response?.data?.productName)
             val itemDate = String.format(resources.getString(R.string.detail_item_date), response?.data?.expirationDate)
+
+            // 제품 기본 정보 ArrayList 초기화
+            basicInfoArrLst = arrayListOf(itemName, itemDate)
+
             val itemSummary = response?.data?.summary
 
             if (itemSummary != null) { // 제품 요약 정보가 null이 아니라면
-                // 제품명, 소비기한, 요약 -> ArrayList에 추가
-                dataArrayList.add(DetailItemData("DETAIL_NAME", DetailNameViewObject(itemName)))
-                dataArrayList.add(DetailItemData("DETAIL_DATE", DetailDateViewObject(itemDate)))
-                for (summary in itemSummary) {
-                    dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
-                }
+                summaryInfoArrLst = itemSummary as ArrayList<String> // 제품 요약 설명 ArrayList 초기화
             } else {
                 MainActivity.tts.readText("제품 상세 정보가 누락되었습니다.", requireContext())
             }
@@ -87,9 +86,11 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
         if (prevPage == "list") { // 소비기한 리스트 화면에서 넘어온 경우
             binding.tvStoreOrDelete.text = "제품 삭제하기" // 버튼 내부 텍스트 수정
+            binding.tvBack.text = "이전 화면으로 이동"
 
             // TalkBack의 contentDescription 설정
-            binding.btnBack.contentDescription = "이전 버튼. 소비기한 리스트 화면으로 다시 이동합니다."
+            binding.btnBasicInfo.contentDescription = "제품명, 소비기한, 보관 장소 정보 듣기 버튼"
+            binding.btnBack.contentDescription = "이전 화면으로 이동 버튼. 소비기한 리스트 화면으로 다시 이동합니다."
             binding.btnStoreOrDelete.contentDescription = "제품 삭제 버튼. 해당 제품을 삭제하고 소비기한 리스트 화면으로 다시 이동합니다."
 
             // DB에서 해당 제품에 대한 상세 정보 불러오기
@@ -103,13 +104,9 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                 val itemStorage = String.format(resources.getString(R.string.detail_item_storage), detailData.storageLocation) // 보관 장소
                 val itemSummary = detailData.summary // 제품 요약 설명
 
-                // 변수의 값을 데이터 ArrrayList에 하나씩 추가
-                dataArrayList.add(DetailItemData("DETAIL_NAME", DetailNameViewObject(itemName)))
-                dataArrayList.add(DetailItemData("DETAIL_DATE", DetailDateViewObject(itemDate)))
-                dataArrayList.add(DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage)))
-                for (summary in itemSummary) {
-                    dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
-                }
+                // 제품 기본 정보, 제품 요약 설명 ArrayList 각각 초기화
+                basicInfoArrLst = arrayListOf(itemName, itemDate, itemStorage)
+                summaryInfoArrLst = itemSummary as ArrayList<String>
             } else { // DB에서 불러온 정보가 null이라면
                 MainActivity.tts.readText("제품 상세 정보를 불러올 수 없습니다!", requireContext())
             }
@@ -118,6 +115,18 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         recyclerViewAdapter = DetailRecyclerViewAdapter(dataArrayList) // RecyclerView 어댑터 생성
 
         initView()
+
+        // 제품 기본 정보 버튼 클릭 이벤트 처리
+        binding.btnBasicInfo.setOnClickListener {
+            for (info in basicInfoArrLst)
+                MainActivity.tts.readText(info, requireContext())
+        }
+
+        // 제품 요약 설명 버튼 클릭 이벤트 처리
+        binding.btnSummaryInfo.setOnClickListener {
+            for (info in summaryInfoArrLst)
+                MainActivity.tts.readText(info, requireContext())
+        }
 
         binding.btnBack.setOnClickListener { // 이전 버튼 클릭 -> "홈 화면" or "소비기한 리스트" 화면으로 이동
             findNavController().popBackStack()
@@ -165,33 +174,17 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
             // 원재료명 다이얼로그 show
             if (txtIngredients != null) { // 원재료명 정보가 null이 아니라면
-                val dialog =
-                    DetailIngredientsDialog(txtIngredients) // DetailIngredientsDialog 인스턴스화 (원재료명도 같이 입력으로 넣어줌)
-                dialog.setTargetFragment(this, 0) // targetFragment Null 에러 방지
-                dialog.show(parentFragmentManager, "DetailIngredientsDialog") // dialog 최종 show
+                MainActivity.tts.readText("제품 원재료명 정보입니다. $txtIngredients", requireContext())
             } else {
                 MainActivity.tts.readText("원재료명 정보가 인식되지 않았습니다.", requireContext())
             }
-        }
-
-        binding.btnReplay.setOnClickListener { // 설명 다시 듣기 버튼 클릭 -> 제품 상세 설명 다시 들려줌
-            val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
-            MainActivity.tts.readText("제품에 대한 전체 설명입니다. $itemTexts", requireContext())
         }
     }
 
     private fun initView() =
         with(binding) {
-            // xml의 recyclerview와 앞서 만든 RecyclerView 어댑터 연결
-            recyclerview.layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            recyclerview.adapter = recyclerViewAdapter
-
-            // RecyclerView 내부의 모든 아이템에 대해 Text를 가져옴
-            val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
-
             // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            MainActivity.tts.readText("제품 상세 설명 화면입니다. 오른쪽으로 드래그하여 제품에 대한 설명을 하나씩 확인해보세요.", requireContext()) {
+            MainActivity.tts.readText("제품 상세 설명 화면입니다. 버튼을 눌러서 제품에 대한 설명을 하나씩 확인해보세요.", requireContext()) {
                 binding.detailLayout.post { binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
             }
         }
