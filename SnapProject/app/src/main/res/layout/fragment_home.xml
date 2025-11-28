@@ -20,26 +20,6 @@
         android:text="SNAP"
         android:textSize="32sp" />
 
-    <TextView
-        android:id="@+id/tvWelcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="47dp"
-        android:layout_marginTop="53dp"
-        android:bufferType="spannable"
-        android:fontFamily="@font/pretendard_bold"
-        android:lineSpacingExtra="5sp"
-        android:text="안녕하세요, 사용자님!\n두 손가락으로 화면 중앙을 넘겨보세요."
-        android:textSize="16sp" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPagerMenu"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="39.12dp"
-        android:layout_weight="1" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -68,19 +48,6 @@
                 android:textColor="@color/main_blue"
                 android:textSize="14sp" />
         </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:id="@+id/btnAppInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="17dp"
-            android:layout_marginBottom="14dp"
-            android:contentDescription="앱 정보 확인 버튼. 관련 화면으로 이동합니다."
-            android:fontFamily="@font/pretendard_bold"
-            android:text="@string/home_app_info"
-            android:textColor="@color/dark_gray_2"
-            android:textSize="13sp" />
     </LinearLayout>
 
 </LinearLayout>

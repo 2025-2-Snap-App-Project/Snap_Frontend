@@ -70,19 +70,6 @@ class HomeFragment : Fragment() {
             colorArray[2] = subBlueTwo
 
             tvAppName.setTextColorAsLinearGradient(colorArray) // 미리 설정한 ColorArray로 Gradient 적용
-
-            // 텍스트뷰에서 "사용자" 부분만 컬러 변경하기
-            val tvData: String = tvWelcome.text.toString()
-            val tvBuilder = SpannableStringBuilder(tvData)
-            val colorBlueSpan =
-                ForegroundColorSpan(
-                    "#2276FF".toColorInt(),
-                )
-            tvBuilder.setSpan(colorBlueSpan, 7, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            tvWelcome.text = tvBuilder
-
-            // ViewPager2 어댑터 연결
-            viewPagerMenu.adapter = viewPagerAdapter
         }
 
     override fun onDestroy() {
