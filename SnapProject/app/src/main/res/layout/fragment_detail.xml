@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="더 자세한 정보"
+                android:text="원재료명 정보"
                 android:textColor="@color/sub_white"
                 android:textSize="20sp" />
         </com.google.android.material.card.MaterialCardView>
