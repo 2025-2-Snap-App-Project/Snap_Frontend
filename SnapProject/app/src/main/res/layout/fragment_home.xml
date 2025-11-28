@@ -27,12 +27,13 @@
         android:orientation="vertical">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnTalkBack"
+            android:id="@+id/btnAppInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="31dp"
             android:layout_marginTop="33dp"
             android:layout_marginEnd="31dp"
+            android:layout_marginBottom="33dp"
             android:contentDescription="TalkBack 접근성 설정 버튼. 시스템 설정 화면으로 이동합니다.."
             app:cardBackgroundColor="@color/main_white"
             app:cardCornerRadius="10dp"
@@ -44,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="TalkBack 설정"
+                android:text="앱 정보 확인"
                 android:textColor="@color/main_blue"
                 android:textSize="14sp" />
         </com.google.android.material.card.MaterialCardView>
