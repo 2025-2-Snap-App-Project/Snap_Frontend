@@ -298,6 +298,8 @@ class CameraFragment : Fragment() {
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
+        binding ?: return // binding이 null이면 바로 리턴 (다음 화면 이돋 시 발생하는 NullPointerException 에러 방지)
+
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
         val bitmap = dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
