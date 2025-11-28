@@ -28,6 +28,10 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
     private val binding get() = _binding!!
     private lateinit var recyclerViewAdapter: DetailRecyclerViewAdapter // RecyclerView 어댑터
 
+    // ArrayList 변수 (제품 기본 정보, 제품 요약 설명)
+    private lateinit var basicInfoArrLst : ArrayList<String>
+    private lateinit var summaryInfoArrLst : ArrayList<String>
+
     companion object {
         fun newInstance() = DetailFragment()
     }
@@ -71,15 +75,14 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             // SafeArgs로 받은 서버 응답 결과를 각각 변수에 저장
             val itemName = String.format(resources.getString(R.string.detail_item_name), response?.data?.productName)
             val itemDate = String.format(resources.getString(R.string.detail_item_date), response?.data?.expirationDate)
+
+            // 제품 기본 정보 ArrayList 초기화
+            basicInfoArrLst = arrayListOf(itemName, itemDate)
+
             val itemSummary = response?.data?.summary
 
             if (itemSummary != null) { // 제품 요약 정보가 null이 아니라면
-                // 제품명, 소비기한, 요약 -> ArrayList에 추가
-                dataArrayList.add(DetailItemData("DETAIL_NAME", DetailNameViewObject(itemName)))
-                dataArrayList.add(DetailItemData("DETAIL_DATE", DetailDateViewObject(itemDate)))
-                for (summary in itemSummary) {
-                    dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
-                }
+                summaryInfoArrLst = itemSummary as ArrayList<String> // 제품 요약 설명 ArrayList 초기화
             } else {
                 MainActivity.tts.readText("제품 상세 정보가 누락되었습니다.", requireContext())
             }
@@ -103,13 +106,10 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                 val itemStorage = String.format(resources.getString(R.string.detail_item_storage), detailData.storageLocation) // 보관 장소
                 val itemSummary = detailData.summary // 제품 요약 설명
 
-                // 변수의 값을 데이터 ArrrayList에 하나씩 추가
-                dataArrayList.add(DetailItemData("DETAIL_NAME", DetailNameViewObject(itemName)))
-                dataArrayList.add(DetailItemData("DETAIL_DATE", DetailDateViewObject(itemDate)))
-                dataArrayList.add(DetailItemData("DETAIL_STORAGE", DetailStorageViewObject(itemStorage)))
-                for (summary in itemSummary) {
-                    dataArrayList.add(DetailItemData("DETAIL_SUMMARY", DetailSummaryViewObject(summary)))
-                }
+                // 제품 기본 정보, 제품 요약 설명 ArrayList 각각 초기화
+                basicInfoArrLst = arrayListOf(itemName, itemDate, itemStorage)
+                summaryInfoArrLst = itemSummary as ArrayList<String>
+
             } else { // DB에서 불러온 정보가 null이라면
                 MainActivity.tts.readText("제품 상세 정보를 불러올 수 없습니다!", requireContext())
             }
