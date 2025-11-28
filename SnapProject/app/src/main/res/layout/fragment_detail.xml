@@ -52,6 +52,7 @@
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:layout_marginStart="10dp"
+            android:contentDescription="제품 요약 설명 듣기 버튼"
             app:cardBackgroundColor="@color/black">
 
             <TextView
@@ -69,6 +70,7 @@
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:layout_marginTop="10dp"
+            android:contentDescription="원재료명 정보 듣기 버튼"
             app:cardBackgroundColor="@color/black">
 
             <TextView

@@ -69,6 +69,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
         if (prevPage == "loading") { // 이전 화면이 로딩 화면인 경우
             // TalkBack의 contentDescription 설정
+            binding.btnBasicInfo.contentDescription = "제품명, 소비기한 정보 듣기 버튼"
             binding.btnBack.contentDescription = "이전 버튼. 홈 화면으로 다시 이동합니다."
             binding.btnStoreOrDelete.contentDescription = "제품 보관하기 버튼. 보관하기 화면으로 이동합니다."
 
@@ -93,6 +94,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             binding.tvBack.text = "이전 화면으로 이동"
 
             // TalkBack의 contentDescription 설정
+            binding.btnBasicInfo.contentDescription = "제품명, 소비기한, 보관 장소 정보 듣기 버튼"
             binding.btnBack.contentDescription = "이전 버튼. 소비기한 리스트 화면으로 다시 이동합니다."
             binding.btnStoreOrDelete.contentDescription = "제품 삭제 버튼. 해당 제품을 삭제하고 소비기한 리스트 화면으로 다시 이동합니다."
 
