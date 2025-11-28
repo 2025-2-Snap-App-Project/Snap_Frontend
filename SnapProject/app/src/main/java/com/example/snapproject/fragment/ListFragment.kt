@@ -25,22 +25,6 @@ class ListFragment : Fragment() {
         fun newInstance() = ListFragment()
     }
 
-    override fun onResume() {
-        super.onResume()
-        view?.post { // view가 생성된 후 실행
-            binding.listLayout.importantForAccessibility =
-                View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
-
-            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            MainActivity.tts.readText("소비기한별로 제품 리스트를 확인할 수 있습니다. 원하는 제품을 눌러 상세 정보를 확인해보세요.", requireContext()) {
-                binding.listLayout.post {
-                    binding.listLayout.importantForAccessibility =
-                        View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-                }
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
