@@ -198,7 +198,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
             val itemTexts = recyclerViewAdapter.getAllTextsForTTS(binding.recyclerview).joinToString(", ")
 
             // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            MainActivity.tts.readText("제품 상세 설명 화면입니다. 오른쪽으로 드래그하여 제품에 대한 설명을 하나씩 확인해보세요.", requireContext()) {
+            MainActivity.tts.readText("제품 상세 설명 화면입니다. 버튼을 눌러서 제품에 대한 설명을 하나씩 확인해보세요.", requireContext()) {
                 binding.detailLayout.post { binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
             }
         }
