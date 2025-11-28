@@ -560,8 +560,8 @@ class CameraFragment : Fragment() {
 
         return dateRegex.findAll(text) // 정규식에 해당되는 모든 부분 찾기
             .mapNotNull {
-                // 공백 제거 -> . or - 으로 split
-                val parts = it.value.replace(" ", "").split('.', '-')
+                // 모든 종류의 공백 제거 -> . or - 으로 split
+                val parts = it.value.replace(Regex("\\s+"), "").split('.', '-')
 
                 // 연, 월, 일 변수에 각각 저장
                 var year = parts[0].toInt()
