@@ -9,35 +9,16 @@
     android:orientation="vertical"
     tools:context=".fragment.StoreRecordFragment">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="이전 버튼. 제품 상세 설명 화면으로 이동합니다."
-            app:cardBackgroundColor="@android:color/transparent"
-            app:contentPadding="30dp"
-            app:strokeColor="@android:color/transparent">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_back" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/pretendard_black"
-            android:gravity="center"
-            android:text="보관하기"
-            android:textColor="@color/dark_gray"
-            android:textSize="20sp" />
-    </FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="26dp"
+        android:fontFamily="@font/pretendard_black"
+        android:gravity="center"
+        android:text="보관하기"
+        android:textColor="@color/dark_gray"
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -92,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="31dp"
             android:layout_marginEnd="31dp"
-            android:contentDescription="다음으로 버튼. 입력한 내용을 저장하고 이전 화면으로 이동합니다."
+            android:contentDescription="확인 버튼. 입력한 내용을 저장하고 제품 상세 설명 화면으로 이동합니다."
             app:cardBackgroundColor="@color/main_blue"
             app:cardCornerRadius="10dp"
             app:contentPadding="10dp"
@@ -103,19 +84,19 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="다음으로"
+                android:text="확인"
                 android:textColor="@color/main_white"
                 android:textSize="14sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnKeyBoard"
+            android:id="@+id/btnBack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="31dp"
             android:layout_marginTop="17dp"
             android:layout_marginEnd="31dp"
-            android:contentDescription="키보드로 입력 버튼. 키보드로 보관 장소를 입력합니다."
+            android:contentDescription="취소 버튼. 취소하고 제품 상세 설명 화면으로 이동합니다."
             app:cardBackgroundColor="@color/main_white"
             app:cardCornerRadius="10dp"
             app:contentPadding="10dp"
@@ -126,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="키보드로 입력"
+                android:text="취소"
                 android:textColor="@color/main_blue"
                 android:textSize="14sp" />
         </com.google.android.material.card.MaterialCardView>

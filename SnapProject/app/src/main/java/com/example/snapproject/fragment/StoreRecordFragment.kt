@@ -176,13 +176,6 @@ class StoreRecordFragment : Fragment() {
             }
         }
 
-        binding.btnKeyBoard.setOnClickListener { // "키보드로 입력" 버튼 클릭
-            binding.edtTxtStore.isEnabled = true // EditText 수정 가능
-            binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
-            binding.edtTxtStore.hint = "보관 장소를\n입력해주세요."
-            mActivity.showSoftInput(binding.edtTxtStore) // MainActivity의 키보드 보여주는 함수 호출
-        }
-
         // 키보드 바깥쪽 레이아웃 클릭 이벤트
         binding.storeLayout.setOnTouchListener { _, _ ->
             mActivity.hideKeyboard(binding.edtTxtStore) // 키보드 숨기기
