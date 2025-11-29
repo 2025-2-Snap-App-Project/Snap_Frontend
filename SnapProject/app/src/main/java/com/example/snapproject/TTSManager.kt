@@ -9,7 +9,10 @@ import android.util.Log
 import java.util.Locale
 
 // TTS 초기화 함수
-fun initTTS(context: Context, onReady: () -> Unit): TextToSpeech {
+fun initTTS(
+    context: Context,
+    onReady: () -> Unit,
+): TextToSpeech {
     var tts: TextToSpeech? = null
     tts =
         TextToSpeech(context) {

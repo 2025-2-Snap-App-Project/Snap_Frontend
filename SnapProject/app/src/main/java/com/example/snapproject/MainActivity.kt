@@ -35,10 +35,11 @@ class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
-        tts = initTTS(this@MainActivity) { // TTS 초기화
-            // TalkBack이 꺼져 있는 경우, 음성 안내 (TTS 초기화 끝난 뒤에 실행)
-            tts.readText("TalkBack을 키고 앱을 사용해주세요.", this)
-        }
+        tts =
+            initTTS(this@MainActivity) { // TTS 초기화
+                // TalkBack이 꺼져 있는 경우, 음성 안내 (TTS 초기화 끝난 뒤에 실행)
+                tts.readText("TalkBack을 키고 앱을 사용해주세요.", this)
+            }
 
         setUpJetpackNavigation() // 화면 전환 컨트롤러 -> 프래그먼트 전환
 
