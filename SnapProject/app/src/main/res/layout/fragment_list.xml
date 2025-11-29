@@ -16,6 +16,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="27dp"
             android:layout_marginBottom="17dp"
+            android:contentDescription="소비기한 확인 화면입니다. 소비기한별로 제품 리스트를 확인할 수 있습니다. 원하는 제품을 눌러 상세 정보를 확인해보세요."
             android:fontFamily="@font/pretendard_black"
             android:gravity="center"
             android:text="소비기한 확인"
@@ -27,14 +28,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/main_white"
-        android:contentDescription="소비기한 카테고리"
         app:tabIndicatorColor="@color/dark_gray"
         app:tabIndicatorFullWidth="true"
         app:tabIndicatorHeight="2dp"
         app:tabRippleColor="@android:color/transparent"
         app:tabSelectedTextColor="@color/dark_gray"
         app:tabTextAppearance="@style/list_tab_text"
-        app:tabTextColor="@color/light_gray_1">
+        app:tabTextColor="@color/light_gray_1"
+        android:importantForAccessibility="no">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"
@@ -63,6 +64,7 @@
             android:layout_weight="1"
             android:layout_marginTop="13dp"
             android:clipToPadding="false"
+            android:importantForAccessibility="no"
             android:paddingStart="24dp"
             android:paddingTop="21dp"
             android:paddingEnd="24dp"

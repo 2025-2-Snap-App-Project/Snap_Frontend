@@ -31,13 +31,6 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
         fun newInstance() = DetailFragment()
     }
 
-    override fun onResume() {
-        super.onResume()
-        view?.post { // view가 생성된 후 실행
-            binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -183,10 +176,6 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
     private fun initView() =
         with(binding) {
-            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            MainActivity.tts.readText("제품 상세 설명 화면입니다. 버튼을 눌러서 제품에 대한 설명을 하나씩 확인해보세요.", requireContext()) {
-                binding.detailLayout.post { binding.detailLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
-            }
         }
 
     override fun onDestroy() {

@@ -33,18 +33,6 @@ class LoadingFragment : Fragment() {
         fun newInstance() = LoadingFragment()
     }
 
-    override fun onResume() {
-        super.onResume()
-        view?.post { // view가 생성된 후 실행
-            binding.loadingLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS // 기존 Talkback focus 지우기
-
-            // TTS 발화 먼저 진행 -> 발화 끝난 뒤, 다시 Talkback focus 복원
-            MainActivity.tts.readText("이미지 분석 진행 중입니다. 잠시만 기다려주세요.", requireContext()) {
-                binding.loadingLayout.post { binding.loadingLayout.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO }
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
