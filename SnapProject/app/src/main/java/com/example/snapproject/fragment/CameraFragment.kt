@@ -599,8 +599,8 @@ class CameraFragment : Fragment() {
         super.onDestroyView()
 
         cameraProvider?.unbindAll()
-        cameraExecutor.shutdownNow()
         imageAnalyzer.clearAnalyzer()
+        cameraExecutor.shutdownNow()
         _binding = null
     }
 
