@@ -258,6 +258,11 @@ class CameraFragment : Fragment() {
                 .build()
 
         imageAnalyzer.setAnalyzer(cameraExecutor) {
+            if (!isAdded || _binding == null) { // Fragment가 attach된 상태가 아니거나, _binding이 null이면
+                // imageProxy를 닫고 바로 리턴
+                it.close()
+                return@setAnalyzer
+            }
             imageProcess(it)
             it.close()
         }
@@ -302,7 +307,11 @@ class CameraFragment : Fragment() {
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
-        binding ?: return // binding이 null이면 바로 리턴 (다음 화면 이돋 시 발생하는 NullPointerException 에러 방지)
+        // binding이 null이면 -> imageProxy 중단 후, 바로 리턴 (다음 화면 이돋 시 발생하는 NullPointerException 에러 방지)
+        _binding ?: run {
+            imageProxy.close()
+            return
+        }
 
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
@@ -370,6 +379,9 @@ class CameraFragment : Fragment() {
 
     // 현재 스크린 크기만큼 비트맵 생성
     private fun createScreenBitmap(fullBitmap: Bitmap): Bitmap {
+        // 카메라 프리뷰가 null이면 -> 입력으로 들어온 fullBitmap 그대로 반환 (화면 이동 시, binding NullPointer Exception 방지)
+        binding?.previewCamera ?: return fullBitmap
+
         // PreviewView의 가로 세로 비율 계산
         val screenW = binding.previewCamera.width
         val screenH = binding.previewCamera.height
