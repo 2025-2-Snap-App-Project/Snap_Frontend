@@ -1,3 +1,38 @@
 <resources>
-    <string name="app_name">SnapProject</string>
+    <string name="app_name">Snap</string>
+    <string name="home_app_info"><u>앱 정보 확인</u></string>
+    <string name="detail_more_info"><u>더 자세한 정보 확인</u></string>
+    <string name="appbar_scrolling_view_behavior" translatable="false">
+        com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior
+    </string>
+    <string name="detail_item_name">"제품명은 %s입니다."</string>
+    <string name="detail_item_date">"소비기한은 %s 까지입니다."</string>
+    <string name="detail_item_storage">"이 제품은 %s에 있습니다."</string>
+
+    <string name="talkback_home_menu_first"> 촬영하기 메뉴. 알레르기 성분, 소비기한 등 식품 상세 정보를 확인해요. 두 손가락으로 화면을 오른쪽으로 넘기면 다른 메뉴를 확인할 수 있어요.</string>
+    <string name="talkback_home_menu_second">소비기한 메뉴. 날짜가 임박한 제품을 카테고리별로 확인해요. 두 손가락으로 화면을 왼쪽으로 넘기면 다른 메뉴를 확인할 수 있어요.</string>
+    <string name="talkback_loading_description">이미지 분석 중. 잠시만 기다려주세요</string>
+    <string name="talkback_loading_failure">이미지 분석에 실패했습니다. 다시 시도하시겠습니까?</string>
+
+    <string name="icon_asset_license_camera">
+    <![CDATA[
+    <a href="https://www.flaticon.com/free-icons/videocam" title="videocam icons">Videocam icons created by smashingstocks - Flaticon</a>
+    ]]>
+    </string>
+    <string name="icon_asset_license_calendar">
+    <![CDATA[
+    <a href="https://www.flaticon.com/free-icons/calendar" title="calendar icons">Calendar icons created by Freepik - Flaticon</a>
+    ]]>
+    </string>
+    <string name="icon_asset_license_message">
+    <![CDATA[
+    <a href="https://www.flaticon.com/free-icons/message" title="message icons">Message icons created by Freepik - Flaticon</a>
+    ]]>
+    </string>
+    <string name="icon_asset_license_microphone">
+    <![CDATA[
+    <a href="https://www.flaticon.com/free-icons/microphone" title="microphone icons">Microphone icons created by Freepik - Flaticon</a>
+    ]]>
+    </string>
+
 </resources>

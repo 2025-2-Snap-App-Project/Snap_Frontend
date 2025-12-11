@@ -5,5 +5,29 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
+    <!-- 소비기한 리스트 화면 - 카테고리 탭의 기본 텍스트 스타일 -->
+    <style name="list_tab_text" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/pretendard_bold</item>
+    </style>
+
+    <!-- 소비기한 리스트 화면 - 아이템의 별 CheckBox 스타일 -->
+    <style name="list_star_checkbox">
+        <item name="android:button">@null</item>
+        <item name="android:background">@drawable/bg_star</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+
+    <!-- 소비기한 리스트 삭제 화면 - 아이템의 CheckBox 스타일 -->
+    <style name="delete_checkbox">
+        <item name="android:button">@null</item>
+        <item name="android:background">@drawable/bg_delete_check</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+
     <style name="Theme.SnapProject" parent="Base.Theme.SnapProject" />
 </resources>

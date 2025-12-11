@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.snapproject.fragment.HomeFragment"
+        android:label="HomeFragment">
+        <action
+            android:id="@+id/action_homeFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_licenseFragment"
+            app:destination="@id/licenseFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/licenseFragment"
+        android:name="com.example.snapproject.fragment.LicenseFragment"
+        android:label="LicenseFragment">
+        <action
+            android:id="@+id/action_licenseFragment_to_iconAssetFragment"
+            app:destination="@id/iconAssetFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/iconAssetFragment"
+        android:name="com.example.snapproject.fragment.IconAssetFragment"
+        android:label="IconAssetFragment">
+    </fragment>
+
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.example.snapproject.fragment.CameraFragment"
+        android:label="CameraFragment">
+        <action
+            android:id="@+id/action_cameraFragment_to_loadingFragment"
+            app:destination="@id/loadingFragment"
+            app:popUpTo="@id/homeFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/loadingFragment"
+        android:name="com.example.snapproject.fragment.LoadingFragment"
+        android:label="LoadingFragment">
+        <argument
+            android:name="uriArrLst"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_loadingFragment_to_detailFragment"
+            app:destination="@id/detailFragment"
+            app:popUpTo="@id/homeFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.snapproject.fragment.ListFragment"
+        android:label="ListFragment">
+        <action
+            android:id="@+id/action_listFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.snapproject.fragment.DetailFragment"
+        android:label="DetailFragment">
+        <argument
+            android:name="prevPage"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="itemId"
+            app:argType="integer" />
+        <argument
+            android:name="analyzeResponse"
+            app:argType="com.example.snapproject.model.AnalyzeResponse"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_detailFragment_to_storeRecordFragment"
+            app:destination="@id/storeRecordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/storeRecordFragment"
+        android:name="com.example.snapproject.fragment.StoreRecordFragment"
+        android:label="StoreRecordFragment">
+        <argument
+            android:name="prevPage"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="itemId"
+            app:argType="integer" />
+        <argument
+            android:name="analyzeResponse"
+            app:argType="com.example.snapproject.model.AnalyzeResponse"
+            app:nullable="true" />
+    </fragment>
+</navigation>

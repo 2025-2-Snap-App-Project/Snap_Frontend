@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detailLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_white"
+    android:orientation="vertical"
+    tools:context=".fragment.DetailFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="26dp"
+        android:contentDescription="제품 상세 설명 화면입니다. 하단에 있는 버튼을 눌러서 제품에 대한 설명을 하나씩 확인해보세요."
+        android:fontFamily="@font/pretendard_black"
+        android:gravity="center"
+        android:text="제품 상세 설명"
+        android:textColor="@color/dark_gray"
+        android:textSize="20sp" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="120dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginBottom="120dp"
+        android:layout_weight="1"
+        android:columnCount="2">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnBasicInfo"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            app:cardBackgroundColor="@color/main_blue"
+            app:strokeColor="@android:color/transparent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="제품 기본 정보"
+                android:textColor="@color/sub_white"
+                android:textSize="20sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnSummaryInfo"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginStart="10dp"
+            android:contentDescription="제품 요약 설명 듣기 버튼"
+            app:cardBackgroundColor="@color/black"
+            app:strokeColor="@android:color/transparent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="제품 요약 설명"
+                android:textColor="@color/sub_white"
+                android:textSize="20sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnMoreInfo"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="10dp"
+            android:contentDescription="원재료명 정보 듣기 버튼"
+            app:cardBackgroundColor="@color/black"
+            app:strokeColor="@android:color/transparent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="원재료명 정보"
+                android:textColor="@color/sub_white"
+                android:textSize="20sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnStoreOrDelete"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            app:cardBackgroundColor="@color/main_blue"
+            app:strokeColor="@android:color/transparent">
+
+            <TextView
+                android:id="@+id/tvStoreOrDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="제품 보관하기"
+                android:textColor="@color/sub_white"
+                android:textSize="20sp" />
+        </com.google.android.material.card.MaterialCardView>
+    </GridLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/main_blue"
+        app:cardCornerRadius="0dp"
+        app:contentPadding="20dp"
+        app:strokeColor="@android:color/transparent">
+
+        <TextView
+            android:id="@+id/tvBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/pretendard_bold"
+            android:text="홈으로 돌아가기"
+            android:textColor="@color/sub_white"
+            android:textSize="20sp" />
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>
