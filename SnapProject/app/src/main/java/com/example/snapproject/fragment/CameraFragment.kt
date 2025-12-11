@@ -258,7 +258,7 @@ class CameraFragment : Fragment() {
                 .build()
 
         imageAnalyzer.setAnalyzer(cameraExecutor) {
-            if (!isAdded || _binding == null) { // Fragment가 attach된 상태가 아니거나, _binding이 null이면
+            if (!isAdded || view == null || _binding == null) { // Fragment가 attach된 상태가 아니거나, view가 null이거나, _binding이 null이면
                 // imageProxy를 닫고 바로 리턴
                 it.close()
                 return@setAnalyzer
