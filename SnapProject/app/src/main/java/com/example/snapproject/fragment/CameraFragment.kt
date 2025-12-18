@@ -178,6 +178,47 @@ class CameraFragment : Fragment() {
 
         initView()
 
+        // YOLO 객체 탐지가 성공한 경우
+        viewModel.yoloResults.observe(viewLifecycleOwner) { results ->
+            // 비어있으면 리턴
+            if (results.isEmpty()) return@observe
+
+            // 화면에 YOLO 추론 결과 (RectView) 그리기
+            binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
+            binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+            val drawRect = binding.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
+
+            // 화면에 YOLO 추론 결과가 그려져 있다면
+            if (drawRect != null) {
+                // 전체 화면 Bitmap 생성 -> File 변환
+                val screenBitmap = createScreenBitmap(viewModel.fullRotatedBitmap!!) // 현재 스크린에 보이는 만큼 비트맵 생성
+                val drawRectBitmap = createRectBitmap(screenBitmap, drawRect) // RectView 크기만큼 비트맵 생성
+                val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
+
+                // "제품명 인식됨" -> 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
+                if (results.firstOrNull()?.classIndex == 1 && !viewModel.isRequesting && !viewModel.isSpeaking) {
+                    viewModel.isRequesting = true
+                    lifecycleScope.launch {
+                        when (val result = ApiRepository.postName(imgFile)) { // POST 요청
+                            is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
+                                val productName = result.data.productName // 제품명 인식 결과 저장
+                                viewModel.onProductNameDetected(productName, drawRectBitmap)
+                            }
+                            is ApiResult.Error -> {
+                                Log.e("productNameTTS", "서버 요청 실패")
+                                viewModel.isRequesting = false
+                            }
+                        }
+                    }
+                }
+
+                // "제품 라벨 인식됨" -> TTS 출력
+                if (results.firstOrNull()?.classIndex == 0 && !viewModel.isSpeaking) {
+                    viewModel.onProductLabelDetected(drawRectBitmap)
+                }
+            }
+        }
+
         viewModel.isAllDetected.observe(viewLifecycleOwner) { allDetected ->
             if (allDetected == false || hasNavigated) return@observe
 
@@ -346,12 +387,6 @@ class CameraFragment : Fragment() {
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
-        // binding이 null이면 -> imageProxy 중단 후, 바로 리턴 (다음 화면 이돋 시 발생하는 NullPointerException 에러 방지)
-        _binding ?: run {
-            imageProxy.close()
-            return
-        }
-
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
         val bitmap = viewModel.dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
@@ -376,41 +411,9 @@ class CameraFragment : Fragment() {
 
         // YOLO 추론 최종 결과 출력
         val results = viewModel.dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
-        binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
-        binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
-
-        val drawRect = binding.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
         val fullBitmap = imageProxy.toBitmap() // 원본 imageProxy를 비트맵으로
         val fullRotatedBitmap = imageToRotatedBitmap(imageProxy.toBitmap(), rotation) // 원본 imageProxy를 회전된 비트맵으로
-        val screenBitmap = createScreenBitmap(fullRotatedBitmap) // 현재 스크린에 보이는 만큼 비트맵 생성
-
-        if (drawRect != null) { // drawRect가 화면에 표시된 상태라면
-            val drawRectBitmap = createRectBitmap(screenBitmap, drawRect) // RectView 크기만큼 비트맵 생성
-            val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
-
-            if (results.firstOrNull()?.classIndex == 1 && !viewModel.isRequesting && !viewModel.isSpeaking) {
-                // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
-                viewModel.isRequesting = true
-                lifecycleScope.launch {
-                    when (val result = ApiRepository.postName(imgFile)) { // POST 요청
-                        is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
-                            val productName = result.data.productName // 제품명 인식 결과 저장
-                            viewModel.onProductNameDetected(productName, drawRectBitmap)
-                            viewModel.isRequesting = false
-                        }
-                        is ApiResult.Error -> {
-                            Log.e("productNameTTS", "서버 요청 실패")
-                            viewModel.isRequesting = false
-                        }
-                    }
-                }
-            }
-
-            // "제품 라벨 인식됨" -> TTS 출력
-            if (results.firstOrNull()?.classIndex == 0 && !viewModel.isSpeaking) {
-                viewModel.onProductLabelDetected(drawRectBitmap)
-            }
-        }
+        viewModel.onYoloResult(results, fullBitmap, fullRotatedBitmap) // YOLO 추론 결과 업데이트
 
         if (!viewModel.isSpeaking) {
             // 소비기한 OCR 수행
