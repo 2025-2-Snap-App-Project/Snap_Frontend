@@ -457,9 +457,9 @@ class CameraFragment : Fragment() {
                 Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
                 val dates = extractValidDates(it.text) // 소비기한 조건 체크
                 if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
-                    Log.d("ocrDateSuccess", "인식된 날짜: ${dates.first()}")
-                    expirationDate = dates.first() // 인식된 소비기한을 변수에 저장
-                    expiryDateTTS(bitmap) // 인식된 소비기한 TTS 출력
+                    val ocrDate = dates.first()
+                    Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
+                    expiryDateTTS(bitmap, ocrDate) // 인식된 소비기한 TTS 출력
                 } else { // 소비기한이 인식되지 않은 경우
                     Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
                 }
@@ -470,20 +470,17 @@ class CameraFragment : Fragment() {
     }
 
     // 인식된 소비기한 TTS 출력
-    private fun expiryDateTTS(bitmap: Bitmap) {
-        if (isSpeaking || isDatedDetected) return
+    private fun expiryDateTTS(bitmap: Bitmap, ocrDate: String) {
+        if (!viewModel.canSpeak()) return
+        viewModel.onExpirationDateDetected(ocrDate)
 
-        isSpeaking = true
-        isDatedDetected = true
-        Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
-
-        expirationDate?.let {
+        ocrDate.let {
             MainActivity.tts.readText(it, requireContext()) {
                 requireActivity().runOnUiThread {
                     val uri = saveImgFile("date", bitmap)
                     addUriArrayList(uri)
                     checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                    isSpeaking = false
+                    viewModel.isTTSFinished()
                 }
             }
         }
