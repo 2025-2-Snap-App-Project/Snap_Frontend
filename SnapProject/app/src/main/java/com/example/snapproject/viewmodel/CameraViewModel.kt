@@ -87,8 +87,8 @@ class CameraViewModel : ViewModel() {
     fun onProductNameDetected(name: String, bitmap: Bitmap) {
         if (_isNameDetected.value == true) return
 
-        _productName.value = name
         _isNameDetected.value = true
+        _productName.value = name
         nameBitmap = bitmap
     }
 
@@ -96,8 +96,8 @@ class CameraViewModel : ViewModel() {
     fun onExpirationDateDetected(date: String, bitmap: Bitmap) {
         if (_isDateDetected.value == true) return
 
-        _expirationDate.value = date
         _isDateDetected.value = true
+        _expirationDate.value = date
         dateBitmap = bitmap
     }
 
@@ -106,8 +106,8 @@ class CameraViewModel : ViewModel() {
         if (_isLabelDetected.value == true) return
 
         _isLabelDetected.value = true
-        labelBitmap = bitmap
         _productLabel.value = Unit
+        labelBitmap = bitmap
     }
 
     // TTS 출력 완료 후, 관련 변수 업데이트
