@@ -87,8 +87,8 @@ class CameraViewModel : ViewModel() {
     fun onProductNameDetected(name: String, bitmap: Bitmap) {
         if (_isNameDetected.value == true) return
 
-        _productName.postValue(name)
-        _isNameDetected.postValue(true)
+        _productName.value = name
+        _isNameDetected.value = true
         nameBitmap = bitmap
     }
 
@@ -96,8 +96,8 @@ class CameraViewModel : ViewModel() {
     fun onExpirationDateDetected(date: String, bitmap: Bitmap) {
         if (_isDateDetected.value == true) return
 
-        _expirationDate.postValue(date)
-        _isDateDetected.postValue(true)
+        _expirationDate.value = date
+        _isDateDetected.value = true
         dateBitmap = bitmap
     }
 
@@ -105,7 +105,7 @@ class CameraViewModel : ViewModel() {
     fun onProductLabelDetected(bitmap: Bitmap) {
         if (_isLabelDetected.value == true) return
 
-        _isLabelDetected.postValue(true)
+        _isLabelDetected.value = true
         labelBitmap = bitmap
         _productLabel.value = Unit
     }
