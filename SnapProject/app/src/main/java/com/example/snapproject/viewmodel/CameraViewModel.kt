@@ -1,5 +1,6 @@
 package com.example.snapproject.viewmodel
 
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,6 +17,10 @@ class CameraViewModel : ViewModel() {
     private val _expirationDate = MutableLiveData<String?>()
     val expirationDate: LiveData<String?> = _expirationDate
 
+    // 3. 제품 라벨
+    private val _productLabel = MutableLiveData<String?>()
+    val productLabel: LiveData<String?> = _productLabel
+
     // 인식 여부 플래그
     private val _isNameDetected = MutableLiveData(false)
     val isNameDetected: LiveData<Boolean> = _isNameDetected
@@ -25,6 +30,11 @@ class CameraViewModel : ViewModel() {
 
     private val _isLabelDetected = MutableLiveData(false)
     val isLabelDetected: LiveData<Boolean> = _isLabelDetected
+
+    // bitmap
+    lateinit var nameBitmap: Bitmap
+    lateinit var dateBitmap: Bitmap
+    lateinit var labelBitmap: Bitmap
 
     // 3가지 모두 인식되었는지 체크
     private val _isAllDetected = MediatorLiveData<Boolean>()
@@ -52,59 +62,39 @@ class CameraViewModel : ViewModel() {
         return false
     }
 
-
-
     // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
-    private var isRequesting = false
+    var isRequesting = false
 
     // TTS 중복 실행 방지 플래그
-    private var isSpeaking = false
+    var isSpeaking = false
 
     lateinit var dataProcess: DataProcess
 
     // 제품 이름이 인식되었을 때
-    fun onProductNameDetected(name: String) {
+    fun onProductNameDetected(name: String, bitmap: Bitmap) {
         if (_isNameDetected.value == true) return
 
         _productName.postValue(name)
         _isNameDetected.postValue(true)
+        nameBitmap = bitmap
     }
 
     // 소비기한이 인식되었을 때
-    fun onExpirationDateDetected(date: String) {
+    fun onExpirationDateDetected(date: String, bitmap: Bitmap) {
         if (_isDateDetected.value == true) return
 
         _expirationDate.postValue(date)
         _isDateDetected.postValue(true)
+        dateBitmap = bitmap
     }
 
     // 제품 라벨이 인식되었을 때
-    fun onProductLabelDetected() {
+    fun onProductLabelDetected(bitmap: Bitmap) {
         if (_isLabelDetected.value == true) return
 
+        _productLabel.postValue("제품 라벨이 인식되었습니다.")
         _isLabelDetected.postValue(true)
-    }
-
-    // 현재 TTS 출력 중인지 체크
-    fun canSpeak(): Boolean {
-        if (isSpeaking) return false
-        isSpeaking = true
-        return true
-    }
-
-    // TTS 종료
-    fun isTTSFinished() {
-        isSpeaking = false
-    }
-
-    // 네트워크 요청 상태 관리
-    fun canRequest(): Boolean {
-        if (isRequesting) return false
-        isRequesting = true
-        return true
-    }
-    fun isRequestFinished() {
-        isRequesting = false
+        labelBitmap = bitmap
     }
 
 }
