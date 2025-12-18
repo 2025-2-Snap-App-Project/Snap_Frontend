@@ -26,13 +26,20 @@ class CameraViewModel : ViewModel() {
     val isLabelDetected: LiveData<Boolean> = _isLabelDetected
 
     // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
-    private val _isRequesting = MutableLiveData(false)
-    val isRequesting: LiveData<Boolean> = _isRequesting
+    private var isRequesting = false
 
     // TTS 중복 실행 방지 플래그
     private var isSpeaking = false
 
     lateinit var dataProcess: DataProcess
+
+    // 제품 이름이 인식되었을 때
+    fun onProductNameDetected(name: String) {
+        if (_isNameDetected.value == true) return
+
+        _productName.value = name
+        _isNameDetected.value = true
+    }
 
     // 소비기한이 인식되었을 때
     fun onExpirationDateDetected(date: String) {
@@ -51,6 +58,16 @@ class CameraViewModel : ViewModel() {
     // TTS 종료
     fun isTTSFinished() {
         isSpeaking = false
+    }
+
+    // 네트워크 요청 상태 관리
+    fun canRequest(): Boolean {
+        if (isRequesting) return false
+        isRequesting = true
+        return true
+    }
+    fun isRequestFinished() {
+        isRequesting = false
     }
 
 }
