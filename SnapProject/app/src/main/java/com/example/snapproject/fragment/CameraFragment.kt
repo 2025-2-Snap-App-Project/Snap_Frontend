@@ -69,12 +69,6 @@ class CameraFragment : Fragment() {
     private lateinit var imageAnalyzer: ImageAnalysis
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
-    private lateinit var dataProcess: DataProcess
-
-    private lateinit var auth: FirebaseAuth
-    private lateinit var functions: FirebaseFunctions
-    private var isRequesting = false // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
-
     // TextRecognizer 인스턴스 생성
     val txtRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
@@ -82,25 +76,7 @@ class CameraFragment : Fragment() {
     private lateinit var ortEnvironment: OrtEnvironment
     private lateinit var session: OrtSession
 
-    // YOLO 추론 후, OCR 결과를 저장할 변수
-    private var productName: String? = null // 제품명 OCR 결과
-    private var expirationDate: String? = null // 소비기한 OCR 결과
     private var productLabelTxt: String = "제품 라벨이 인식되었습니다."
-
-    // 인식 여부를 저장할 변수
-    @Volatile private var isNameDetected: Boolean = false
-
-    @Volatile private var isDatedDetected: Boolean = false
-
-    @Volatile private var isLabelDetected: Boolean = false
-
-    // TTS로 안내한 횟수를 저장할 변수
-    private var productNameTTSNum: Int = 0 // 제품명 TTS 횟수
-    private var expirationDateTTSNum: Int = 0 // 소비기한 TTS 횟수
-    private var productLabelTTSNum: Int = 0 // 제품 라벨 TTS 횟수
-
-    // TTS 중복 실행 방지 플래그
-    private var isSpeaking = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
