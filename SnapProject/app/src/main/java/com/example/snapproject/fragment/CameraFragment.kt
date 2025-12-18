@@ -27,14 +27,18 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.MainActivity
+import com.example.snapproject.R
 import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
+import com.example.snapproject.viewmodel.CameraViewModel
 import com.example.snapproject.yolo.DataProcess
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
@@ -56,6 +60,8 @@ import java.util.concurrent.Executors
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel by viewModels<CameraViewModel>()  // CameraViewModel 초기화
 
     private lateinit var mContext: Context
     private lateinit var mActivity: MainActivity
@@ -146,7 +152,7 @@ class CameraFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentCameraBinding.inflate(inflater, container, false)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_camera, container, false)
         return binding.root
     }
 
