@@ -34,4 +34,23 @@ class CameraViewModel : ViewModel() {
 
     lateinit var dataProcess: DataProcess
 
+    // 소비기한이 인식되었을 때
+    fun onExpirationDateDetected(date: String) {
+        if (_isDateDetected.value == true) return
+
+        _expirationDate.value = date
+        _isDateDetected.value = true
+    }
+    // 현재 TTS 출력 중인지 체크
+    fun canSpeak(): Boolean {
+        if (isSpeaking) return false
+        isSpeaking = true
+        return true
+    }
+
+    // TTS 종료
+    fun isTTSFinished() {
+        isSpeaking = false
+    }
+
 }
