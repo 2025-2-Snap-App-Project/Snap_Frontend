@@ -491,30 +491,27 @@ class CameraFragment : Fragment() {
         imgFile: File,
         bitmap: Bitmap,
     ) {
-        if (isRequesting || isSpeaking || isNameDetected) return
-        isRequesting = true
-        isSpeaking = true
+        if (!viewModel.canSpeak() || !viewModel.canRequest()) return
 
         // 서버 요청 + TTS 발화
         lifecycleScope.launch {
             when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                 is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
-                    productName = result.data.productName // 제품명 인식 결과 저장
-                    isNameDetected = true
-                    Log.d("CameraFragment", "isNameDetected: $isNameDetected")
+                    val productName = result.data.productName // 제품명 인식 결과 저장
+                    viewModel.onProductNameDetected(productName)
 
-                    MainActivity.tts.readText(productName!!, requireContext()) {
+                    MainActivity.tts.readText(productName, requireContext()) {
                         requireActivity().runOnUiThread {
                             val uri = saveImgFile("name", bitmap)
                             addUriArrayList(uri)
                             checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                            isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
+                            viewModel.isTTSFinished() // TTS가 끝나는 시점에 false로 바꿔주기
                         }
                     }
                 }
                 is ApiResult.Error -> {
                     Log.e("productNameTTS", "서버 요청 실패")
-                    isSpeaking = false // 서버 요청 실패한 경우에도 false로 바꿔주기
+                    viewModel.isTTSFinished() // 서버 요청 실패한 경우에도 false로 바꿔주기
                 }
             }
         }
