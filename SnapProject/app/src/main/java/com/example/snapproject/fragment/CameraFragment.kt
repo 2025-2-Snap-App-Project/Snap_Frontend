@@ -190,6 +190,47 @@ class CameraFragment : Fragment() {
             val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
             findNavController().navigate(action)
         }
+
+        // 제품명 인식되면 실행
+        viewModel.productName.observe(viewLifecycleOwner) { name ->
+            if (name == null) return@observe
+
+            viewModel.isSpeaking = true
+
+            // TTS 출력
+            MainActivity.tts.readText(name, requireContext()) {
+                val uri = saveImgFile("name", viewModel.nameBitmap)
+                addUriArrayList(uri)
+                viewModel.isSpeaking = false
+            }
+        }
+
+        // 소비기한 인식되면 실행
+        viewModel.expirationDate.observe(viewLifecycleOwner) { date ->
+            if (date == null) return@observe
+
+            viewModel.isSpeaking = true
+
+            // TTS 출력
+            MainActivity.tts.readText(date, requireContext()) {
+                val uri = saveImgFile("date", viewModel.dateBitmap)
+                addUriArrayList(uri)
+                viewModel.isSpeaking = false
+            }
+        }
+
+        // 제품 라벨 인식되면 실행
+        viewModel.productLabel.observe(viewLifecycleOwner) {
+
+            viewModel.isSpeaking = true
+
+            // TTS 출력
+            MainActivity.tts.readText(productLabelTxt, requireContext()) {
+                val uri = saveImgFile("label", viewModel.labelBitmap)
+                addUriArrayList(uri)
+                viewModel.isSpeaking = false
+            }
+        }
     }
 
     // 시스템 설정에서 권한 허용해 준 뒤, 다시 돌아왔을 때 카메라 세팅 필요
