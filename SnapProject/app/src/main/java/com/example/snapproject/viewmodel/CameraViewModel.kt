@@ -46,8 +46,8 @@ class CameraViewModel : ViewModel() {
     private var isLabelTTSCompleted : Boolean = false
 
     // 3개의 TTS를 모두 출력했는지
-    private val _isAllTTSCompleted = MutableLiveData<Unit>()
-    val isAllTTSCompleted: LiveData<Unit> = _isAllTTSCompleted
+    private val _isAllTTSCompleted = MutableLiveData(false)
+    val isAllTTSCompleted: LiveData<Boolean> = _isAllTTSCompleted
 
 
     // 3가지 모두 인식되었는지 체크
@@ -59,7 +59,7 @@ class CameraViewModel : ViewModel() {
         )
         if (isNameTTSCompleted && isDateTTSCompleted && isLabelTTSCompleted) {
             Log.d("TTS_CHECK", "ALL DONE → NAVIGATE")
-            _isAllTTSCompleted.value = Unit
+            _isAllTTSCompleted.postValue(true)
         }
     }
 
