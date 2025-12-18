@@ -6,6 +6,9 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.snapproject.yolo.DataProcess
+import com.example.snapproject.yolo.YoloResult
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class CameraViewModel : ViewModel() {
     // YOLO 추론 후, OCR 결과를 저장할 변수
@@ -40,6 +43,14 @@ class CameraViewModel : ViewModel() {
     private val _isAllDetected = MediatorLiveData<Boolean>()
     val isAllDetected: LiveData<Boolean> = _isAllDetected
 
+    // YOLO 추론 결과
+    private val _yoloResults = MutableLiveData<ArrayList<YoloResult>>(arrayListOf())
+    val yoloResults: LiveData<ArrayList<YoloResult>> = _yoloResults
+
+    // 전체 화면 Bitmap
+    var fullBitmap: Bitmap? = null
+    var fullRotatedBitmap: Bitmap? = null
+
     init {
         _isAllDetected.value = false
 
@@ -53,6 +64,13 @@ class CameraViewModel : ViewModel() {
             _isAllDetected.value = isAllDetected()
         }
 
+    }
+
+    // YOLO 추론 결과 + 전체 화면 Bitmap 업데이트
+    fun onYoloResult(results: ArrayList<YoloResult>, fullBitmap: Bitmap, fullRotatedBitmap: Bitmap) {
+        _yoloResults.postValue(results)
+        this.fullBitmap = fullBitmap
+        this.fullRotatedBitmap = fullRotatedBitmap
     }
 
     private fun isAllDetected() : Boolean {
