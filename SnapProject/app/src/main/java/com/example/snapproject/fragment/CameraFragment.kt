@@ -219,7 +219,11 @@ class CameraFragment : Fragment() {
             }
         }
 
-        viewModel.isAllTTSCompleted.observe(viewLifecycleOwner) {
+        viewModel.isAllTTSCompleted.observe(viewLifecycleOwner) { flag ->
+            if (flag == false) return@observe
+
+            Log.d("TTS_CHECK", "Fragment 쪽 navigation 실행 시작")
+
             // 카메라 자원 해제
             cameraProvider?.unbindAll()
             cameraExecutor.shutdownNow()
