@@ -243,6 +243,8 @@ class CameraFragment : Fragment() {
                 val uri = saveImgFile("name", viewModel.nameBitmap)
                 addUriArrayList(uri)
                 viewModel.isSpeaking = false
+
+                viewModel.taskCompleted() // 하나 인식 완료 알림
             }
         }
 
@@ -257,6 +259,8 @@ class CameraFragment : Fragment() {
                 val uri = saveImgFile("date", viewModel.dateBitmap)
                 addUriArrayList(uri)
                 viewModel.isSpeaking = false
+
+                viewModel.taskCompleted() // 하나 인식 완료 알림
             }
         }
 
@@ -270,6 +274,8 @@ class CameraFragment : Fragment() {
                 val uri = saveImgFile("label", viewModel.labelBitmap)
                 addUriArrayList(uri)
                 viewModel.isSpeaking = false
+
+                viewModel.taskCompleted() // 하나 인식 완료 알림
             }
         }
     }

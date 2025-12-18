@@ -42,6 +42,7 @@ class CameraViewModel : ViewModel() {
     // 3가지 모두 인식되었는지 체크
     private val _isAllDetected = MediatorLiveData<Boolean>()
     val isAllDetected: LiveData<Boolean> = _isAllDetected
+    private var completedTasks = 0 // 현재 감지된 항목 개수
 
     // YOLO 추론 결과
     private val _yoloResults = MutableLiveData<ArrayList<YoloResult>>(arrayListOf())
@@ -51,21 +52,6 @@ class CameraViewModel : ViewModel() {
     var fullBitmap: Bitmap? = null
     var fullRotatedBitmap: Bitmap? = null
 
-    init {
-        _isAllDetected.value = false
-
-        _isAllDetected.addSource(_isNameDetected) {
-            _isAllDetected.value = isAllDetected()
-        }
-        _isAllDetected.addSource(_isDateDetected) {
-            _isAllDetected.value = isAllDetected()
-        }
-        _isAllDetected.addSource(_isLabelDetected) {
-            _isAllDetected.value = isAllDetected()
-        }
-
-    }
-
     // YOLO 추론 결과 + 전체 화면 Bitmap 업데이트
     fun onYoloResult(results: ArrayList<YoloResult>, fullBitmap: Bitmap, fullRotatedBitmap: Bitmap) {
         _yoloResults.postValue(results)
@@ -73,11 +59,11 @@ class CameraViewModel : ViewModel() {
         this.fullRotatedBitmap = fullRotatedBitmap
     }
 
-    private fun isAllDetected() : Boolean {
-        if ((_isNameDetected.value == true) && (_isDateDetected.value == true) && (_isLabelDetected.value == true)) {
-            return true
+    fun taskCompleted() {
+        completedTasks++
+        if (completedTasks >= 3) { // 3가지 항목 모두 감지되었을 때
+            _isAllDetected.postValue(true)
         }
-        return false
     }
 
     // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
