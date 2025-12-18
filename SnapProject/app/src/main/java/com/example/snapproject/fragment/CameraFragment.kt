@@ -347,19 +347,52 @@ class CameraFragment : Fragment() {
             val drawRectBitmap = createRectBitmap(screenBitmap, drawRect) // RectView 크기만큼 비트맵 생성
             val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
 
-            if (results.firstOrNull()?.classIndex == 1) {
+            if (results.firstOrNull()?.classIndex == 1 && !viewModel.isRequesting && !viewModel.isSpeaking) {
                 // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
-                productNamePostAndTTS(imgFile, drawRectBitmap)
+                viewModel.isRequesting = true
+                lifecycleScope.launch {
+                    when (val result = ApiRepository.postName(imgFile)) { // POST 요청
+                        is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
+                            val productName = result.data.productName // 제품명 인식 결과 저장
+                            viewModel.onProductNameDetected(productName, drawRectBitmap)
+                            viewModel.isRequesting = false
+                        }
+                        is ApiResult.Error -> {
+                            Log.e("productNameTTS", "서버 요청 실패")
+                            viewModel.isRequesting = false
+                        }
+                    }
+                }
             }
 
             // "제품 라벨 인식됨" -> TTS 출력
-            if (results.firstOrNull()?.classIndex == 0) {
-                productLabelTTS(drawRectBitmap)
+            if (results.firstOrNull()?.classIndex == 0 && !viewModel.isSpeaking) {
+                viewModel.onProductLabelDetected(drawRectBitmap)
             }
         }
 
-        // 소비기한 OCR 수행
-        recognizeExpiryDate(fullBitmap)
+        if (!viewModel.isSpeaking) {
+            // 소비기한 OCR 수행
+            // Bitmap 객체에서 InputImage 객체 생성
+            val image = InputImage.fromBitmap(fullBitmap, 0)
+
+            // OCR 수행
+            txtRecognizer.process(image)
+                .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
+                    Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
+                    val dates = extractValidDates(it.text) // 소비기한 조건 체크
+                    if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
+                        val ocrDate = dates.first()
+                        Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
+                        viewModel.onExpirationDateDetected(ocrDate, fullBitmap)
+                    } else { // 소비기한이 인식되지 않은 경우
+                        Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("ocrDateError", "${e.message}")
+                }
+        }
     }
 
     // 회전된 비트맵 생성
@@ -460,89 +493,6 @@ class CameraFragment : Fragment() {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
         fos.close()
         return fileItem
-    }
-
-    // 소비기한 OCR 수행
-    private fun recognizeExpiryDate(bitmap: Bitmap) {
-        // Bitmap 객체에서 InputImage 객체 생성
-        val image = InputImage.fromBitmap(bitmap, 0)
-
-        // OCR 수행
-        txtRecognizer.process(image)
-            .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
-                Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
-                val dates = extractValidDates(it.text) // 소비기한 조건 체크
-                if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
-                    val ocrDate = dates.first()
-                    Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
-                    expiryDateTTS(bitmap, ocrDate) // 인식된 소비기한 TTS 출력
-                } else { // 소비기한이 인식되지 않은 경우
-                    Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("ocrDateError", "${e.message}")
-            }
-    }
-
-    // 인식된 소비기한 TTS 출력
-    private fun expiryDateTTS(bitmap: Bitmap, ocrDate: String) {
-        if (!viewModel.canSpeak()) return
-        viewModel.onExpirationDateDetected(ocrDate)
-
-        ocrDate.let {
-            MainActivity.tts.readText(it, requireContext()) {
-                requireActivity().runOnUiThread {
-                    val uri = saveImgFile("date", bitmap)
-                    addUriArrayList(uri)
-                    viewModel.isTTSFinished()
-                }
-            }
-        }
-    }
-
-    // 인식된 제품명 이미지 서버로 POST 요청 + TTS 출력
-    private fun productNamePostAndTTS(
-        imgFile: File,
-        bitmap: Bitmap,
-    ) {
-        if (!viewModel.canSpeak() || !viewModel.canRequest()) return
-
-        // 서버 요청 + TTS 발화
-        lifecycleScope.launch {
-            when (val result = ApiRepository.postName(imgFile)) { // POST 요청
-                is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
-                    val productName = result.data.productName // 제품명 인식 결과 저장
-                    viewModel.onProductNameDetected(productName)
-
-                    MainActivity.tts.readText(productName, requireContext()) {
-                        requireActivity().runOnUiThread {
-                            val uri = saveImgFile("name", bitmap)
-                            addUriArrayList(uri)
-                            viewModel.isTTSFinished() // TTS가 끝나는 시점에 false로 바꿔주기
-                        }
-                    }
-                }
-                is ApiResult.Error -> {
-                    Log.e("productNameTTS", "서버 요청 실패")
-                    viewModel.isTTSFinished() // 서버 요청 실패한 경우에도 false로 바꿔주기
-                }
-            }
-        }
-    }
-
-    // 인식된 라벨 TTS 출력
-    private fun productLabelTTS(bitmap: Bitmap) {
-        if (!viewModel.canSpeak()) return
-        viewModel.onProductLabelDetected()
-
-        MainActivity.tts.readText(productLabelTxt, requireContext()) {
-            requireActivity().runOnUiThread {
-                val uri = saveImgFile("label", bitmap)
-                addUriArrayList(uri)
-                viewModel.isTTSFinished()
-            }
-        }
     }
 
     // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수
