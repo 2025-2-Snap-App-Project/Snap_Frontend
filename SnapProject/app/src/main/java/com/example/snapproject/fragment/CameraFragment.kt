@@ -219,14 +219,10 @@ class CameraFragment : Fragment() {
             }
         }
 
-        viewModel.isAllDetected.observe(viewLifecycleOwner) { allDetected ->
-            if (allDetected == false || hasNavigated) return@observe
-
+        viewModel.isAllTTSCompleted.observe(viewLifecycleOwner) {
             // 카메라 자원 해제
             cameraProvider?.unbindAll()
             cameraExecutor.shutdownNow()
-
-            hasNavigated = true
 
             val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
             findNavController().navigate(action)
@@ -243,8 +239,7 @@ class CameraFragment : Fragment() {
                 val uri = saveImgFile("name", viewModel.nameBitmap)
                 addUriArrayList(uri)
                 viewModel.isSpeaking = false
-
-                viewModel.taskCompleted() // 하나 인식 완료 알림
+                viewModel.onNameTTSCompleted()
             }
         }
 
@@ -259,23 +254,22 @@ class CameraFragment : Fragment() {
                 val uri = saveImgFile("date", viewModel.dateBitmap)
                 addUriArrayList(uri)
                 viewModel.isSpeaking = false
-
-                viewModel.taskCompleted() // 하나 인식 완료 알림
+                viewModel.onDateTTSCompleted()
             }
         }
 
         // 제품 라벨 인식되면 실행
-        viewModel.productLabel.observe(viewLifecycleOwner) {
+        viewModel.productLabel.observe(viewLifecycleOwner) { label ->
+            if (label == null) return@observe
 
             viewModel.isSpeaking = true
 
             // TTS 출력
-            MainActivity.tts.readText(productLabelTxt, requireContext()) {
+            MainActivity.tts.readText(label, requireContext()) {
                 val uri = saveImgFile("label", viewModel.labelBitmap)
                 addUriArrayList(uri)
                 viewModel.isSpeaking = false
-
-                viewModel.taskCompleted() // 하나 인식 완료 알림
+                viewModel.onLabelTTSCompleted()
             }
         }
     }

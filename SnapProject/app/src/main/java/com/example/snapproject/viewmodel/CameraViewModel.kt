@@ -39,10 +39,22 @@ class CameraViewModel : ViewModel() {
     lateinit var dateBitmap: Bitmap
     lateinit var labelBitmap: Bitmap
 
+    // TTS 완료 플래그
+    private var isNameTTSCompleted : Boolean = false
+    private var isDateTTSCompleted : Boolean = false
+    private var isLabelTTSCompleted : Boolean = false
+
+    // 3개의 TTS를 모두 출력했는지
+    private val _isAllTTSCompleted = MutableLiveData<Unit>()
+    val isAllTTSCompleted: LiveData<Unit> = _isAllTTSCompleted
+
+
     // 3가지 모두 인식되었는지 체크
-    private val _isAllDetected = MediatorLiveData<Boolean>()
-    val isAllDetected: LiveData<Boolean> = _isAllDetected
-    private var completedTasks = 0 // 현재 감지된 항목 개수
+    private fun checkAllTTSCompleted() {
+        if (isNameTTSCompleted && isDateTTSCompleted && isLabelTTSCompleted) {
+            _isAllTTSCompleted.value = Unit
+        }
+    }
 
     // YOLO 추론 결과
     private val _yoloResults = MutableLiveData<ArrayList<YoloResult>>(arrayListOf())
@@ -57,13 +69,6 @@ class CameraViewModel : ViewModel() {
         _yoloResults.postValue(results)
         this.fullBitmap = fullBitmap
         this.fullRotatedBitmap = fullRotatedBitmap
-    }
-
-    fun taskCompleted() {
-        completedTasks++
-        if (completedTasks >= 3) { // 3가지 항목 모두 감지되었을 때
-            _isAllDetected.postValue(true)
-        }
     }
 
     // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
@@ -101,4 +106,17 @@ class CameraViewModel : ViewModel() {
         labelBitmap = bitmap
     }
 
+    // TTS 출력 완료 후, 관련 변수 업데이트
+    fun onNameTTSCompleted() {
+        isNameTTSCompleted = true
+        checkAllTTSCompleted()
+    }
+    fun onDateTTSCompleted() {
+        isDateTTSCompleted = true
+        checkAllTTSCompleted()
+    }
+    fun onLabelTTSCompleted() {
+        isLabelTTSCompleted = true
+        checkAllTTSCompleted()
+    }
 }
