@@ -1,6 +1,7 @@
 package com.example.snapproject.viewmodel
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,8 +22,8 @@ class CameraViewModel : ViewModel() {
     val expirationDate: LiveData<String?> = _expirationDate
 
     // 3. 제품 라벨
-    private val _productLabel = MutableLiveData<String?>()
-    val productLabel: LiveData<String?> = _productLabel
+    private val _productLabel = MutableLiveData<Unit>()
+    val productLabel: LiveData<Unit> = _productLabel
 
     // 인식 여부 플래그
     private val _isNameDetected = MutableLiveData(false)
@@ -51,7 +52,13 @@ class CameraViewModel : ViewModel() {
 
     // 3가지 모두 인식되었는지 체크
     private fun checkAllTTSCompleted() {
+        Log.d("TTS_CHECK",
+            "name=${isNameTTSCompleted}, " +
+                    "date=${isDateTTSCompleted}, " +
+                    "label=${isLabelTTSCompleted}"
+        )
         if (isNameTTSCompleted && isDateTTSCompleted && isLabelTTSCompleted) {
+            Log.d("TTS_CHECK", "ALL DONE → NAVIGATE")
             _isAllTTSCompleted.value = Unit
         }
     }
@@ -73,9 +80,6 @@ class CameraViewModel : ViewModel() {
 
     // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
     var isRequesting = false
-
-    // TTS 중복 실행 방지 플래그
-    var isSpeaking = false
 
     lateinit var dataProcess: DataProcess
 
@@ -101,9 +105,9 @@ class CameraViewModel : ViewModel() {
     fun onProductLabelDetected(bitmap: Bitmap) {
         if (_isLabelDetected.value == true) return
 
-        _productLabel.postValue("제품 라벨이 인식되었습니다.")
         _isLabelDetected.postValue(true)
         labelBitmap = bitmap
+        _productLabel.value = Unit
     }
 
     // TTS 출력 완료 후, 관련 변수 업데이트

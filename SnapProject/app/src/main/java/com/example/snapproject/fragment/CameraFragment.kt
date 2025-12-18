@@ -196,7 +196,7 @@ class CameraFragment : Fragment() {
                 val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
 
                 // "제품명 인식됨" -> 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
-                if (results.firstOrNull()?.classIndex == 1 && !viewModel.isRequesting && !viewModel.isSpeaking) {
+                if (results.firstOrNull()?.classIndex == 1 && !viewModel.isRequesting && viewModel.isNameDetected.value != true) {
                     viewModel.isRequesting = true
                     lifecycleScope.launch {
                         when (val result = ApiRepository.postName(imgFile)) { // POST 요청
@@ -213,7 +213,8 @@ class CameraFragment : Fragment() {
                 }
 
                 // "제품 라벨 인식됨" -> TTS 출력
-                if (results.firstOrNull()?.classIndex == 0 && !viewModel.isSpeaking) {
+                if (results.firstOrNull()?.classIndex == 0 &&
+                    viewModel.isLabelDetected.value != true) {
                     viewModel.onProductLabelDetected(drawRectBitmap)
                 }
             }
@@ -231,14 +232,10 @@ class CameraFragment : Fragment() {
         // 제품명 인식되면 실행
         viewModel.productName.observe(viewLifecycleOwner) { name ->
             if (name == null) return@observe
-
-            viewModel.isSpeaking = true
-
             // TTS 출력
             MainActivity.tts.readText(name, requireContext()) {
                 val uri = saveImgFile("name", viewModel.nameBitmap)
                 addUriArrayList(uri)
-                viewModel.isSpeaking = false
                 viewModel.onNameTTSCompleted()
             }
         }
@@ -247,13 +244,10 @@ class CameraFragment : Fragment() {
         viewModel.expirationDate.observe(viewLifecycleOwner) { date ->
             if (date == null) return@observe
 
-            viewModel.isSpeaking = true
-
             // TTS 출력
             MainActivity.tts.readText(date, requireContext()) {
                 val uri = saveImgFile("date", viewModel.dateBitmap)
                 addUriArrayList(uri)
-                viewModel.isSpeaking = false
                 viewModel.onDateTTSCompleted()
             }
         }
@@ -262,13 +256,10 @@ class CameraFragment : Fragment() {
         viewModel.productLabel.observe(viewLifecycleOwner) { label ->
             if (label == null) return@observe
 
-            viewModel.isSpeaking = true
-
             // TTS 출력
-            MainActivity.tts.readText(label, requireContext()) {
+            MainActivity.tts.readText("제품 라벨이 인식되었습니다.", requireContext()) {
                 val uri = saveImgFile("label", viewModel.labelBitmap)
                 addUriArrayList(uri)
-                viewModel.isSpeaking = false
                 viewModel.onLabelTTSCompleted()
             }
         }
@@ -415,7 +406,7 @@ class CameraFragment : Fragment() {
         val fullRotatedBitmap = imageToRotatedBitmap(imageProxy.toBitmap(), rotation) // 원본 imageProxy를 회전된 비트맵으로
         viewModel.onYoloResult(results, fullBitmap, fullRotatedBitmap) // YOLO 추론 결과 업데이트
 
-        if (!viewModel.isSpeaking) {
+        if (viewModel.isDateDetected.value != true) {
             // 소비기한 OCR 수행
             // Bitmap 객체에서 InputImage 객체 생성
             val image = InputImage.fromBitmap(fullBitmap, 0)
