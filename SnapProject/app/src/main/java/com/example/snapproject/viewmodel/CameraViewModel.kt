@@ -48,6 +48,14 @@ class CameraViewModel : ViewModel() {
         _expirationDate.value = date
         _isDateDetected.value = true
     }
+
+    // 제품 라벨이 인식되었을 때
+    fun onProductLabelDetected() {
+        if (_isLabelDetected.value == true) return
+
+        _isLabelDetected.value = true
+    }
+
     // 현재 TTS 출력 중인지 체크
     fun canSpeak(): Boolean {
         if (isSpeaking) return false
