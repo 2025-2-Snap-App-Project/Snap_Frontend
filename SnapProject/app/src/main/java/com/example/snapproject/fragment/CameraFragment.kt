@@ -84,6 +84,9 @@ class CameraFragment : Fragment() {
 
     private var productLabelTxt: String = "제품 라벨이 인식되었습니다."
 
+    private var hasNavigated = false
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -174,6 +177,19 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
+
+        viewModel.isAllDetected.observe(viewLifecycleOwner) { allDetected ->
+            if (allDetected == false || hasNavigated) return@observe
+
+            // 카메라 자원 해제
+            cameraProvider?.unbindAll()
+            cameraExecutor.shutdownNow()
+
+            hasNavigated = true
+
+            val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+            findNavController().navigate(action)
+        }
     }
 
     // 시스템 설정에서 권한 허용해 준 뒤, 다시 돌아왔을 때 카메라 세팅 필요
@@ -479,7 +495,6 @@ class CameraFragment : Fragment() {
                 requireActivity().runOnUiThread {
                     val uri = saveImgFile("date", bitmap)
                     addUriArrayList(uri)
-                    checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
                     viewModel.isTTSFinished()
                 }
             }
@@ -504,7 +519,6 @@ class CameraFragment : Fragment() {
                         requireActivity().runOnUiThread {
                             val uri = saveImgFile("name", bitmap)
                             addUriArrayList(uri)
-                            checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
                             viewModel.isTTSFinished() // TTS가 끝나는 시점에 false로 바꿔주기
                         }
                     }
@@ -526,23 +540,8 @@ class CameraFragment : Fragment() {
             requireActivity().runOnUiThread {
                 val uri = saveImgFile("label", bitmap)
                 addUriArrayList(uri)
-                checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
                 viewModel.isTTSFinished()
             }
-        }
-    }
-
-    // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크하는 함수
-    private fun checkAllDetected() {
-        // 3개 다 인식되었다면, 다음 화면으로 이동
-        if (isNameDetected && isDatedDetected && isLabelDetected) {
-            // 카메라 자원 해제
-            cameraProvider?.unbindAll()
-            cameraExecutor.shutdownNow()
-
-            val action =
-                CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
-            findNavController().navigate(action)
         }
     }
 
