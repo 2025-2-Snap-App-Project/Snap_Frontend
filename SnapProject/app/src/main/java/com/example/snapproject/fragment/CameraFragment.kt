@@ -167,7 +167,7 @@ class CameraFragment : Fragment() {
         mActivity = context as MainActivity
 
         // mContext 초기화된 뒤에, DataProcess 객체 생성
-        dataProcess = DataProcess(context = mContext)
+        viewModel.dataProcess = DataProcess(context = mContext)
     }
 
     override fun onViewCreated(
@@ -313,10 +313,10 @@ class CameraFragment : Fragment() {
 
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
-        val bitmap = dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
-        val rotatedBitmap = dataProcess.imageToRotatedBitmap(bitmap, rotation) // 회전된 비트맵 이미지
+        val bitmap = viewModel.dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
+        val rotatedBitmap = viewModel.dataProcess.imageToRotatedBitmap(bitmap, rotation) // 회전된 비트맵 이미지
 
-        val floatBuffer = dataProcess.bitmapToFloatBuffer(rotatedBitmap)
+        val floatBuffer = viewModel.dataProcess.bitmapToFloatBuffer(rotatedBitmap)
         val inputName = session.inputNames.iterator().next()
 
         // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
@@ -334,7 +334,7 @@ class CameraFragment : Fragment() {
         val outputs = resultTensor.get(0).value as Array<*>
 
         // YOLO 추론 최종 결과 출력
-        val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
+        val results = viewModel.dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
         binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
         binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
 
@@ -591,8 +591,8 @@ class CameraFragment : Fragment() {
     // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
     private fun load() {
         // 파일 불러오기
-        dataProcess.loadModel()
-        dataProcess.loadLabel()
+        viewModel.dataProcess.loadModel()
+        viewModel.dataProcess.loadLabel()
 
         // OrtSession 객체 생성
         ortEnvironment = OrtEnvironment.getEnvironment()
@@ -603,6 +603,6 @@ class CameraFragment : Fragment() {
             )
 
         // assets의 txt 파일을 불러와서 RectView에 라벨 클래스 전달
-        binding.rectView.setClassLabel(dataProcess.classes)
+        binding.rectView.setClassLabel(viewModel.dataProcess.classes)
     }
 }
