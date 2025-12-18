@@ -385,52 +385,58 @@ class CameraFragment : Fragment() {
 
         val bitmap = viewModel.dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
         val rotatedBitmap = viewModel.dataProcess.imageToRotatedBitmap(bitmap, rotation) // 회전된 비트맵 이미지
-
-        val floatBuffer = viewModel.dataProcess.bitmapToFloatBuffer(rotatedBitmap)
-        val inputName = session.inputNames.iterator().next()
-
-        // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
-        val shape =
-            longArrayOf(
-                DataProcess.BATCH_SIZE.toLong(),
-                DataProcess.PIXEL_SIZE.toLong(),
-                DataProcess.INPUT_SIZE.toLong(),
-                DataProcess.INPUT_SIZE.toLong(),
-            )
-
-        // YOLO 추론 코드
-        val inputTensor = OnnxTensor.createTensor(ortEnvironment, floatBuffer, shape)
-        val resultTensor = session.run(Collections.singletonMap(inputName, inputTensor))
-        val outputs = resultTensor.get(0).value as Array<*>
-
-        // YOLO 추론 최종 결과 출력
-        val results = viewModel.dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
         val fullBitmap = imageProxy.toBitmap() // 원본 imageProxy를 비트맵으로
         val fullRotatedBitmap = imageToRotatedBitmap(imageProxy.toBitmap(), rotation) // 원본 imageProxy를 회전된 비트맵으로
-        viewModel.onYoloResult(results, fullBitmap, fullRotatedBitmap) // YOLO 추론 결과 업데이트
 
-        if (viewModel.isDateDetected.value == false) {
-            // 소비기한 OCR 수행
-            // Bitmap 객체에서 InputImage 객체 생성
-            val image = InputImage.fromBitmap(fullBitmap, 0)
+        // 한 프레임에 YOLO/ML-Kit 둘 중에 하나만 실행
+        if (viewModel.runYOLO) { // 현재 프레임은 YOLO만 실행하는 프레임이다
+            val floatBuffer = viewModel.dataProcess.bitmapToFloatBuffer(rotatedBitmap)
+            val inputName = session.inputNames.iterator().next()
 
-            // OCR 수행
-            txtRecognizer.process(image)
-                .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
-                    Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
-                    val dates = extractValidDates(it.text) // 소비기한 조건 체크
-                    if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
-                        val ocrDate = dates.first()
-                        Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
-                        viewModel.onExpirationDateDetected(ocrDate, fullBitmap)
-                    } else { // 소비기한이 인식되지 않은 경우
-                        Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
+            // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
+            val shape =
+                longArrayOf(
+                    DataProcess.BATCH_SIZE.toLong(),
+                    DataProcess.PIXEL_SIZE.toLong(),
+                    DataProcess.INPUT_SIZE.toLong(),
+                    DataProcess.INPUT_SIZE.toLong(),
+                )
+
+            // YOLO 추론 코드
+            val inputTensor = OnnxTensor.createTensor(ortEnvironment, floatBuffer, shape)
+            val resultTensor = session.run(Collections.singletonMap(inputName, inputTensor))
+            val outputs = resultTensor.get(0).value as Array<*>
+
+            // YOLO 추론 최종 결과 출력
+            val results = viewModel.dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
+            viewModel.onYoloResult(results, fullBitmap, fullRotatedBitmap) // YOLO 추론 결과 업데이트
+        } else { // 현재 프레임은 OCR만 실행하는 프레임이다
+            if (viewModel.isDateDetected.value == false) {
+                // 소비기한 OCR 수행
+                // Bitmap 객체에서 InputImage 객체 생성
+                val image = InputImage.fromBitmap(fullBitmap, 0)
+
+                // OCR 수행
+                txtRecognizer.process(image)
+                    .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
+                        Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
+                        val dates = extractValidDates(it.text) // 소비기한 조건 체크
+                        if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
+                            val ocrDate = dates.first()
+                            Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
+                            viewModel.onExpirationDateDetected(ocrDate, fullBitmap)
+                        } else { // 소비기한이 인식되지 않은 경우
+                            Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
+                        }
                     }
-                }
-                .addOnFailureListener { e ->
-                    Log.e("ocrDateError", "${e.message}")
-                }
+                    .addOnFailureListener { e ->
+                        Log.e("ocrDateError", "${e.message}")
+                    }
+            }
         }
+
+        // 다음 프레임에는 반대 작업 수행 (지금 YOLO를 실행했다면, 다음 프레임은 ML-Kit 실행한다. 반대의 경우도 마찬가지)
+        viewModel.runYOLO = !viewModel.runYOLO
     }
 
     // 회전된 비트맵 생성

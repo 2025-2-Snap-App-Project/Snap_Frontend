@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class CameraViewModel : ViewModel() {
+    var runYOLO = true  // true면 YOLO, false면 OCR
+
+
     // YOLO 추론 후, OCR 결과를 저장할 변수
     // 1. 제품명 OCR 결과
     private val _productName = MutableLiveData<String?>()
