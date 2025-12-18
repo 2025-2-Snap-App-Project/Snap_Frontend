@@ -519,18 +519,15 @@ class CameraFragment : Fragment() {
 
     // 인식된 라벨 TTS 출력
     private fun productLabelTTS(bitmap: Bitmap) {
-        if (isSpeaking || isLabelDetected) return
-
-        isSpeaking = true
-        isLabelDetected = true
-        Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
+        if (!viewModel.canSpeak()) return
+        viewModel.onProductLabelDetected()
 
         MainActivity.tts.readText(productLabelTxt, requireContext()) {
             requireActivity().runOnUiThread {
                 val uri = saveImgFile("label", bitmap)
                 addUriArrayList(uri)
                 checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                isSpeaking = false
+                viewModel.isTTSFinished()
             }
         }
     }
