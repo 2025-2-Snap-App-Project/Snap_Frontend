@@ -188,7 +188,7 @@ class CameraFragment : Fragment() {
             Log.d(
                 "rectDebug",
                 "rect=(${drawRect.left}, ${drawRect.top}, ${drawRect.right}, ${drawRect.bottom}), " +
-                        "view=(${binding.rectView.width}, ${binding.rectView.height})"
+                    "view=(${binding.rectView.width}, ${binding.rectView.height})",
             )
 
             // 프레임의 중앙에 객체가 위치해있는지 / 화면 끝에 걸쳐져있는지 체크
@@ -197,8 +197,6 @@ class CameraFragment : Fragment() {
                 return@observe
             }
             Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 중앙에 위치")
-
-
 
             // 화면에 YOLO 추론 결과가 그려져 있다면
             // 전체 화면 Bitmap 생성 -> File 변환
