@@ -72,4 +72,19 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
     fun getDrawRect(): RectF? {
         return results?.firstOrNull()?.rectF
     }
+
+    // 화면에 그려진 bbox 좌표가 화면 끝에 위치해있다면, false 반환
+    fun isRectOnEdge(screenWidth: Float, screenHeight: Float): Boolean {
+        val rectF = results?.firstOrNull()?.rectF ?: return false
+        if (width == 0 || height == 0) return false
+
+        // 화면의 5%
+        val marginX = width * 0.05f
+        val marginY = height * 0.05f
+
+        return rectF.left <= marginX ||
+                rectF.top <= marginY ||
+                rectF.right >= screenWidth - marginX ||
+                rectF.bottom >= screenHeight - marginY
+    }
 }
