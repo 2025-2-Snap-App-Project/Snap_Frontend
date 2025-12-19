@@ -40,27 +40,9 @@ class CameraViewModel : ViewModel() {
     lateinit var labelBitmap: Bitmap
 
     // TTS 완료 플래그
-    private var isNameTTSCompleted: Boolean = false
-    private var isDateTTSCompleted: Boolean = false
-    private var isLabelTTSCompleted: Boolean = false
-
-    // 3개의 TTS를 모두 출력했는지
-    private val _isAllTTSCompleted = MutableLiveData(false)
-    val isAllTTSCompleted: LiveData<Boolean> = _isAllTTSCompleted
-
-    // 3가지 모두 인식되었는지 체크
-    private fun checkAllTTSCompleted() {
-        Log.d(
-            "TTS_CHECK",
-            "name=$isNameTTSCompleted, " +
-                "date=$isDateTTSCompleted, " +
-                "label=$isLabelTTSCompleted",
-        )
-        if (isNameTTSCompleted && isDateTTSCompleted && isLabelTTSCompleted) {
-            Log.d("TTS_CHECK", "ALL DONE → NAVIGATE")
-            _isAllTTSCompleted.postValue(true)
-        }
-    }
+    var isNameTTSCompleted: Boolean = false
+    var isDateTTSCompleted: Boolean = false
+    var isLabelTTSCompleted: Boolean = false
 
     // YOLO 추론 결과
     private val _yoloResults = MutableLiveData<ArrayList<YoloResult>>(arrayListOf())
@@ -122,16 +104,13 @@ class CameraViewModel : ViewModel() {
     // TTS 출력 완료 후, 관련 변수 업데이트
     fun onNameTTSCompleted() {
         isNameTTSCompleted = true
-        checkAllTTSCompleted()
     }
 
     fun onDateTTSCompleted() {
         isDateTTSCompleted = true
-        checkAllTTSCompleted()
     }
 
     fun onLabelTTSCompleted() {
         isLabelTTSCompleted = true
-        checkAllTTSCompleted()
     }
 }

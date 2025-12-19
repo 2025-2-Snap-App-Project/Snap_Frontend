@@ -216,19 +216,6 @@ class CameraFragment : Fragment() {
             }
         }
 
-        viewModel.isAllTTSCompleted.observe(viewLifecycleOwner) { flag ->
-            if (flag == false) return@observe
-
-            Log.d("TTS_CHECK", "Fragment 쪽 navigation 실행 시작")
-
-            // 카메라 자원 해제
-            cameraProvider?.unbindAll()
-            cameraExecutor.shutdownNow()
-
-            val action = CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
-            findNavController().navigate(action)
-        }
-
         // 제품명 인식되면 실행
         viewModel.productName.observe(viewLifecycleOwner) { name ->
             if (name == null) return@observe
@@ -237,6 +224,7 @@ class CameraFragment : Fragment() {
                 val uri = saveImgFile("name", viewModel.nameBitmap)
                 addUriArrayList(uri)
                 viewModel.onNameTTSCompleted()
+                checkAllTTSCompleted()
             }
         }
 
@@ -249,6 +237,7 @@ class CameraFragment : Fragment() {
                 val uri = saveImgFile("date", viewModel.dateBitmap)
                 addUriArrayList(uri)
                 viewModel.onDateTTSCompleted()
+                checkAllTTSCompleted()
             }
         }
 
@@ -261,6 +250,26 @@ class CameraFragment : Fragment() {
                 val uri = saveImgFile("label", viewModel.labelBitmap)
                 addUriArrayList(uri)
                 viewModel.onLabelTTSCompleted()
+                checkAllTTSCompleted()
+            }
+        }
+    }
+
+    // 3가지 모두 인식되었는지 체크
+    private fun checkAllTTSCompleted() {
+        Log.d(
+            "CameraFragment",
+            "name=${viewModel.isNameTTSCompleted}, " +
+                    "date=${viewModel.isDateTTSCompleted}, " +
+                    "label=${viewModel.isLabelTTSCompleted}",
+        )
+        if (viewModel.isNameTTSCompleted && viewModel.isDateTTSCompleted && viewModel.isLabelTTSCompleted) {
+            Log.d("CameraFragment", "ALL DONE → NAVIGATE")
+
+            requireActivity().runOnUiThread {
+                val action =
+                    CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+                findNavController().navigate(action)
             }
         }
     }
