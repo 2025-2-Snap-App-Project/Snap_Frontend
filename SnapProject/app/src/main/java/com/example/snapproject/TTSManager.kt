@@ -82,7 +82,8 @@ fun TextToSpeech?.readText(
                         ttsCallbacks.remove(uid) // 해당 ID에 맞는 콜백을 map에서 제거 (실행 X)
                         try {
                             audioManager.abandonAudioFocus(null)
-                        } catch (e: Exception) {}
+                        } catch (e: Exception) {
+                        }
                     }
                 }
             },

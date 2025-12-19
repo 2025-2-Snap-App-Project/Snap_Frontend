@@ -260,8 +260,8 @@ class CameraFragment : Fragment() {
         Log.d(
             "CameraFragment",
             "name=${viewModel.isNameTTSCompleted}, " +
-                    "date=${viewModel.isDateTTSCompleted}, " +
-                    "label=${viewModel.isLabelTTSCompleted}",
+                "date=${viewModel.isDateTTSCompleted}, " +
+                "label=${viewModel.isLabelTTSCompleted}",
         )
         if (viewModel.isNameTTSCompleted && viewModel.isDateTTSCompleted && viewModel.isLabelTTSCompleted) {
             Log.d("CameraFragment", "ALL DONE → NAVIGATE")
