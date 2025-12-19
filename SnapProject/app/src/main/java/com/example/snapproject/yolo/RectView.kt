@@ -25,6 +25,8 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
     private val boxPaint =
         Paint().also {
             it.style = Paint.Style.STROKE
+            it.color = Color.RED
+            it.strokeWidth = 10f
         }
 
     // 실제 기기의 화면 크기에 맞게 좌표값 수정
