@@ -27,17 +27,19 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.MainActivity
+import com.example.snapproject.R
 import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
+import com.example.snapproject.viewmodel.CameraViewModel
 import com.example.snapproject.yolo.DataProcess
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.functions.FirebaseFunctions
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
@@ -57,6 +59,8 @@ class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel by viewModels<CameraViewModel>() // CameraViewModel 초기화
+
     private lateinit var mContext: Context
     private lateinit var mActivity: MainActivity
 
@@ -69,12 +73,6 @@ class CameraFragment : Fragment() {
     private lateinit var imageAnalyzer: ImageAnalysis
     private var uriArrayList: ArrayList<String> = arrayListOf() // 이미지 파일 저장 경로 ArrayList
 
-    private lateinit var dataProcess: DataProcess
-
-    private lateinit var auth: FirebaseAuth
-    private lateinit var functions: FirebaseFunctions
-    private var isRequesting = false // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
-
     // TextRecognizer 인스턴스 생성
     val txtRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
@@ -82,25 +80,9 @@ class CameraFragment : Fragment() {
     private lateinit var ortEnvironment: OrtEnvironment
     private lateinit var session: OrtSession
 
-    // YOLO 추론 후, OCR 결과를 저장할 변수
-    private var productName: String? = null // 제품명 OCR 결과
-    private var expirationDate: String? = null // 소비기한 OCR 결과
     private var productLabelTxt: String = "제품 라벨이 인식되었습니다."
 
-    // 인식 여부를 저장할 변수
-    @Volatile private var isNameDetected: Boolean = false
-
-    @Volatile private var isDatedDetected: Boolean = false
-
-    @Volatile private var isLabelDetected: Boolean = false
-
-    // TTS로 안내한 횟수를 저장할 변수
-    private var productNameTTSNum: Int = 0 // 제품명 TTS 횟수
-    private var expirationDateTTSNum: Int = 0 // 소비기한 TTS 횟수
-    private var productLabelTTSNum: Int = 0 // 제품 라벨 TTS 횟수
-
-    // TTS 중복 실행 방지 플래그
-    private var isSpeaking = false
+    private var hasNavigated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -170,7 +152,7 @@ class CameraFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentCameraBinding.inflate(inflater, container, false)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_camera, container, false)
         return binding.root
     }
 
@@ -182,7 +164,7 @@ class CameraFragment : Fragment() {
         mActivity = context as MainActivity
 
         // mContext 초기화된 뒤에, DataProcess 객체 생성
-        dataProcess = DataProcess(context = mContext)
+        viewModel.dataProcess = DataProcess(context = mContext)
     }
 
     override fun onViewCreated(
@@ -192,6 +174,104 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
+
+        // YOLO 객체 탐지가 성공한 경우
+        viewModel.yoloResults.observe(viewLifecycleOwner) { results ->
+            // 비어있으면 리턴
+            if (results.isEmpty()) return@observe
+
+            // 화면에 YOLO 추론 결과 (RectView) 그리기
+            binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
+            binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
+            val drawRect = binding.rectView.getDrawRect() ?: return@observe // 화면에 그려진 Rect 가져오기
+
+            // 화면에 YOLO 추론 결과가 그려져 있다면
+            // 전체 화면 Bitmap 생성 -> File 변환
+            val screenBitmap = createScreenBitmap(viewModel.fullRotatedBitmap!!) // 현재 스크린에 보이는 만큼 비트맵 생성
+            val drawRectBitmap = createRectBitmap(screenBitmap, drawRect) // RectView 크기만큼 비트맵 생성
+            val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
+
+            val firstResult = results.firstOrNull() ?: return@observe
+
+            // "제품명 인식됨" -> 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
+            if (firstResult.classIndex == 1 && !viewModel.isRequesting) {
+                viewModel.isRequesting = true
+                lifecycleScope.launch {
+                    when (val result = ApiRepository.postName(imgFile)) { // POST 요청
+                        is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
+                            val productName = result.data.productName // 제품명 인식 결과 저장
+                            viewModel.onProductNameDetected(productName, drawRectBitmap)
+                        }
+                        is ApiResult.Error -> {
+                            Log.e("productNameTTS", "서버 요청 실패")
+                            viewModel.isRequesting = false
+                        }
+                    }
+                }
+            }
+
+            // "제품 라벨 인식됨" -> TTS 출력
+            if (firstResult.classIndex == 0) {
+                viewModel.onProductLabelDetected(drawRectBitmap)
+            }
+        }
+
+        // 제품명 인식되면 실행
+        viewModel.productName.observe(viewLifecycleOwner) { name ->
+            if (name == null) return@observe
+            // TTS 출력
+            MainActivity.tts.readText(name, requireContext()) {
+                val uri = saveImgFile("name", viewModel.nameBitmap)
+                addUriArrayList(uri)
+                viewModel.onNameTTSCompleted()
+                checkAllTTSCompleted()
+            }
+        }
+
+        // 소비기한 인식되면 실행
+        viewModel.expirationDate.observe(viewLifecycleOwner) { date ->
+            if (date == null) return@observe
+
+            // TTS 출력
+            MainActivity.tts.readText(date, requireContext()) {
+                val uri = saveImgFile("date", viewModel.dateBitmap)
+                addUriArrayList(uri)
+                viewModel.onDateTTSCompleted()
+                checkAllTTSCompleted()
+            }
+        }
+
+        // 제품 라벨 인식되면 실행
+        viewModel.productLabel.observe(viewLifecycleOwner) { label ->
+            if (label == null) return@observe
+
+            // TTS 출력
+            MainActivity.tts.readText("제품 라벨이 인식되었습니다.", requireContext()) {
+                val uri = saveImgFile("label", viewModel.labelBitmap)
+                addUriArrayList(uri)
+                viewModel.onLabelTTSCompleted()
+                checkAllTTSCompleted()
+            }
+        }
+    }
+
+    // 3가지 모두 인식되었는지 체크
+    private fun checkAllTTSCompleted() {
+        Log.d(
+            "CameraFragment",
+            "name=${viewModel.isNameTTSCompleted}, " +
+                "date=${viewModel.isDateTTSCompleted}, " +
+                "label=${viewModel.isLabelTTSCompleted}",
+        )
+        if (viewModel.isNameTTSCompleted && viewModel.isDateTTSCompleted && viewModel.isLabelTTSCompleted) {
+            Log.d("CameraFragment", "ALL DONE → NAVIGATE")
+
+            requireActivity().runOnUiThread {
+                val action =
+                    CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
+                findNavController().navigate(action)
+            }
+        }
     }
 
     // 시스템 설정에서 권한 허용해 준 뒤, 다시 돌아왔을 때 카메라 세팅 필요
@@ -307,61 +387,62 @@ class CameraFragment : Fragment() {
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
-        // binding이 null이면 -> imageProxy 중단 후, 바로 리턴 (다음 화면 이돋 시 발생하는 NullPointerException 에러 방지)
-        _binding ?: run {
-            imageProxy.close()
-            return
-        }
-
         val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
 
-        val bitmap = dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
-        val rotatedBitmap = dataProcess.imageToRotatedBitmap(bitmap, rotation) // 회전된 비트맵 이미지
-
-        val floatBuffer = dataProcess.bitmapToFloatBuffer(rotatedBitmap)
-        val inputName = session.inputNames.iterator().next()
-
-        // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
-        val shape =
-            longArrayOf(
-                DataProcess.BATCH_SIZE.toLong(),
-                DataProcess.PIXEL_SIZE.toLong(),
-                DataProcess.INPUT_SIZE.toLong(),
-                DataProcess.INPUT_SIZE.toLong(),
-            )
-
-        // YOLO 추론 코드
-        val inputTensor = OnnxTensor.createTensor(ortEnvironment, floatBuffer, shape)
-        val resultTensor = session.run(Collections.singletonMap(inputName, inputTensor))
-        val outputs = resultTensor.get(0).value as Array<*>
-
-        // YOLO 추론 최종 결과 출력
-        val results = dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
-        binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
-        binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
-
-        val drawRect = binding.rectView.getDrawRect() // 화면에 그려진 Rect 가져오기
+        val bitmap = viewModel.dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
+        val rotatedBitmap = viewModel.dataProcess.imageToRotatedBitmap(bitmap, rotation) // 회전된 비트맵 이미지
         val fullBitmap = imageProxy.toBitmap() // 원본 imageProxy를 비트맵으로
         val fullRotatedBitmap = imageToRotatedBitmap(imageProxy.toBitmap(), rotation) // 원본 imageProxy를 회전된 비트맵으로
-        val screenBitmap = createScreenBitmap(fullRotatedBitmap) // 현재 스크린에 보이는 만큼 비트맵 생성
 
-        if (drawRect != null) { // drawRect가 화면에 표시된 상태라면
-            val drawRectBitmap = createRectBitmap(screenBitmap, drawRect) // RectView 크기만큼 비트맵 생성
-            val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
+        // 한 프레임에 YOLO/ML-Kit 둘 중에 하나만 실행
+        if (viewModel.runYOLO) { // 현재 프레임은 YOLO만 실행하는 프레임이다
+            val floatBuffer = viewModel.dataProcess.bitmapToFloatBuffer(rotatedBitmap)
+            val inputName = session.inputNames.iterator().next()
 
-            if (results.firstOrNull()?.classIndex == 1) {
-                // 인식한 제품명 이미지를 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
-                productNamePostAndTTS(imgFile, drawRectBitmap)
-            }
+            // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
+            val shape =
+                longArrayOf(
+                    DataProcess.BATCH_SIZE.toLong(),
+                    DataProcess.PIXEL_SIZE.toLong(),
+                    DataProcess.INPUT_SIZE.toLong(),
+                    DataProcess.INPUT_SIZE.toLong(),
+                )
 
-            // "제품 라벨 인식됨" -> TTS 출력
-            if (results.firstOrNull()?.classIndex == 0) {
-                productLabelTTS(drawRectBitmap)
+            // YOLO 추론 코드
+            val inputTensor = OnnxTensor.createTensor(ortEnvironment, floatBuffer, shape)
+            val resultTensor = session.run(Collections.singletonMap(inputName, inputTensor))
+            val outputs = resultTensor.get(0).value as Array<*>
+
+            // YOLO 추론 최종 결과 출력
+            val results = viewModel.dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
+            viewModel.onYoloResult(results, fullBitmap, fullRotatedBitmap) // YOLO 추론 결과 업데이트
+        } else { // 현재 프레임은 OCR만 실행하는 프레임이다
+            if (viewModel.isDateDetected.value == false) {
+                // 소비기한 OCR 수행
+                // Bitmap 객체에서 InputImage 객체 생성
+                val image = InputImage.fromBitmap(fullBitmap, 0)
+
+                // OCR 수행
+                txtRecognizer.process(image)
+                    .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
+                        Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
+                        val dates = extractValidDates(it.text) // 소비기한 조건 체크
+                        if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
+                            val ocrDate = dates.first()
+                            Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
+                            viewModel.onExpirationDateDetected(ocrDate, fullBitmap)
+                        } else { // 소비기한이 인식되지 않은 경우
+                            Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("ocrDateError", "${e.message}")
+                    }
             }
         }
 
-        // 소비기한 OCR 수행
-        recognizeExpiryDate(fullBitmap)
+        // 다음 프레임에는 반대 작업 수행 (지금 YOLO를 실행했다면, 다음 프레임은 ML-Kit 실행한다. 반대의 경우도 마찬가지)
+        viewModel.runYOLO = !viewModel.runYOLO
     }
 
     // 회전된 비트맵 생성
@@ -464,115 +545,6 @@ class CameraFragment : Fragment() {
         return fileItem
     }
 
-    // 소비기한 OCR 수행
-    private fun recognizeExpiryDate(bitmap: Bitmap) {
-        // Bitmap 객체에서 InputImage 객체 생성
-        val image = InputImage.fromBitmap(bitmap, 0)
-
-        // OCR 수행
-        txtRecognizer.process(image)
-            .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
-                Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
-                val dates = extractValidDates(it.text) // 소비기한 조건 체크
-                if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
-                    Log.d("ocrDateSuccess", "인식된 날짜: ${dates.first()}")
-                    expirationDate = dates.first() // 인식된 소비기한을 변수에 저장
-                    expiryDateTTS(bitmap) // 인식된 소비기한 TTS 출력
-                } else { // 소비기한이 인식되지 않은 경우
-                    Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("ocrDateError", "${e.message}")
-            }
-    }
-
-    // 인식된 소비기한 TTS 출력
-    private fun expiryDateTTS(bitmap: Bitmap) {
-        if (isSpeaking || isDatedDetected) return
-
-        isSpeaking = true
-        isDatedDetected = true
-        Log.d("CameraFragment", "isDatedDetected: $isDatedDetected")
-
-        expirationDate?.let {
-            MainActivity.tts.readText(it, requireContext()) {
-                requireActivity().runOnUiThread {
-                    val uri = saveImgFile("date", bitmap)
-                    addUriArrayList(uri)
-                    checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                    isSpeaking = false
-                }
-            }
-        }
-    }
-
-    // 인식된 제품명 이미지 서버로 POST 요청 + TTS 출력
-    private fun productNamePostAndTTS(
-        imgFile: File,
-        bitmap: Bitmap,
-    ) {
-        if (isRequesting || isSpeaking || isNameDetected) return
-        isRequesting = true
-        isSpeaking = true
-
-        // 서버 요청 + TTS 발화
-        lifecycleScope.launch {
-            when (val result = ApiRepository.postName(imgFile)) { // POST 요청
-                is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
-                    productName = result.data.productName // 제품명 인식 결과 저장
-                    isNameDetected = true
-                    Log.d("CameraFragment", "isNameDetected: $isNameDetected")
-
-                    MainActivity.tts.readText(productName!!, requireContext()) {
-                        requireActivity().runOnUiThread {
-                            val uri = saveImgFile("name", bitmap)
-                            addUriArrayList(uri)
-                            checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                            isSpeaking = false // TTS가 끝나는 시점에 false로 바꿔주기
-                        }
-                    }
-                }
-                is ApiResult.Error -> {
-                    Log.e("productNameTTS", "서버 요청 실패")
-                    isSpeaking = false // 서버 요청 실패한 경우에도 false로 바꿔주기
-                }
-            }
-        }
-    }
-
-    // 인식된 라벨 TTS 출력
-    private fun productLabelTTS(bitmap: Bitmap) {
-        if (isSpeaking || isLabelDetected) return
-
-        isSpeaking = true
-        isLabelDetected = true
-        Log.d("CameraFragment", "isLabelDetected: $isLabelDetected")
-
-        MainActivity.tts.readText(productLabelTxt, requireContext()) {
-            requireActivity().runOnUiThread {
-                val uri = saveImgFile("label", bitmap)
-                addUriArrayList(uri)
-                checkAllDetected() // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크
-                isSpeaking = false
-            }
-        }
-    }
-
-    // 제품명, 소비기한, 라벨이 모두 인식되었는지 체크하는 함수
-    private fun checkAllDetected() {
-        // 3개 다 인식되었다면, 다음 화면으로 이동
-        if (isNameDetected && isDatedDetected && isLabelDetected) {
-            // 카메라 자원 해제
-            cameraProvider?.unbindAll()
-            cameraExecutor.shutdownNow()
-
-            val action =
-                CameraFragmentDirections.actionCameraFragmentToLoadingFragment(uriArrLst = uriArrayList.toTypedArray())
-            findNavController().navigate(action)
-        }
-    }
-
     // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수
     private fun extractValidDates(text: String): List<String> {
         // 날짜 정규식: 2자리 또는 4자리 연도, 점(.) 또는 하이픈(-), 월/일 1~2자리
@@ -619,8 +591,8 @@ class CameraFragment : Fragment() {
     // onnx + 라벨링 txt 파일 불러오기, OrtSession 객체 생성
     private fun load() {
         // 파일 불러오기
-        dataProcess.loadModel()
-        dataProcess.loadLabel()
+        viewModel.dataProcess.loadModel()
+        viewModel.dataProcess.loadLabel()
 
         // OrtSession 객체 생성
         ortEnvironment = OrtEnvironment.getEnvironment()
@@ -631,6 +603,6 @@ class CameraFragment : Fragment() {
             )
 
         // assets의 txt 파일을 불러와서 RectView에 라벨 클래스 전달
-        binding.rectView.setClassLabel(dataProcess.classes)
+        binding.rectView.setClassLabel(viewModel.dataProcess.classes)
     }
 }

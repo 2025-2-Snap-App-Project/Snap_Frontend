@@ -8,6 +8,9 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import java.util.Locale
 
+// utterance ID별로 TTS 완료 콜백을 관리
+private val ttsCallbacks = mutableMapOf<String, () -> Unit>() // <Key, Value> -> <utterance ID, TTS 완료 후 호출할 콜백>
+
 // TTS 초기화 함수
 fun initTTS(
     context: Context,
@@ -35,6 +38,7 @@ fun TextToSpeech?.readText(
 ) {
     this?.let { tts ->
         val utteranceId = System.currentTimeMillis().toString() // 발화 식별용 고유 ID
+        onDone?.let { ttsCallbacks[utteranceId] = it } // ID별로 TTS 완료 콜백 저장
 
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
@@ -62,19 +66,24 @@ fun TextToSpeech?.readText(
                 override fun onStart(utteranceId: String?) {}
 
                 // 발화 완료 후 입력으로 들어온 OnDone 코드 실행
-                override fun onDone(utteranceId: String?) {
-                    try {
-                        audioManager.abandonAudioFocus(null)
-                    } catch (e: Exception) {
-                        Log.e("SnapTextToSpeech", "abandonAudioFocus 실패: ${e.message}")
+                override fun onDone(id: String?) {
+                    id?.let { uid ->
+                        ttsCallbacks.remove(uid)?.invoke() // 해당 ID에 맞는 콜백 실행하면서 동시에 map에서 제거
+                        try {
+                            audioManager.abandonAudioFocus(null)
+                        } catch (e: Exception) {
+                            Log.e("SnapTextToSpeech", "abandonAudioFocus 실패: ${e.message}")
+                        }
                     }
-                    onDone?.invoke()
                 }
 
-                override fun onError(utteranceId: String?) {
-                    try {
-                        audioManager.abandonAudioFocus(null)
-                    } catch (e: Exception) {
+                override fun onError(id: String?) {
+                    id?.let { uid ->
+                        ttsCallbacks.remove(uid) // 해당 ID에 맞는 콜백을 map에서 제거 (실행 X)
+                        try {
+                            audioManager.abandonAudioFocus(null)
+                        } catch (e: Exception) {
+                        }
                     }
                 }
             },
