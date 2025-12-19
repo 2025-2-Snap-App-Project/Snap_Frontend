@@ -3,17 +3,13 @@ package com.example.snapproject.viewmodel
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.snapproject.yolo.DataProcess
 import com.example.snapproject.yolo.YoloResult
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 class CameraViewModel : ViewModel() {
-    var runYOLO = true  // true면 YOLO, false면 OCR
-
+    var runYOLO = true // true면 YOLO, false면 OCR
 
     // YOLO 추론 후, OCR 결과를 저장할 변수
     // 1. 제품명 OCR 결과
@@ -44,21 +40,21 @@ class CameraViewModel : ViewModel() {
     lateinit var labelBitmap: Bitmap
 
     // TTS 완료 플래그
-    private var isNameTTSCompleted : Boolean = false
-    private var isDateTTSCompleted : Boolean = false
-    private var isLabelTTSCompleted : Boolean = false
+    private var isNameTTSCompleted: Boolean = false
+    private var isDateTTSCompleted: Boolean = false
+    private var isLabelTTSCompleted: Boolean = false
 
     // 3개의 TTS를 모두 출력했는지
     private val _isAllTTSCompleted = MutableLiveData(false)
     val isAllTTSCompleted: LiveData<Boolean> = _isAllTTSCompleted
 
-
     // 3가지 모두 인식되었는지 체크
     private fun checkAllTTSCompleted() {
-        Log.d("TTS_CHECK",
-            "name=${isNameTTSCompleted}, " +
-                    "date=${isDateTTSCompleted}, " +
-                    "label=${isLabelTTSCompleted}"
+        Log.d(
+            "TTS_CHECK",
+            "name=$isNameTTSCompleted, " +
+                "date=$isDateTTSCompleted, " +
+                "label=$isLabelTTSCompleted",
         )
         if (isNameTTSCompleted && isDateTTSCompleted && isLabelTTSCompleted) {
             Log.d("TTS_CHECK", "ALL DONE → NAVIGATE")
@@ -75,7 +71,11 @@ class CameraViewModel : ViewModel() {
     var fullRotatedBitmap: Bitmap? = null
 
     // YOLO 추론 결과 + 전체 화면 Bitmap 업데이트
-    fun onYoloResult(results: ArrayList<YoloResult>, fullBitmap: Bitmap, fullRotatedBitmap: Bitmap) {
+    fun onYoloResult(
+        results: ArrayList<YoloResult>,
+        fullBitmap: Bitmap,
+        fullRotatedBitmap: Bitmap,
+    ) {
         _yoloResults.postValue(results)
         this.fullBitmap = fullBitmap
         this.fullRotatedBitmap = fullRotatedBitmap
@@ -87,7 +87,10 @@ class CameraViewModel : ViewModel() {
     lateinit var dataProcess: DataProcess
 
     // 제품 이름이 인식되었을 때
-    fun onProductNameDetected(name: String, bitmap: Bitmap) {
+    fun onProductNameDetected(
+        name: String,
+        bitmap: Bitmap,
+    ) {
         if (_isNameDetected.value == true) return
 
         _isNameDetected.value = true
@@ -96,7 +99,10 @@ class CameraViewModel : ViewModel() {
     }
 
     // 소비기한이 인식되었을 때
-    fun onExpirationDateDetected(date: String, bitmap: Bitmap) {
+    fun onExpirationDateDetected(
+        date: String,
+        bitmap: Bitmap,
+    ) {
         if (_isDateDetected.value == true) return
 
         _isDateDetected.value = true
@@ -118,10 +124,12 @@ class CameraViewModel : ViewModel() {
         isNameTTSCompleted = true
         checkAllTTSCompleted()
     }
+
     fun onDateTTSCompleted() {
         isDateTTSCompleted = true
         checkAllTTSCompleted()
     }
+
     fun onLabelTTSCompleted() {
         isLabelTTSCompleted = true
         checkAllTTSCompleted()

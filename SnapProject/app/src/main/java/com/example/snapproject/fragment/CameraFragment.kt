@@ -40,8 +40,6 @@ import com.example.snapproject.databinding.FragmentCameraBinding
 import com.example.snapproject.readText
 import com.example.snapproject.viewmodel.CameraViewModel
 import com.example.snapproject.yolo.DataProcess
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.functions.FirebaseFunctions
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
@@ -61,7 +59,7 @@ class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel by viewModels<CameraViewModel>()  // CameraViewModel 초기화
+    private val viewModel by viewModels<CameraViewModel>() // CameraViewModel 초기화
 
     private lateinit var mContext: Context
     private lateinit var mActivity: MainActivity
@@ -85,7 +83,6 @@ class CameraFragment : Fragment() {
     private var productLabelTxt: String = "제품 라벨이 인식되었습니다."
 
     private var hasNavigated = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
