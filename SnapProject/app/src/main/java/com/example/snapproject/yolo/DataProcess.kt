@@ -26,24 +26,6 @@ class DataProcess(val context: Context) { // context 추가
         const val LABEL_NAME = "yolov8n.txt" // YOLO 모델 라벨링 txt 파일명
     }
 
-    // imageProxy에서 bitmap 생성
-    fun imageToBitmap(imageProxy: ImageProxy): Bitmap {
-        return imageProxy.toBitmap().scale(INPUT_SIZE, INPUT_SIZE) // 비트맵 생성
-    }
-
-    // 회전된 비트맵 생성
-    fun imageToRotatedBitmap(
-        bitmap: Bitmap,
-        degrees: Int,
-    ): Bitmap {
-        // Matrix 객체에 매개변수로 받은 회전 각도 적용
-        val matrix = android.graphics.Matrix()
-        matrix.postRotate(degrees.toFloat())
-
-        // 회전된 비트맵 반환
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
-
     // 이미지를 FloatBuffer에 담는 함수
     fun bitmapToFloatBuffer(bitmap: Bitmap): FloatBuffer {
         val imageSTD = 255.0f
