@@ -185,9 +185,14 @@ class CameraFragment : Fragment() {
         viewModel.yoloResults.observe(viewLifecycleOwner) { results ->
             // 비어있으면 리턴
             if (results.isEmpty()) return@observe
-
             val firstResult = results.firstOrNull() ?: return@observe
-            Log.d("YOLO_DEBUG", results.firstOrNull().toString())
+
+            // 프레임의 중앙에 객체가 위치해있는지 / 화면 끝에 걸쳐져있는지 체크
+            if (isRectOnEdge(firstResult.rectF, viewModel.yoloBitmap)) {
+                Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 끝에 걸쳐진 상태 : $firstResult")
+                return@observe // 화면 끝에 걸쳐져 있는 것이므로 바로 리턴
+            }
+            Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 중앙에 위치 : $firstResult")
 
             val croppedBitmap = cropBitmapWithRect(viewModel.yoloBitmap, firstResult.rectF)
             val imgFile = saveBitmapToFile(croppedBitmap)
@@ -252,6 +257,26 @@ class CameraFragment : Fragment() {
                 checkAllTTSCompleted()
             }
         }
+    }
+
+    // YOLO 객체 bounding box가 가장자리에 위치해있는지 체크
+    // (left, top, right, bottom 중 하나라도 가장자리에 위치해 있으면 true, 나머지는 전부 false)
+    private fun isRectOnEdge(rectF: RectF, fullBitmap: Bitmap): Boolean {
+        val width = rectF.width()
+        val height = rectF.height()
+        val bitmapWidth = fullBitmap.width
+        val bitmapHeight = fullBitmap.height
+
+        if (width == 0f || height == 0f) return true // 높이와 너비 둘 중 하나가 0이면 true
+
+        // 화면의 5%
+        val marginX = width * 0.05f
+        val marginY = height * 0.05f
+
+        return rectF.left <= marginX ||
+                rectF.top <= marginY ||
+                rectF.right >= bitmapWidth - marginX ||
+                rectF.bottom >= bitmapHeight - marginY
     }
 
     // YOLO의 bounding box 크기만큼 crop해서 비트맵 생성
