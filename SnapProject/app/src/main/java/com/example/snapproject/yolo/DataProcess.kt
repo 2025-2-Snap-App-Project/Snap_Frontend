@@ -3,8 +3,6 @@ package com.example.snapproject.yolo
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.RectF
-import androidx.camera.core.ImageProxy
-import androidx.core.graphics.scale
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream

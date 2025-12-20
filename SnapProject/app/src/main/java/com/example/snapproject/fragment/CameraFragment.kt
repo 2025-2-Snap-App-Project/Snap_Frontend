@@ -31,6 +31,7 @@ import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -59,7 +60,6 @@ import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import androidx.core.graphics.scale
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -261,7 +261,10 @@ class CameraFragment : Fragment() {
 
     // YOLO 객체 bounding box가 가장자리에 위치해있는지 체크
     // (left, top, right, bottom 중 하나라도 가장자리에 위치해 있으면 true, 나머지는 전부 false)
-    private fun isRectOnEdge(rectF: RectF, fullBitmap: Bitmap): Boolean {
+    private fun isRectOnEdge(
+        rectF: RectF,
+        fullBitmap: Bitmap,
+    ): Boolean {
         val width = rectF.width()
         val height = rectF.height()
         val bitmapWidth = fullBitmap.width
@@ -274,15 +277,15 @@ class CameraFragment : Fragment() {
         val marginY = height * 0.05f
 
         return rectF.left <= marginX ||
-                rectF.top <= marginY ||
-                rectF.right >= bitmapWidth - marginX ||
-                rectF.bottom >= bitmapHeight - marginY
+            rectF.top <= marginY ||
+            rectF.right >= bitmapWidth - marginX ||
+            rectF.bottom >= bitmapHeight - marginY
     }
 
     // YOLO의 bounding box 크기만큼 crop해서 비트맵 생성
     private fun cropBitmapWithRect(
         source: Bitmap,
-        rectF: RectF
+        rectF: RectF,
     ): Bitmap {
         // bounding box(rectF) 좌표
         val left = rectF.left.coerceIn(0f, source.width.toFloat()).toInt()
@@ -305,7 +308,7 @@ class CameraFragment : Fragment() {
             left,
             top,
             width,
-            height
+            height,
         )
     }
 
@@ -375,20 +378,21 @@ class CameraFragment : Fragment() {
             CameraSelector.Builder().requireLensFacing(cameraFacing).build()
 
         // 카메라 4:3 비율로 고정
-        val resolutionSelector = ResolutionSelector.Builder()
-            .setAspectRatioStrategy(
-                AspectRatioStrategy(
-                    AspectRatio.RATIO_4_3,
-                    AspectRatioStrategy.FALLBACK_RULE_AUTO
+        val resolutionSelector =
+            ResolutionSelector.Builder()
+                .setAspectRatioStrategy(
+                    AspectRatioStrategy(
+                        AspectRatio.RATIO_4_3,
+                        AspectRatioStrategy.FALLBACK_RULE_AUTO,
+                    ),
                 )
-            )
-            .setResolutionStrategy(
-                ResolutionStrategy(
-                    Size(1280, 960),
-                    ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER
+                .setResolutionStrategy(
+                    ResolutionStrategy(
+                        Size(1280, 960),
+                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER,
+                    ),
                 )
-            )
-            .build()
+                .build()
 
         // 카메라 Preview 설정
         preview =

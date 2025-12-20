@@ -38,10 +38,9 @@ class CameraViewModel : ViewModel() {
     lateinit var yoloBitmap: Bitmap
 
     // 서버로 보낼 최종 이미지 파일 변수
-    lateinit var nameImgFile : File
-    lateinit var dateImgFile : File
-    lateinit var labelImgFile : File
-
+    lateinit var nameImgFile: File
+    lateinit var dateImgFile: File
+    lateinit var labelImgFile: File
 
     // TTS 완료 플래그
     var isNameTTSCompleted: Boolean = false
@@ -59,7 +58,6 @@ class CameraViewModel : ViewModel() {
     ) {
         _yoloResults.postValue(results)
         this.yoloBitmap = yoloBitmap
-
     }
 
     // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
