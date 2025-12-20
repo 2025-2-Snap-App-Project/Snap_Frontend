@@ -13,19 +13,25 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -179,32 +185,17 @@ class CameraFragment : Fragment() {
         viewModel.yoloResults.observe(viewLifecycleOwner) { results ->
             // 비어있으면 리턴
             if (results.isEmpty()) return@observe
-
-            // 화면에 YOLO 추론 결과 (RectView) 그리기
-            binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
-            binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
-            val drawRect = binding.rectView.getDrawRect() ?: return@observe // 화면에 그려진 Rect 가져오기
-
-            Log.d(
-                "rectDebug",
-                "rect=(${drawRect.left}, ${drawRect.top}, ${drawRect.right}, ${drawRect.bottom}), " +
-                    "view=(${binding.rectView.width}, ${binding.rectView.height})",
-            )
+            val firstResult = results.firstOrNull() ?: return@observe
 
             // 프레임의 중앙에 객체가 위치해있는지 / 화면 끝에 걸쳐져있는지 체크
-            if (binding.rectView.isRectOnEdge(binding.rectView.width.toFloat(), binding.rectView.height.toFloat())) {
-                Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 끝에 걸쳐진 상태")
-                return@observe
+            if (isRectOnEdge(firstResult.rectF, viewModel.yoloBitmap)) {
+                Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 끝에 걸쳐진 상태 : $firstResult")
+                return@observe // 화면 끝에 걸쳐져 있는 것이므로 바로 리턴
             }
-            Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 중앙에 위치")
+            Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 중앙에 위치 : $firstResult")
 
-            // 화면에 YOLO 추론 결과가 그려져 있다면
-            // 전체 화면 Bitmap 생성 -> File 변환
-            val screenBitmap = createScreenBitmap(viewModel.fullRotatedBitmap!!) // 현재 스크린에 보이는 만큼 비트맵 생성
-            val drawRectBitmap = createRectBitmap(screenBitmap, drawRect) // RectView 크기만큼 비트맵 생성
-            val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
-
-            val firstResult = results.firstOrNull() ?: return@observe
+            val croppedBitmap = cropBitmapWithRect(viewModel.yoloBitmap, firstResult.rectF)
+            val imgFile = saveBitmapToFile(croppedBitmap)
 
             // "제품명 인식됨" -> 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
             if (firstResult.classIndex == 1 && !viewModel.isRequesting) {
@@ -213,7 +204,7 @@ class CameraFragment : Fragment() {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                             val productName = result.data.productName // 제품명 인식 결과 저장
-                            viewModel.onProductNameDetected(productName, drawRectBitmap)
+                            viewModel.onProductNameDetected(productName, imgFile)
                         }
                         is ApiResult.Error -> {
                             Log.e("productNameTTS", "서버 요청 실패")
@@ -225,7 +216,7 @@ class CameraFragment : Fragment() {
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (firstResult.classIndex == 0) {
-                viewModel.onProductLabelDetected(drawRectBitmap)
+                viewModel.onProductLabelDetected(imgFile)
             }
         }
 
@@ -234,7 +225,7 @@ class CameraFragment : Fragment() {
             if (name == null) return@observe
             // TTS 출력
             MainActivity.tts.readText(name, requireContext()) {
-                val uri = saveImgFile("name", viewModel.nameBitmap)
+                val uri = saveImgFile("name", viewModel.nameImgFile)
                 addUriArrayList(uri)
                 viewModel.onNameTTSCompleted()
                 checkAllTTSCompleted()
@@ -247,7 +238,7 @@ class CameraFragment : Fragment() {
 
             // TTS 출력
             MainActivity.tts.readText(date, requireContext()) {
-                val uri = saveImgFile("date", viewModel.dateBitmap)
+                val uri = saveImgFile("date", viewModel.dateImgFile)
                 addUriArrayList(uri)
                 viewModel.onDateTTSCompleted()
                 checkAllTTSCompleted()
@@ -260,12 +251,65 @@ class CameraFragment : Fragment() {
 
             // TTS 출력
             MainActivity.tts.readText("제품 라벨이 인식되었습니다.", requireContext()) {
-                val uri = saveImgFile("label", viewModel.labelBitmap)
+                val uri = saveImgFile("label", viewModel.labelImgFile)
                 addUriArrayList(uri)
                 viewModel.onLabelTTSCompleted()
                 checkAllTTSCompleted()
             }
         }
+    }
+
+    // YOLO 객체 bounding box가 가장자리에 위치해있는지 체크
+    // (left, top, right, bottom 중 하나라도 가장자리에 위치해 있으면 true, 나머지는 전부 false)
+    private fun isRectOnEdge(
+        rectF: RectF,
+        fullBitmap: Bitmap,
+    ): Boolean {
+        val width = rectF.width()
+        val height = rectF.height()
+        val bitmapWidth = fullBitmap.width
+        val bitmapHeight = fullBitmap.height
+
+        if (width == 0f || height == 0f) return true // 높이와 너비 둘 중 하나가 0이면 true
+
+        // 화면의 5%
+        val marginX = width * 0.05f
+        val marginY = height * 0.05f
+
+        return rectF.left <= marginX ||
+            rectF.top <= marginY ||
+            rectF.right >= bitmapWidth - marginX ||
+            rectF.bottom >= bitmapHeight - marginY
+    }
+
+    // YOLO의 bounding box 크기만큼 crop해서 비트맵 생성
+    private fun cropBitmapWithRect(
+        source: Bitmap,
+        rectF: RectF,
+    ): Bitmap {
+        // bounding box(rectF) 좌표
+        val left = rectF.left.coerceIn(0f, source.width.toFloat()).toInt()
+        val top = rectF.top.coerceIn(0f, source.height.toFloat()).toInt()
+        val right = rectF.right.coerceIn(0f, source.width.toFloat()).toInt()
+        val bottom = rectF.bottom.coerceIn(0f, source.height.toFloat()).toInt()
+
+        // bounding box(rectF)의 너비와 높이 계산
+        val width = right - left
+        val height = bottom - top
+
+        // 너비와 높이가 0 이하일 때 에러 처리
+        if (width <= 0 || height <= 0) {
+            throw IllegalArgumentException("Invalid crop rect: $rectF")
+        }
+
+        // bounding box(rectF) 크기만큼 비트맵 새로 생성
+        return Bitmap.createBitmap(
+            source,
+            left,
+            top,
+            width,
+            height,
+        )
     }
 
     // 3가지 모두 인식되었는지 체크
@@ -333,9 +377,27 @@ class CameraFragment : Fragment() {
         val cameraSelector =
             CameraSelector.Builder().requireLensFacing(cameraFacing).build()
 
+        // 카메라 4:3 비율로 고정
+        val resolutionSelector =
+            ResolutionSelector.Builder()
+                .setAspectRatioStrategy(
+                    AspectRatioStrategy(
+                        AspectRatio.RATIO_4_3,
+                        AspectRatioStrategy.FALLBACK_RULE_AUTO,
+                    ),
+                )
+                .setResolutionStrategy(
+                    ResolutionStrategy(
+                        Size(1280, 960),
+                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER,
+                    ),
+                )
+                .build()
+
         // 카메라 Preview 설정
         preview =
             Preview.Builder()
+                .setResolutionSelector(resolutionSelector)
                 .build()
                 .also {
                     it.surfaceProvider = binding.previewCamera.surfaceProvider
@@ -347,6 +409,7 @@ class CameraFragment : Fragment() {
         // 이미지 분석을 위한 ImageAnalysis 객체 생성 및 세팅
         imageAnalyzer =
             ImageAnalysis.Builder()
+                .setResolutionSelector(resolutionSelector)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
@@ -378,19 +441,22 @@ class CameraFragment : Fragment() {
         }
     }
 
-    // 비트맵을 캐시 디렉터리에 이미지 파일 형태로 저장하는 함수
+    // 이미지 파일을 캐시 디렉터리에 저장
     private fun saveImgFile(
         category: String,
-        bitmap: Bitmap,
+        srcFile: File,
     ): Uri {
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
-        val imgFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
-        imgFile.createNewFile() // 파일 생성
-        val outputStream = FileOutputStream(imgFile)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // 이미지 저장
-        outputStream.close()
-        Log.d("CameraFragment", "저장된 파일 경로 : ${imgFile.toUri()}") // 이미지 저장 경로 확인
-        return imgFile.toUri()
+        val dstFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
+
+        srcFile.inputStream().use { input ->
+            dstFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        Log.d("CameraFragment", "저장된 파일 경로 : ${dstFile.toUri()}") // 이미지 저장 경로 확인
+        return dstFile.toUri()
     }
 
     // 저장된 이미지 파일 경로를 ArrayList에 추가
@@ -400,16 +466,12 @@ class CameraFragment : Fragment() {
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
-        val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
-
-        val bitmap = viewModel.dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
-        val rotatedBitmap = viewModel.dataProcess.imageToRotatedBitmap(bitmap, rotation) // 회전된 비트맵 이미지
-        val fullBitmap = imageProxy.toBitmap() // 원본 imageProxy를 비트맵으로
-        val fullRotatedBitmap = imageToRotatedBitmap(imageProxy.toBitmap(), rotation) // 원본 imageProxy를 회전된 비트맵으로
+        val bitmap = imageProxy.toBitmap() // 원본 비트맵
+        val yoloBitmap = bitmap.scale(DataProcess.INPUT_SIZE, DataProcess.INPUT_SIZE) // YOLO 입력 비트맵
 
         // 한 프레임에 YOLO/ML-Kit 둘 중에 하나만 실행
         if (viewModel.runYOLO) { // 현재 프레임은 YOLO만 실행하는 프레임이다
-            val floatBuffer = viewModel.dataProcess.bitmapToFloatBuffer(rotatedBitmap)
+            val floatBuffer = viewModel.dataProcess.bitmapToFloatBuffer(yoloBitmap)
             val inputName = session.inputNames.iterator().next()
 
             // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
@@ -428,12 +490,12 @@ class CameraFragment : Fragment() {
 
             // YOLO 추론 최종 결과 출력
             val results = viewModel.dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
-            viewModel.onYoloResult(results, fullBitmap, fullRotatedBitmap) // YOLO 추론 결과 업데이트
+            viewModel.onYoloResult(results, yoloBitmap) // YOLO 추론 결과 업데이트
         } else { // 현재 프레임은 OCR만 실행하는 프레임이다
             if (viewModel.isDateDetected.value == false) {
                 // 소비기한 OCR 수행
                 // Bitmap 객체에서 InputImage 객체 생성
-                val image = InputImage.fromBitmap(fullBitmap, 0)
+                val image = InputImage.fromBitmap(bitmap, imageProxy.imageInfo.rotationDegrees)
 
                 // OCR 수행
                 txtRecognizer.process(image)
@@ -441,9 +503,10 @@ class CameraFragment : Fragment() {
                         Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
                         val dates = extractValidDates(it.text) // 소비기한 조건 체크
                         if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
+                            val imgFile = saveBitmapToFile(bitmap)
                             val ocrDate = dates.first()
                             Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
-                            viewModel.onExpirationDateDetected(ocrDate, fullBitmap)
+                            viewModel.onExpirationDateDetected(ocrDate, imgFile)
                         } else { // 소비기한이 인식되지 않은 경우
                             Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
                         }
@@ -456,95 +519,6 @@ class CameraFragment : Fragment() {
 
         // 다음 프레임에는 반대 작업 수행 (지금 YOLO를 실행했다면, 다음 프레임은 ML-Kit 실행한다. 반대의 경우도 마찬가지)
         viewModel.runYOLO = !viewModel.runYOLO
-    }
-
-    // 회전된 비트맵 생성
-    private fun imageToRotatedBitmap(
-        bitmap: Bitmap,
-        degrees: Int,
-    ): Bitmap {
-        // Matrix 객체에 매개변수로 받은 회전 각도 적용
-        val matrix = android.graphics.Matrix()
-        matrix.postRotate(degrees.toFloat())
-
-        // 회전된 비트맵 반환
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
-
-    // 현재 스크린 크기만큼 비트맵 생성
-    private fun createScreenBitmap(fullBitmap: Bitmap): Bitmap {
-        // 카메라 프리뷰가 null이면 -> 입력으로 들어온 fullBitmap 그대로 반환 (화면 이동 시, binding NullPointer Exception 방지)
-        binding?.previewCamera ?: return fullBitmap
-
-        // PreviewView의 가로 세로 비율 계산
-        val screenW = binding.previewCamera.width
-        val screenH = binding.previewCamera.height
-        val screenRatio = screenW.toFloat() / screenH.toFloat()
-
-        // 원본 비트맵의 가로 세로 비율 계산
-        val imgW = fullBitmap.width
-        val imgH = fullBitmap.height
-        val imgRatio = imgW.toFloat() / imgH.toFloat()
-
-        var cropW = imgW
-        var cropH = imgH
-
-        if (imgRatio > screenRatio) { // 이미지가 가로로 더 넓음 → 좌우를 잘라야 함
-            cropW = (imgH * screenRatio).toInt()
-        } else { // 이미지가 세로로 더 김 → 위아래를 잘라야 함
-            cropH = (imgW / screenRatio).toInt()
-        }
-
-        // 중앙에서 crop
-        val left = (imgW - cropW) / 2
-        val top = (imgH - cropH) / 2
-
-        val croppedBitmap = Bitmap.createBitmap(fullBitmap, left, top, cropW, cropH)
-        return croppedBitmap
-    }
-
-    // RectView 크기만큼 비트맵 생성
-    private fun createRectBitmap(
-        screenBitmap: Bitmap,
-        drawRect: RectF,
-    ): Bitmap {
-        // screenBitmap의 실제 크기
-        val imgW = screenBitmap.width
-        val imgH = screenBitmap.height
-
-        // PreviewView 실제 화면에서의 크기
-        val viewW = binding.previewCamera.width
-        val viewH = binding.previewCamera.height
-
-        // 화면 Rect → 비트맵 좌표 변환 시 곱해줄 값
-        val scaleX = imgW.toFloat() / viewW.toFloat()
-        val scaleY = imgH.toFloat() / viewH.toFloat()
-
-        // 화면 Rect → 비트맵 좌표로 변환
-        val left = (drawRect.left * scaleX).toInt()
-        val top = (drawRect.top * scaleY).toInt()
-        val right = (drawRect.right * scaleX).toInt()
-        val bottom = (drawRect.bottom * scaleY).toInt()
-
-        // 좌표와 크기가 비트맵을 벗어나지 않도록 강제로 제한
-        val cropLeft = left.coerceIn(0, imgW - 1)
-        val cropTop = top.coerceIn(0, imgH - 1)
-        val cropWidth = (right - left).coerceAtLeast(1).coerceAtMost(imgW - cropLeft)
-        val cropHeight = (bottom - top).coerceAtLeast(1).coerceAtMost(imgH - cropTop)
-
-        Log.d("bitmapSize", "left=$cropLeft top=$cropTop width=$cropWidth height=$cropHeight")
-
-        // 최종 rect 비트맵 생성
-        val rectBitmap =
-            Bitmap.createBitmap(
-                screenBitmap,
-                cropLeft,
-                cropTop,
-                cropWidth,
-                cropHeight,
-            )
-
-        return rectBitmap
     }
 
     // 비트맵 이미지를 File 타입으로 바꿔서 저장
