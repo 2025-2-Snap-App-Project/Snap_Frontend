@@ -37,6 +37,7 @@ class CameraViewModel : ViewModel() {
     lateinit var nameBitmap: Bitmap
     lateinit var dateBitmap: Bitmap
     lateinit var labelBitmap: Bitmap
+    lateinit var yoloBitmap: Bitmap
 
     // TTS 완료 플래그
     var isNameTTSCompleted: Boolean = false
@@ -47,19 +48,14 @@ class CameraViewModel : ViewModel() {
     private val _yoloResults = MutableLiveData<ArrayList<YoloResult>>(arrayListOf())
     val yoloResults: LiveData<ArrayList<YoloResult>> = _yoloResults
 
-    // 전체 화면 Bitmap
-    var fullBitmap: Bitmap? = null
-    var fullRotatedBitmap: Bitmap? = null
-
     // YOLO 추론 결과 + 전체 화면 Bitmap 업데이트
     fun onYoloResult(
         results: ArrayList<YoloResult>,
-        fullBitmap: Bitmap,
-        fullRotatedBitmap: Bitmap,
+        yoloBitmap: Bitmap,
     ) {
         _yoloResults.postValue(results)
-        this.fullBitmap = fullBitmap
-        this.fullRotatedBitmap = fullRotatedBitmap
+        this.yoloBitmap = yoloBitmap
+
     }
 
     // 현재 POST 요청 중인지 여부를 알려주는 상태 변수
