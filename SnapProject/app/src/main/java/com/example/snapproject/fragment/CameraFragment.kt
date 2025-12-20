@@ -199,7 +199,7 @@ class CameraFragment : Fragment() {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                             val productName = result.data.productName // 제품명 인식 결과 저장
-                            viewModel.onProductNameDetected(productName, viewModel.yoloBitmap)
+                            viewModel.onProductNameDetected(productName, imgFile)
                         }
                         is ApiResult.Error -> {
                             Log.e("productNameTTS", "서버 요청 실패")
@@ -211,7 +211,7 @@ class CameraFragment : Fragment() {
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (firstResult.classIndex == 0) {
-                viewModel.onProductLabelDetected(viewModel.yoloBitmap)
+                viewModel.onProductLabelDetected(imgFile)
             }
         }
 
@@ -474,9 +474,10 @@ class CameraFragment : Fragment() {
                         Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
                         val dates = extractValidDates(it.text) // 소비기한 조건 체크
                         if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
+                            val imgFile = saveBitmapToFile(bitmap)
                             val ocrDate = dates.first()
                             Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
-                            viewModel.onExpirationDateDetected(ocrDate, bitmap)
+                            viewModel.onExpirationDateDetected(ocrDate, imgFile)
                         } else { // 소비기한이 인식되지 않은 경우
                             Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
                         }
