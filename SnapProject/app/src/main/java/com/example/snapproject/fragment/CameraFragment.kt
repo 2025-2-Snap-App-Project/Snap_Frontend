@@ -186,7 +186,6 @@ class CameraFragment : Fragment() {
             if (results.isEmpty()) return@observe
 
             // 화면에 YOLO 추론 결과 (RectView) 그리기
-            binding.rectView.transformRect(results, binding.previewCamera.width, binding.previewCamera.height) // 실제 기기 화면 크기에 맞게 좌표값 조정
             binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
             val drawRect = binding.rectView.getDrawRect() ?: return@observe // 화면에 그려진 Rect 가져오기
 

@@ -29,28 +29,6 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
             it.strokeWidth = 10f
         }
 
-    // 실제 기기의 화면 크기에 맞게 좌표값 수정
-    fun transformRect(
-        results: ArrayList<YoloResult>,
-        previewWidth: Int,
-        previewHeight: Int,
-    ) {
-        val modelSize = DataProcess.INPUT_SIZE.toFloat() // YOLO 모델 입력 이미지 크기
-
-        // YOLO 모델 입력 이미지 좌표 -> PreviewView 좌표 변환 시, 곱하는 비율
-        val scaleX = previewWidth / modelSize
-        val scaleY = previewHeight / modelSize
-
-        // 좌표 변환 (YOLO 모델 입력 이미지 좌표 -> PreviewView 좌표)
-        results.forEach { r ->
-            r.rectF.left *= scaleX
-            r.rectF.right *= scaleX
-            r.rectF.top *= scaleY
-            r.rectF.bottom *= scaleY
-        }
-        this.results = results
-    }
-
     // 라벨링된 클래스의 문자열 값 가져오기
     fun setClassLabel(classes: Array<String>) {
         this.classes = classes
