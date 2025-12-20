@@ -13,16 +13,21 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -333,9 +338,26 @@ class CameraFragment : Fragment() {
         val cameraSelector =
             CameraSelector.Builder().requireLensFacing(cameraFacing).build()
 
+        // 카메라 4:3 비율로 고정
+        val resolutionSelector = ResolutionSelector.Builder()
+            .setAspectRatioStrategy(
+                AspectRatioStrategy(
+                    AspectRatio.RATIO_4_3,
+                    AspectRatioStrategy.FALLBACK_RULE_AUTO
+                )
+            )
+            .setResolutionStrategy(
+                ResolutionStrategy(
+                    Size(1280, 960),
+                    ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER
+                )
+            )
+            .build()
+
         // 카메라 Preview 설정
         preview =
             Preview.Builder()
+                .setResolutionSelector(resolutionSelector)
                 .build()
                 .also {
                     it.surfaceProvider = binding.previewCamera.surfaceProvider
@@ -347,6 +369,7 @@ class CameraFragment : Fragment() {
         // 이미지 분석을 위한 ImageAnalysis 객체 생성 및 세팅
         imageAnalyzer =
             ImageAnalysis.Builder()
+                .setResolutionSelector(resolutionSelector)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
