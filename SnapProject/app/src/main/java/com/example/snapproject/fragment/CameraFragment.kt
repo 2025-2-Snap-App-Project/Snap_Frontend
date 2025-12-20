@@ -185,6 +185,19 @@ class CameraFragment : Fragment() {
             binding.rectView.invalidate() // 최종 결과를 화면에 그려줌
             val drawRect = binding.rectView.getDrawRect() ?: return@observe // 화면에 그려진 Rect 가져오기
 
+            Log.d(
+                "rectDebug",
+                "rect=(${drawRect.left}, ${drawRect.top}, ${drawRect.right}, ${drawRect.bottom}), " +
+                    "view=(${binding.rectView.width}, ${binding.rectView.height})",
+            )
+
+            // 프레임의 중앙에 객체가 위치해있는지 / 화면 끝에 걸쳐져있는지 체크
+            if (binding.rectView.isRectOnEdge(binding.rectView.width.toFloat(), binding.rectView.height.toFloat())) {
+                Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 끝에 걸쳐진 상태")
+                return@observe
+            }
+            Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 중앙에 위치")
+
             // 화면에 YOLO 추론 결과가 그려져 있다면
             // 전체 화면 Bitmap 생성 -> File 변환
             val screenBitmap = createScreenBitmap(viewModel.fullRotatedBitmap!!) // 현재 스크린에 보이는 만큼 비트맵 생성
