@@ -59,6 +59,7 @@ import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import androidx.core.graphics.scale
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -204,9 +205,7 @@ class CameraFragment : Fragment() {
 
             // 화면에 YOLO 추론 결과가 그려져 있다면
             // 전체 화면 Bitmap 생성 -> File 변환
-            val screenBitmap = createScreenBitmap(viewModel.fullRotatedBitmap!!) // 현재 스크린에 보이는 만큼 비트맵 생성
-            val drawRectBitmap = createRectBitmap(screenBitmap, drawRect) // RectView 크기만큼 비트맵 생성
-            val imgFile = saveBitmapToFile(drawRectBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
+            val imgFile = saveBitmapToFile(viewModel.yoloBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
 
             val firstResult = results.firstOrNull() ?: return@observe
 
@@ -217,7 +216,7 @@ class CameraFragment : Fragment() {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                             val productName = result.data.productName // 제품명 인식 결과 저장
-                            viewModel.onProductNameDetected(productName, drawRectBitmap)
+                            viewModel.onProductNameDetected(productName, viewModel.yoloBitmap)
                         }
                         is ApiResult.Error -> {
                             Log.e("productNameTTS", "서버 요청 실패")
@@ -229,7 +228,7 @@ class CameraFragment : Fragment() {
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (firstResult.classIndex == 0) {
-                viewModel.onProductLabelDetected(drawRectBitmap)
+                viewModel.onProductLabelDetected(viewModel.yoloBitmap)
             }
         }
 
@@ -422,16 +421,12 @@ class CameraFragment : Fragment() {
 
     // 이미지 처리 함수
     private fun imageProcess(imageProxy: ImageProxy) {
-        val rotation = imageProxy.imageInfo.rotationDegrees // 현재 이미지 회전 각도 가져오기
-
-        val bitmap = viewModel.dataProcess.imageToBitmap(imageProxy) // 비트맵 이미지
-        val rotatedBitmap = viewModel.dataProcess.imageToRotatedBitmap(bitmap, rotation) // 회전된 비트맵 이미지
-        val fullBitmap = imageProxy.toBitmap() // 원본 imageProxy를 비트맵으로
-        val fullRotatedBitmap = imageToRotatedBitmap(imageProxy.toBitmap(), rotation) // 원본 imageProxy를 회전된 비트맵으로
+        val bitmap = imageProxy.toBitmap() // 원본 비트맵
+        val yoloBitmap = bitmap.scale(DataProcess.INPUT_SIZE, DataProcess.INPUT_SIZE) // YOLO 입력 비트맵
 
         // 한 프레임에 YOLO/ML-Kit 둘 중에 하나만 실행
         if (viewModel.runYOLO) { // 현재 프레임은 YOLO만 실행하는 프레임이다
-            val floatBuffer = viewModel.dataProcess.bitmapToFloatBuffer(rotatedBitmap)
+            val floatBuffer = viewModel.dataProcess.bitmapToFloatBuffer(yoloBitmap)
             val inputName = session.inputNames.iterator().next()
 
             // 모델 요구 입력값 (배치 사이즈, 픽셀, 너비, 높이)
@@ -450,12 +445,12 @@ class CameraFragment : Fragment() {
 
             // YOLO 추론 최종 결과 출력
             val results = viewModel.dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
-            viewModel.onYoloResult(results, fullBitmap, fullRotatedBitmap) // YOLO 추론 결과 업데이트
+            viewModel.onYoloResult(results, yoloBitmap) // YOLO 추론 결과 업데이트
         } else { // 현재 프레임은 OCR만 실행하는 프레임이다
             if (viewModel.isDateDetected.value == false) {
                 // 소비기한 OCR 수행
                 // Bitmap 객체에서 InputImage 객체 생성
-                val image = InputImage.fromBitmap(fullBitmap, 0)
+                val image = InputImage.fromBitmap(bitmap, imageProxy.imageInfo.rotationDegrees)
 
                 // OCR 수행
                 txtRecognizer.process(image)
@@ -465,7 +460,7 @@ class CameraFragment : Fragment() {
                         if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
                             val ocrDate = dates.first()
                             Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
-                            viewModel.onExpirationDateDetected(ocrDate, fullBitmap)
+                            viewModel.onExpirationDateDetected(ocrDate, bitmap)
                         } else { // 소비기한이 인식되지 않은 경우
                             Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
                         }
