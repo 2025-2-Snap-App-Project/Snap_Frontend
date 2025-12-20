@@ -220,7 +220,7 @@ class CameraFragment : Fragment() {
             if (name == null) return@observe
             // TTS 출력
             MainActivity.tts.readText(name, requireContext()) {
-                val uri = saveImgFile("name", viewModel.nameBitmap)
+                val uri = saveImgFile("name", viewModel.nameImgFile)
                 addUriArrayList(uri)
                 viewModel.onNameTTSCompleted()
                 checkAllTTSCompleted()
@@ -233,7 +233,7 @@ class CameraFragment : Fragment() {
 
             // TTS 출력
             MainActivity.tts.readText(date, requireContext()) {
-                val uri = saveImgFile("date", viewModel.dateBitmap)
+                val uri = saveImgFile("date", viewModel.dateImgFile)
                 addUriArrayList(uri)
                 viewModel.onDateTTSCompleted()
                 checkAllTTSCompleted()
@@ -246,7 +246,7 @@ class CameraFragment : Fragment() {
 
             // TTS 출력
             MainActivity.tts.readText("제품 라벨이 인식되었습니다.", requireContext()) {
-                val uri = saveImgFile("label", viewModel.labelBitmap)
+                val uri = saveImgFile("label", viewModel.labelImgFile)
                 addUriArrayList(uri)
                 viewModel.onLabelTTSCompleted()
                 checkAllTTSCompleted()
@@ -412,19 +412,22 @@ class CameraFragment : Fragment() {
         }
     }
 
-    // 비트맵을 캐시 디렉터리에 이미지 파일 형태로 저장하는 함수
+    // 이미지 파일을 캐시 디렉터리에 저장
     private fun saveImgFile(
         category: String,
-        bitmap: Bitmap,
+        srcFile: File,
     ): Uri {
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
-        val imgFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
-        imgFile.createNewFile() // 파일 생성
-        val outputStream = FileOutputStream(imgFile)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // 이미지 저장
-        outputStream.close()
-        Log.d("CameraFragment", "저장된 파일 경로 : ${imgFile.toUri()}") // 이미지 저장 경로 확인
-        return imgFile.toUri()
+        val dstFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
+
+        srcFile.inputStream().use { input ->
+            dstFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        Log.d("CameraFragment", "저장된 파일 경로 : ${dstFile.toUri()}") // 이미지 저장 경로 확인
+        return dstFile.toUri()
     }
 
     // 저장된 이미지 파일 경로를 ArrayList에 추가
