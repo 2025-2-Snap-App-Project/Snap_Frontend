@@ -186,11 +186,11 @@ class CameraFragment : Fragment() {
             // 비어있으면 리턴
             if (results.isEmpty()) return@observe
 
-            // 화면에 YOLO 추론 결과가 그려져 있다면
-            // 전체 화면 Bitmap 생성 -> File 변환
-            val imgFile = saveBitmapToFile(viewModel.yoloBitmap) // RectView 크기의 비트맵을 File(.png)로 저장
-
             val firstResult = results.firstOrNull() ?: return@observe
+            Log.d("YOLO_DEBUG", results.firstOrNull().toString())
+
+            val croppedBitmap = cropBitmapWithRect(viewModel.yoloBitmap, firstResult.rectF)
+            val imgFile = saveBitmapToFile(croppedBitmap)
 
             // "제품명 인식됨" -> 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
             if (firstResult.classIndex == 1 && !viewModel.isRequesting) {
