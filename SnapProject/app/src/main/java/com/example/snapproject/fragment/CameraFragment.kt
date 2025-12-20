@@ -254,6 +254,36 @@ class CameraFragment : Fragment() {
         }
     }
 
+    // YOLO의 bounding box 크기만큼 crop해서 비트맵 생성
+    private fun cropBitmapWithRect(
+        source: Bitmap,
+        rectF: RectF
+    ): Bitmap {
+        // bounding box(rectF) 좌표
+        val left = rectF.left.coerceIn(0f, source.width.toFloat()).toInt()
+        val top = rectF.top.coerceIn(0f, source.height.toFloat()).toInt()
+        val right = rectF.right.coerceIn(0f, source.width.toFloat()).toInt()
+        val bottom = rectF.bottom.coerceIn(0f, source.height.toFloat()).toInt()
+
+        // bounding box(rectF)의 너비와 높이 계산
+        val width = right - left
+        val height = bottom - top
+
+        // 너비와 높이가 0 이하일 때 에러 처리
+        if (width <= 0 || height <= 0) {
+            throw IllegalArgumentException("Invalid crop rect: $rectF")
+        }
+
+        // bounding box(rectF) 크기만큼 비트맵 새로 생성
+        return Bitmap.createBitmap(
+            source,
+            left,
+            top,
+            width,
+            height
+        )
+    }
+
     // 3가지 모두 인식되었는지 체크
     private fun checkAllTTSCompleted() {
         Log.d(
