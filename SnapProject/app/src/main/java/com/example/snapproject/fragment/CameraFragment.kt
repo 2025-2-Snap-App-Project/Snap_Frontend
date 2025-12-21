@@ -230,8 +230,7 @@ class CameraFragment : Fragment() {
             if (name == null) return@observe
             // TTS 출력
             MainActivity.tts.readText(name, requireContext()) {
-                val uri = saveImgFile("name", viewModel.nameImgFile)
-                addUriArrayList(uri)
+                viewModel.addBitmap(viewModel.nameBitmap, "name") // 인식된 이미지 파일 -> 뷰모델에 추가
                 viewModel.onNameTTSCompleted()
                 checkAllTTSCompleted()
             }
@@ -243,8 +242,6 @@ class CameraFragment : Fragment() {
 
             // TTS 출력
             MainActivity.tts.readText(date, requireContext()) {
-                val uri = saveImgFile("date", viewModel.dateImgFile)
-                addUriArrayList(uri)
                 viewModel.onDateTTSCompleted()
                 checkAllTTSCompleted()
             }
@@ -256,8 +253,7 @@ class CameraFragment : Fragment() {
 
             // TTS 출력
             MainActivity.tts.readText("제품 라벨이 인식되었습니다.", requireContext()) {
-                val uri = saveImgFile("label", viewModel.labelImgFile)
-                addUriArrayList(uri)
+                viewModel.addBitmap(viewModel.labelBitmap, "label") // 인식된 이미지 파일 -> 뷰모델에 추가
                 viewModel.onLabelTTSCompleted()
                 checkAllTTSCompleted()
             }
