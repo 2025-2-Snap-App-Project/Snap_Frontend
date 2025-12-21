@@ -442,24 +442,6 @@ class CameraFragment : Fragment() {
         }
     }
 
-    // 이미지 파일을 캐시 디렉터리에 저장
-    private fun saveImgFile(
-        category: String,
-        srcFile: File,
-    ): Uri {
-        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
-        val dstFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
-
-        srcFile.inputStream().use { input ->
-            dstFile.outputStream().use { output ->
-                input.copyTo(output)
-            }
-        }
-
-        Log.d("CameraFragment", "저장된 파일 경로 : ${dstFile.toUri()}") // 이미지 저장 경로 확인
-        return dstFile.toUri()
-    }
-
     // 저장된 이미지 파일 경로를 ArrayList에 추가
     private fun addUriArrayList(uri: Uri) {
         uriArrayList.add(uri.toString())
@@ -556,17 +538,6 @@ class CameraFragment : Fragment() {
 
         // 아직 7을 넘지 못했다면 null 반환
         return null
-    }
-
-    // 비트맵 이미지를 File 타입으로 바꿔서 저장
-    private fun saveBitmapToFile(bitmap: Bitmap): File {
-        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
-        val fileItem = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
-        fileItem.createNewFile()
-        val fos = FileOutputStream(fileItem)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
-        fos.close()
-        return fileItem
     }
 
     // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수
