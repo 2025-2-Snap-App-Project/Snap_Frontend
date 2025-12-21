@@ -24,6 +24,11 @@ class CameraViewModel : ViewModel() {
     private val _productLabel = MutableLiveData<Unit>()
     val productLabel: LiveData<Unit> = _productLabel
 
+    // MutableMap -> (최종 인식된 cropped 비트맵, 카테고리)
+    // 카테고리 - 제품명 or 제품 라벨
+    private val _bitmapMap = MutableLiveData<MutableMap<Bitmap, String>>(mutableMapOf())
+    val bitmapMap: LiveData<MutableMap<Bitmap, String>> = _bitmapMap
+
     // 인식 여부 플래그
     private val _isNameDetected = MutableLiveData(false)
     val isNameDetected: LiveData<Boolean> = _isNameDetected
