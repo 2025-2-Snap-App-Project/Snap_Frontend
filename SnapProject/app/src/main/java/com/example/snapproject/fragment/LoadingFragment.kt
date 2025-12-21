@@ -54,8 +54,7 @@ class LoadingFragment : Fragment() {
         initView()
 
         // 뷰모델의 MutableMap (bitmap, category) -> null 체크
-        val bitmapMap = viewModel.bitmapMap.value
-        if (bitmapMap == null) {
+        if (viewModel.bitmapMap.isEmpty()) {
             MainActivity.tts.readText("오류 발생, 다시 시도해주세요.", requireContext()) {
                 findNavController().popBackStack()
                 return@readText
@@ -63,7 +62,7 @@ class LoadingFragment : Fragment() {
         }
 
         // 비트맵을 전부 File 타입으로 변경하여 ArrayList에 추가
-        for ((bitmap, category) in bitmapMap!!) {
+        for ((bitmap, category) in viewModel.bitmapMap) {
             // 파일명 지정을 위해, 카테고리 (제품명 / 제품 라벨)도 같이 넘겨줌
             val file = viewModel.saveBitmapToFile(bitmap, category, requireContext())
             imgArrLst.add(file) // 서버로 보낼 ArrayList에 생성된 파일 추가

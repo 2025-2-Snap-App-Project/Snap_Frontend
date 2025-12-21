@@ -30,8 +30,7 @@ class CameraViewModel : ViewModel() {
 
     // MutableMap -> (최종 인식된 cropped 비트맵, 카테고리)
     // 카테고리 - 제품명 or 제품 라벨
-    private val _bitmapMap = MutableLiveData<MutableMap<Bitmap, String>>(mutableMapOf())
-    val bitmapMap: LiveData<MutableMap<Bitmap, String>> = _bitmapMap
+    var bitmapMap: MutableMap<Bitmap, String> = mutableMapOf()
 
     // 인식 여부 플래그
     private val _isNameDetected = MutableLiveData(false)
@@ -123,8 +122,8 @@ class CameraViewModel : ViewModel() {
     }
 
     // (인식된 비트맵, 카테고리) -> MutableMap에 추가
-    fun addBitmap(bitmap: Bitmap, category: String) {
-        _bitmapMap.value?.put(bitmap, category)
+    private fun addBitmap(bitmap: Bitmap, category: String) {
+        bitmapMap[bitmap] = category
     }
 
     // 비트맵을 File 타입으로 변경
