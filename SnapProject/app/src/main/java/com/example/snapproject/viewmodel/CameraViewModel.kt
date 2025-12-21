@@ -1,5 +1,6 @@
 package com.example.snapproject.viewmodel
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,6 +8,9 @@ import androidx.lifecycle.ViewModel
 import com.example.snapproject.yolo.DataProcess
 import com.example.snapproject.yolo.YoloResult
 import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class CameraViewModel : ViewModel() {
     var runYOLO = true // true면 YOLO, false면 OCR
@@ -24,6 +28,10 @@ class CameraViewModel : ViewModel() {
     private val _productLabel = MutableLiveData<Unit>()
     val productLabel: LiveData<Unit> = _productLabel
 
+    // MutableMap -> (최종 인식된 cropped 비트맵, 카테고리)
+    // 카테고리 - 제품명 or 제품 라벨
+    var bitmapMap: MutableMap<Bitmap, String> = mutableMapOf()
+
     // 인식 여부 플래그
     private val _isNameDetected = MutableLiveData(false)
     val isNameDetected: LiveData<Boolean> = _isNameDetected
@@ -37,10 +45,9 @@ class CameraViewModel : ViewModel() {
     // YOLO 입력용 비트맵 변수
     lateinit var yoloBitmap: Bitmap
 
-    // 서버로 보낼 최종 이미지 파일 변수
-    lateinit var nameImgFile: File
-    lateinit var dateImgFile: File
-    lateinit var labelImgFile: File
+    // 인식된 cropped 비트맵
+    lateinit var nameBitmap: Bitmap
+    lateinit var labelBitmap: Bitmap
 
     // TTS 완료 플래그
     var isNameTTSCompleted: Boolean = false
@@ -71,34 +78,32 @@ class CameraViewModel : ViewModel() {
     // 제품 이름이 인식되었을 때
     fun onProductNameDetected(
         name: String,
-        nameImgFile: File,
+        bitmap: Bitmap,
     ) {
         if (_isNameDetected.value == true) return
 
         _isNameDetected.value = true
         _productName.value = name
-        this.nameImgFile = nameImgFile
+        nameBitmap = bitmap
+        addBitmap(bitmap, "name")
     }
 
     // 소비기한이 인식되었을 때
-    fun onExpirationDateDetected(
-        date: String,
-        dateImgFile: File,
-    ) {
+    fun onExpirationDateDetected(date: String) {
         if (_isDateDetected.value == true) return
 
         _isDateDetected.value = true
         _expirationDate.value = date
-        this.dateImgFile = dateImgFile
     }
 
     // 제품 라벨이 인식되었을 때
-    fun onProductLabelDetected(labelImgFile: File) {
+    fun onProductLabelDetected(bitmap: Bitmap) {
         if (_isLabelDetected.value == true) return
 
         _isLabelDetected.value = true
         _productLabel.value = Unit
-        this.labelImgFile = labelImgFile
+        labelBitmap = bitmap
+        addBitmap(bitmap, "label")
     }
 
     // TTS 출력 완료 후, 관련 변수 업데이트
@@ -112,5 +117,28 @@ class CameraViewModel : ViewModel() {
 
     fun onLabelTTSCompleted() {
         isLabelTTSCompleted = true
+    }
+
+    // (인식된 비트맵, 카테고리) -> MutableMap에 추가
+    private fun addBitmap(
+        bitmap: Bitmap,
+        category: String,
+    ) {
+        bitmapMap[bitmap] = category
+    }
+
+    // 비트맵을 File 타입으로 변경
+    fun saveBitmapToFile(
+        bitmap: Bitmap,
+        category: String,
+        context: Context,
+    ): File {
+        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
+        val file = File(context.cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
+        file.createNewFile()
+        val fos = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+        fos.close()
+        return file
     }
 }

@@ -35,7 +35,7 @@ import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.MainActivity
@@ -50,14 +50,10 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
 import java.util.Collections
-import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -65,7 +61,7 @@ class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel by viewModels<CameraViewModel>() // CameraViewModel 초기화
+    private val viewModel: CameraViewModel by activityViewModels() // CameraViewModel 공유
 
     private lateinit var mContext: Context
     private lateinit var mActivity: MainActivity
@@ -199,16 +195,17 @@ class CameraFragment : Fragment() {
             Log.d("isRectOnEdge", "YOLO 추론한 Rect가 화면 중앙에 위치 : $firstResult")
 
             val croppedBitmap = cropBitmapWithRect(viewModel.yoloBitmap, firstResult.rectF)
-            val imgFile = saveBitmapToFile(croppedBitmap)
 
             // "제품명 인식됨" -> 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
             if (firstResult.classIndex == 1 && !viewModel.isRequesting) {
                 viewModel.isRequesting = true
+                val imgFile = viewModel.saveBitmapToFile(croppedBitmap, "name", requireContext())
+
                 lifecycleScope.launch {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                             val productName = result.data.productName // 제품명 인식 결과 저장
-                            viewModel.onProductNameDetected(productName, imgFile)
+                            viewModel.onProductNameDetected(productName, croppedBitmap)
                         }
                         is ApiResult.Error -> {
                             Log.e("productNameTTS", "서버 요청 실패")
@@ -220,7 +217,7 @@ class CameraFragment : Fragment() {
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (firstResult.classIndex == 0) {
-                viewModel.onProductLabelDetected(imgFile)
+                viewModel.onProductLabelDetected(croppedBitmap)
             }
         }
 
@@ -229,8 +226,6 @@ class CameraFragment : Fragment() {
             if (name == null) return@observe
             // TTS 출력
             MainActivity.tts.readText(name, requireContext()) {
-                val uri = saveImgFile("name", viewModel.nameImgFile)
-                addUriArrayList(uri)
                 viewModel.onNameTTSCompleted()
                 checkAllTTSCompleted()
             }
@@ -242,8 +237,6 @@ class CameraFragment : Fragment() {
 
             // TTS 출력
             MainActivity.tts.readText(date, requireContext()) {
-                val uri = saveImgFile("date", viewModel.dateImgFile)
-                addUriArrayList(uri)
                 viewModel.onDateTTSCompleted()
                 checkAllTTSCompleted()
             }
@@ -255,8 +248,6 @@ class CameraFragment : Fragment() {
 
             // TTS 출력
             MainActivity.tts.readText("제품 라벨이 인식되었습니다.", requireContext()) {
-                val uri = saveImgFile("label", viewModel.labelImgFile)
-                addUriArrayList(uri)
                 viewModel.onLabelTTSCompleted()
                 checkAllTTSCompleted()
             }
@@ -445,24 +436,6 @@ class CameraFragment : Fragment() {
         }
     }
 
-    // 이미지 파일을 캐시 디렉터리에 저장
-    private fun saveImgFile(
-        category: String,
-        srcFile: File,
-    ): Uri {
-        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
-        val dstFile = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
-
-        srcFile.inputStream().use { input ->
-            dstFile.outputStream().use { output ->
-                input.copyTo(output)
-            }
-        }
-
-        Log.d("CameraFragment", "저장된 파일 경로 : ${dstFile.toUri()}") // 이미지 저장 경로 확인
-        return dstFile.toUri()
-    }
-
     // 저장된 이미지 파일 경로를 ArrayList에 추가
     private fun addUriArrayList(uri: Uri) {
         uriArrayList.add(uri.toString())
@@ -514,9 +487,7 @@ class CameraFragment : Fragment() {
                     val confirmedDate = voteExpirationDate(ocrDate) ?: return@addOnSuccessListener
                     Log.d("ocrDateSuccess", "확정된 소비기한: $confirmedDate")
 
-                    // 이미지 파일 저장, 뷰모델 변수 업데이트
-                    val imgFile = saveBitmapToFile(bitmap)
-                    viewModel.onExpirationDateDetected(confirmedDate, imgFile)
+                    viewModel.onExpirationDateDetected(confirmedDate)
                 }
                 .addOnFailureListener { e -> // OCR 실패
                     Log.e("ocrDateError", "${e.message}")
@@ -561,17 +532,6 @@ class CameraFragment : Fragment() {
 
         // 아직 7을 넘지 못했다면 null 반환
         return null
-    }
-
-    // 비트맵 이미지를 File 타입으로 바꿔서 저장
-    private fun saveBitmapToFile(bitmap: Bitmap): File {
-        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) // 파일명 설정
-        val fileItem = File(requireContext().cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
-        fileItem.createNewFile()
-        val fos = FileOutputStream(fileItem)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
-        fos.close()
-        return fileItem
     }
 
     // OCR 수행 결과 -> 소비기한에 해당하는지 체크하는 함수

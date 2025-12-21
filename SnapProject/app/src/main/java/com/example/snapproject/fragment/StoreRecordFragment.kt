@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
@@ -26,6 +27,7 @@ import com.example.snapproject.databinding.FragmentStoreRecordBinding
 import com.example.snapproject.model.db.Product
 import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.readText
+import com.example.snapproject.viewmodel.CameraViewModel
 
 class StoreRecordFragment : Fragment() {
     private var _binding: FragmentStoreRecordBinding? = null
@@ -40,6 +42,8 @@ class StoreRecordFragment : Fragment() {
     private lateinit var mRecognizer: SpeechRecognizer
 
     private lateinit var storageLocation: String // 사용자가 입력한 제품 보관 장소
+
+    private val viewModel: CameraViewModel by activityViewModels() // CameraViewModel 공유
 
     companion object {
         fun newInstance() = StoreRecordFragment()
@@ -140,7 +144,7 @@ class StoreRecordFragment : Fragment() {
             if (prevPage == "loading") { // 로딩 화면에서 넘어온 경우 -> 서버 응답 결과 가져와서 테이블에 Insert
                 // Safe Args로 받은 서버 응답 결과 -> 각각 변수에 저장
                 val productName = response?.data?.productName
-                val expirationDate = response?.data?.expirationDate
+                val expirationDate = viewModel.expirationDate.value
                 val summary = response?.data?.summary
                 val ingredients = response?.data?.ingredients
 

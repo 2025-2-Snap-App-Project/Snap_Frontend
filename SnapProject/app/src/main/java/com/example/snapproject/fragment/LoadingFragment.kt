@@ -1,7 +1,5 @@
 package com.example.snapproject.fragment
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,25 +7,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
 import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
 import com.example.snapproject.databinding.FragmentLoadingBinding
 import com.example.snapproject.readText
+import com.example.snapproject.viewmodel.CameraViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileNotFoundException
 
 class LoadingFragment : Fragment() {
     private var _binding: FragmentLoadingBinding? = null
     private val binding get() = _binding!!
 
     private var imgArrLst: ArrayList<File> = arrayListOf() // 이미지 파일 ArrayList
+    private val viewModel: CameraViewModel by activityViewModels() // CameraViewModel 공유
 
     companion object {
         fun newInstance() = LoadingFragment()
@@ -49,16 +48,20 @@ class LoadingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
 
-        // Safe Args로 받은 데이터 가져오기
-        val args: LoadingFragmentArgs by navArgs()
-        val uriArrLst = args.uriArrLst
-
-        if (uriArrLst != null) {
-            for (strUri in uriArrLst) {
-                val uri = strUri.toUri() // String -> Uri로 변환
-                Log.d("LoadingFragment", "전달 받은 이미지 경로 : $uri") // Uri로 타입 변환 후, 경로 확인
-                imgArrLst.add(uriToFile(requireContext(), uri)) // 이미지 ArrayList에 이미지 파일 하나씩 추가
+        // 뷰모델의 MutableMap (bitmap, category) -> null 체크
+        if (viewModel.bitmapMap.isEmpty()) {
+            MainActivity.tts.readText("오류 발생, 다시 시도해주세요.", requireContext()) {
+                findNavController().popBackStack()
+                return@readText
             }
+        }
+
+        // 비트맵을 전부 File 타입으로 변경하여 ArrayList에 추가
+        for ((bitmap, category) in viewModel.bitmapMap) {
+            // 파일명 지정을 위해, 카테고리 (제품명 / 제품 라벨)도 같이 넘겨줌
+            val file = viewModel.saveBitmapToFile(bitmap, category, requireContext())
+            imgArrLst.add(file) // 서버로 보낼 ArrayList에 생성된 파일 추가
+            Log.d("fileName", "파일 생성 성공, 파일 경로 : ${file.toUri()}") // 파일 경로 확인
         }
 
         viewLifecycleOwner.lifecycleScope.launch { // Fragment의 뷰 생명 주기
@@ -106,20 +109,5 @@ class LoadingFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    // Uri를 File 형태로 변환
-    private fun uriToFile(
-        context: Context,
-        uri: Uri,
-    ): File {
-        val inputStream =
-            context.contentResolver.openInputStream(uri)
-                ?: throw FileNotFoundException("파일을 찾을 수 없음 : $uri")
-
-        // 임시 File 생성 -> Uri에 있는 이미지를 임시 File에 복사
-        val tempFile = File.createTempFile("upload", ".png", context.cacheDir)
-        inputStream.use { input -> tempFile.outputStream().use { output -> input.copyTo(output) } }
-        return tempFile // 생성된 임시 File (이미지 파일) 리턴
     }
 }
