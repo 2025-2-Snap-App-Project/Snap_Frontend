@@ -100,6 +100,10 @@ class CameraFragment : Fragment() {
         // 필요한 권한 array 선언 및 초기화 (카메라 촬영)
         private val PERMISSIONS_REQUIRED =
             arrayOf(android.Manifest.permission.CAMERA)
+
+        // 소비기한 OCR 확정을 위한 상수
+        const val DATE_BUFFER_SIZE = 10 // 버퍼 사이즈 (10개 프레임만 확인)
+        const val DATE_CONFIRM_COUNT = 7 // 확정 기준 (해당 날짜가 7번 이상 나오면 확정)
     }
 
     // 앱 설정 Permission 콜백 등록 (앱 설정에서의 사용자 이벤트 처리)
@@ -492,33 +496,71 @@ class CameraFragment : Fragment() {
             val results = viewModel.dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
             viewModel.onYoloResult(results, yoloBitmap) // YOLO 추론 결과 업데이트
         } else { // 현재 프레임은 OCR만 실행하는 프레임이다
-            if (viewModel.isDateDetected.value == false) {
-                // 소비기한 OCR 수행
-                // Bitmap 객체에서 InputImage 객체 생성
-                val image = InputImage.fromBitmap(bitmap, imageProxy.imageInfo.rotationDegrees)
+            // 소비기한 OCR 시작
+            val image = InputImage.fromBitmap(bitmap, imageProxy.imageInfo.rotationDegrees) // Bitmap에서 InputImage 생성
 
-                // OCR 수행
-                txtRecognizer.process(image)
-                    .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
-                        Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
-                        val dates = extractValidDates(it.text) // 소비기한 조건 체크
-                        if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
-                            val imgFile = saveBitmapToFile(bitmap)
-                            val ocrDate = dates.first()
-                            Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
-                            viewModel.onExpirationDateDetected(ocrDate, imgFile)
-                        } else { // 소비기한이 인식되지 않은 경우
-                            Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("ocrDateError", "${e.message}")
-                    }
-            }
+            // OCR 수행
+            txtRecognizer.process(image)
+                .addOnSuccessListener { // OCR 성공
+                    if (viewModel.isDateDetected.value == true) return@addOnSuccessListener // 소비기한이 확정되었다면, 바로 리턴
+                    val dates = extractValidDates(it.text) // 소비기한 조건 체크
+                    if (dates.isEmpty()) return@addOnSuccessListener // 빈 리스트인 경우, 바로 리턴
+
+                    // 인식된 날짜 출력
+                    val ocrDate = dates.first()
+                    Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
+
+                    // 소비기한 날짜 확정하기 (투표 방식)
+                    val confirmedDate = voteExpirationDate(ocrDate) ?: return@addOnSuccessListener
+                    Log.d("ocrDateSuccess", "확정된 소비기한: $confirmedDate")
+
+                    // 이미지 파일 저장, 뷰모델 변수 업데이트
+                    val imgFile = saveBitmapToFile(bitmap)
+                    viewModel.onExpirationDateDetected(confirmedDate, imgFile)
+                }
+                .addOnFailureListener { e -> // OCR 실패
+                    Log.e("ocrDateError", "${e.message}")
+                }
         }
 
         // 다음 프레임에는 반대 작업 수행 (지금 YOLO를 실행했다면, 다음 프레임은 ML-Kit 실행한다. 반대의 경우도 마찬가지)
         viewModel.runYOLO = !viewModel.runYOLO
+    }
+
+    // 날짜 후보를 버퍼에 저장 -> 가장 많이 나온 날짜 선택
+    private fun voteExpirationDate(candidate: String): String? {
+        // 날짜 후보를 버퍼에 추가
+        viewModel.dateBuffer.add(candidate)
+
+        // 가장 최근 10개 프레임만 확인
+        if (viewModel.dateBuffer.size > DATE_BUFFER_SIZE) {
+            viewModel.dateBuffer.removeAt(0)
+        }
+
+        // 후보 날짜별 등장 횟수 계산
+        val countMap = mutableMapOf<String, Int>()
+        for (date in viewModel.dateBuffer) {
+            countMap[date] = (countMap[date] ?: 0) + 1
+        }
+
+        // (가장 많이 나온 날짜, 등장 횟수) 저장
+        var mostVotedDate: String? = null // 가장 많이 나온 날짜
+        var maxCount = 0 // 등장 횟수
+        for ((date, count) in countMap) {
+            if (count > maxCount) {
+                mostVotedDate = date
+                maxCount = count
+            }
+        }
+
+        // 등장 횟수가 7 이상이면 소비기한 확정
+        if (mostVotedDate != null && maxCount >= DATE_CONFIRM_COUNT) {
+            viewModel.dateBuffer.clear() // 소비기한 확정 후 버퍼 초기화
+            return mostVotedDate // 확정된 소비기한 String 반환
+        }
+
+        // 아직 7을 넘지 못했다면 null 반환
+        return null
     }
 
     // 비트맵 이미지를 File 타입으로 바꿔서 저장
