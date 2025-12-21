@@ -10,8 +10,6 @@ data class AnalyzeResponse(
     val success: Boolean,
 ) : Serializable {
     data class Data(
-        @SerializedName("expiration_date")
-        val expirationDate: String,
         val ingredients: String,
         @SerializedName("product_name")
         val productName: String,
