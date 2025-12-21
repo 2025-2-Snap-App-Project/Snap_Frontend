@@ -53,9 +53,10 @@ class LoadingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
 
-        // 뷰모델의 MutableMap (bitmap, category) null 체크
+        // 뷰모델의 MutableMap (bitmap, category), 소비기한 String -> null 체크
         val bitmapMap = viewModel.bitmapMap.value
-        if (bitmapMap == null) {
+        val date = viewModel.expirationDate.value
+        if (bitmapMap == null || date == null) {
             MainActivity.tts.readText("오류 발생, 다시 시도해주세요.", requireContext()) {
                 findNavController().popBackStack()
                 return@readText
@@ -72,7 +73,7 @@ class LoadingFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch { // Fragment의 뷰 생명 주기
             while (isActive) { // Fragment의 뷰가 살아있는 동안 계속 반복 (에러 발생 시, 서버 요청 무한 재시도)
-                when (val result = ApiRepository.postAnalyze(imgArrLst)) { // result = 서버 요청 결과
+                when (val result = ApiRepository.postAnalyze(imgArrLst, date!!)) { // result = 서버 요청 결과
                     is ApiResult.Success -> { // 서버 통신 성공 시
                         Log.d("LoadingFragment", "Success: $result")
                         // 제품 상세 설명 화면으로 이동 (Safe Args 전달 - "로딩 페이지에서 이동했음", 서버 응답)
