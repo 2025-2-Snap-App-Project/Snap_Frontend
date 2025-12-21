@@ -511,9 +511,7 @@ class CameraFragment : Fragment() {
                     val confirmedDate = voteExpirationDate(ocrDate) ?: return@addOnSuccessListener
                     Log.d("ocrDateSuccess", "확정된 소비기한: $confirmedDate")
 
-                    // 이미지 파일 저장, 뷰모델 변수 업데이트
-                    val imgFile = saveBitmapToFile(bitmap)
-                    viewModel.onExpirationDateDetected(confirmedDate, imgFile)
+                    viewModel.onExpirationDateDetected(confirmedDate)
                 }
                 .addOnFailureListener { e -> // OCR 실패
                     Log.e("ocrDateError", "${e.message}")
