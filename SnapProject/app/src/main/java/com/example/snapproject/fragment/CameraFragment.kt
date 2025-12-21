@@ -98,8 +98,8 @@ class CameraFragment : Fragment() {
             arrayOf(android.Manifest.permission.CAMERA)
 
         // 소비기한 OCR 확정을 위한 상수
-        const val DATE_BUFFER_SIZE = 10 // 버퍼 사이즈 (10개 프레임만 확인)
-        const val DATE_CONFIRM_COUNT = 7 // 확정 기준 (해당 날짜가 7번 이상 나오면 확정)
+        const val DATE_BUFFER_SIZE = 6 // 버퍼 사이즈 (6개 프레임만 확인)
+        const val DATE_CONFIRM_COUNT = 3 // 확정 기준 (해당 날짜가 3번 이상 나오면 확정)
     }
 
     // 앱 설정 Permission 콜백 등록 (앱 설정에서의 사용자 이벤트 처리)
@@ -503,7 +503,7 @@ class CameraFragment : Fragment() {
         // 날짜 후보를 버퍼에 추가
         viewModel.dateBuffer.add(candidate)
 
-        // 가장 최근 10개 프레임만 확인
+        // 가장 최근 N개(DATE_BUFFER_SIZE) 프레임만 확인
         if (viewModel.dateBuffer.size > DATE_BUFFER_SIZE) {
             viewModel.dateBuffer.removeAt(0)
         }
@@ -524,7 +524,7 @@ class CameraFragment : Fragment() {
             }
         }
 
-        // 등장 횟수가 7 이상이면 소비기한 확정
+        // 등장 횟수가 기준값(DATE_CONFIRM_COUNT) 이상이면 소비기한 확정
         if (mostVotedDate != null && maxCount >= DATE_CONFIRM_COUNT) {
             viewModel.dateBuffer.clear() // 소비기한 확정 후 버퍼 초기화
             return mostVotedDate // 확정된 소비기한 String 반환
