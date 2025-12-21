@@ -48,6 +48,41 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
         super.onDraw(canvas)
     }
 
+    // PreviewView에 맞춰서 RectF(YOLO 객체) 좌표 변환
+    fun transformRect(results: ArrayList<YoloResult>) {
+
+        val inputSize = DataProcess.INPUT_SIZE.toFloat()
+
+        // 세로 모드로 카메라 사용.
+        // YOLO 좌표는 landscape 기준 → 회전 필요
+        val scaleY = height / inputSize
+        val scaleX = scaleY * 9f / 16f
+
+        val realX = height * 9f / 16f
+        val diffX = realX - width
+
+        results.forEach {
+
+            // 90도 회전 (x와 y를 서로 바꿔줌)
+            val left = it.rectF.left
+            val top = it.rectF.top
+            val right = it.rectF.right
+            val bottom = it.rectF.bottom
+
+            val newTop = inputSize - right
+            val newBottom = inputSize - left
+
+            // rectF 좌표 변환
+            it.rectF.left = top * scaleX - diffX / 2f
+            it.rectF.right = bottom * scaleX - diffX / 2f
+            it.rectF.top = newTop * scaleY
+            it.rectF.bottom = newBottom * scaleY
+        }
+
+        this.results = results
+    }
+
+
     // 화면에 그려진 RectF 리턴
     fun getDrawRect(): RectF? {
         return results?.firstOrNull()?.rectF

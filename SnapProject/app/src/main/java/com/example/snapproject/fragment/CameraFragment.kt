@@ -196,6 +196,13 @@ class CameraFragment : Fragment() {
 
             val croppedBitmap = cropBitmapWithRect(viewModel.yoloBitmap, firstResult.rectF)
 
+            // 위에서 isRectOnEdge(), cropBitmapWithRect()를 모두 호출한 뒤에, RectF 좌표를 변환해줘야 함 (순서 주의)
+            // RectF 좌표 변환 후, RectView 그리기 (YOLO Bounding Box)
+            binding.rectView.run {
+                transformRect(results)
+                invalidate()
+            }
+
             // "제품명 인식됨" -> 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
             if (firstResult.classIndex == 1 && !viewModel.isRequesting) {
                 viewModel.isRequesting = true
