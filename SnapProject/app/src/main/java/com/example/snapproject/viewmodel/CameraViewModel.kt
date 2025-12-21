@@ -1,5 +1,6 @@
 package com.example.snapproject.viewmodel
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,6 +8,9 @@ import androidx.lifecycle.ViewModel
 import com.example.snapproject.yolo.DataProcess
 import com.example.snapproject.yolo.YoloResult
 import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class CameraViewModel : ViewModel() {
     var runYOLO = true // true면 YOLO, false면 OCR
@@ -121,4 +125,14 @@ class CameraViewModel : ViewModel() {
         _bitmapMap.value?.put(bitmap, category)
     }
 
+    // 비트맵을 File 타입으로 변경
+    fun saveBitmapToFile(bitmap: Bitmap, category: String, context: Context): File {
+        val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
+        val file = File(context.cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
+        file.createNewFile()
+        val fos = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+        fos.close()
+        return file
+    }
 }
