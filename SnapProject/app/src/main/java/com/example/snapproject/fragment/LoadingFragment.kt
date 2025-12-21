@@ -1,8 +1,5 @@
 package com.example.snapproject.fragment
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,10 +8,8 @@ import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
 import com.example.snapproject.api.ApiRepository
 import com.example.snapproject.api.ApiResult
@@ -25,7 +20,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileNotFoundException
 
 class LoadingFragment : Fragment() {
     private var _binding: FragmentLoadingBinding? = null

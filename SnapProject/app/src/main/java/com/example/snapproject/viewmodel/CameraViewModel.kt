@@ -89,9 +89,7 @@ class CameraViewModel : ViewModel() {
     }
 
     // 소비기한이 인식되었을 때
-    fun onExpirationDateDetected(
-        date: String,
-    ) {
+    fun onExpirationDateDetected(date: String) {
         if (_isDateDetected.value == true) return
 
         _isDateDetected.value = true
@@ -99,7 +97,7 @@ class CameraViewModel : ViewModel() {
     }
 
     // 제품 라벨이 인식되었을 때
-    fun onProductLabelDetected(bitmap: Bitmap,) {
+    fun onProductLabelDetected(bitmap: Bitmap) {
         if (_isLabelDetected.value == true) return
 
         _isLabelDetected.value = true
@@ -122,12 +120,19 @@ class CameraViewModel : ViewModel() {
     }
 
     // (인식된 비트맵, 카테고리) -> MutableMap에 추가
-    private fun addBitmap(bitmap: Bitmap, category: String) {
+    private fun addBitmap(
+        bitmap: Bitmap,
+        category: String,
+    ) {
         bitmapMap[bitmap] = category
     }
 
     // 비트맵을 File 타입으로 변경
-    fun saveBitmapToFile(bitmap: Bitmap, category: String, context: Context): File {
+    fun saveBitmapToFile(
+        bitmap: Bitmap,
+        category: String,
+        context: Context,
+    ): File {
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.KOREA).format(System.currentTimeMillis()) + "-$category" // 파일명 설정
         val file = File(context.cacheDir, "$fileName.png") // File 객체 (캐시 directory에 저장)
         file.createNewFile()
