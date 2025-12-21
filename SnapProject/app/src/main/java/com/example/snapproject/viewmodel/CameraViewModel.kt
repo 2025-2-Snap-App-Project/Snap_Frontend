@@ -86,6 +86,7 @@ class CameraViewModel : ViewModel() {
         _isNameDetected.value = true
         _productName.value = name
         nameBitmap = bitmap
+        addBitmap(bitmap, "name")
     }
 
     // 소비기한이 인식되었을 때
@@ -105,6 +106,7 @@ class CameraViewModel : ViewModel() {
         _isLabelDetected.value = true
         _productLabel.value = Unit
         labelBitmap = bitmap
+        addBitmap(bitmap, "label")
     }
 
     // TTS 출력 완료 후, 관련 변수 업데이트

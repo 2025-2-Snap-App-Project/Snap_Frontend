@@ -230,7 +230,6 @@ class CameraFragment : Fragment() {
             if (name == null) return@observe
             // TTS 출력
             MainActivity.tts.readText(name, requireContext()) {
-                viewModel.addBitmap(viewModel.nameBitmap, "name") // 인식된 이미지 파일 -> 뷰모델에 추가
                 viewModel.onNameTTSCompleted()
                 checkAllTTSCompleted()
             }
@@ -253,7 +252,6 @@ class CameraFragment : Fragment() {
 
             // TTS 출력
             MainActivity.tts.readText("제품 라벨이 인식되었습니다.", requireContext()) {
-                viewModel.addBitmap(viewModel.labelBitmap, "label") // 인식된 이미지 파일 -> 뷰모델에 추가
                 viewModel.onLabelTTSCompleted()
                 checkAllTTSCompleted()
             }
