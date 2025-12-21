@@ -107,19 +107,4 @@ class LoadingFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
-
-    // Uri를 File 형태로 변환
-    private fun uriToFile(
-        context: Context,
-        uri: Uri,
-    ): File {
-        val inputStream =
-            context.contentResolver.openInputStream(uri)
-                ?: throw FileNotFoundException("파일을 찾을 수 없음 : $uri")
-
-        // 임시 File 생성 -> Uri에 있는 이미지를 임시 File에 복사
-        val tempFile = File.createTempFile("upload", ".png", context.cacheDir)
-        inputStream.use { input -> tempFile.outputStream().use { output -> input.copyTo(output) } }
-        return tempFile // 생성된 임시 File (이미지 파일) 리턴
-    }
 }
