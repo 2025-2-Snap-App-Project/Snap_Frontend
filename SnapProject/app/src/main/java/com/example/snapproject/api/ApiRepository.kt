@@ -21,7 +21,7 @@ import java.io.File
 object ApiRepository {
     private val apiService: ApiService = ApiClient.instance.create(ApiService::class.java)
 
-    suspend fun postAnalyze(imageFiles: List<File>, date: String): ApiResult<AnalyzeResponse> {
+    suspend fun postAnalyze(imageFiles: List<File>): ApiResult<AnalyzeResponse> {
         val result =
             apiSafeCall { // result -> 서버 요청한 뒤의 결과를 저장
                 // 서버로 보내줘야 하는 데이터 -> MultiPartBody로 변환
@@ -31,13 +31,9 @@ object ApiRepository {
                         MultipartBody.Part.createFormData("images[]", file.name, reqFile)
                     }
 
-                // 소비기한 String -> RequestBody로 변환
-                val dateReqBody =
-                    date.toRequestBody("text/plain".toMediaType())
-
                 // ApiService 인터페이스에 선언된 함수 호출하여 POST 요청
                 apiService.postAnalyzeRaw(
-                    imageParts, dateReqBody
+                    imageParts,
                 )
             }
         return result

@@ -19,7 +19,6 @@ interface ApiService {
     @POST("analyze")
     suspend fun postAnalyzeRaw(
         @Part images: List<MultipartBody.Part>,
-        @Part("expiration_date") date: RequestBody,
     ): Response<AnalyzeResponse>
 
     @Multipart
