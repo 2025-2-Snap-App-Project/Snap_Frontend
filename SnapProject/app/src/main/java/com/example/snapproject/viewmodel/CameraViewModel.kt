@@ -115,4 +115,10 @@ class CameraViewModel : ViewModel() {
     fun onLabelTTSCompleted() {
         isLabelTTSCompleted = true
     }
+
+    // (인식된 비트맵, 카테고리) -> MutableMap에 추가
+    fun addBitmap(bitmap: Bitmap, category: String) {
+        _bitmapMap.value?.put(bitmap, category)
+    }
+
 }
