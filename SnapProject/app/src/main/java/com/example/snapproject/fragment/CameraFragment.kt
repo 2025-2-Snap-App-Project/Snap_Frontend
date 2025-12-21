@@ -100,6 +100,10 @@ class CameraFragment : Fragment() {
         // 필요한 권한 array 선언 및 초기화 (카메라 촬영)
         private val PERMISSIONS_REQUIRED =
             arrayOf(android.Manifest.permission.CAMERA)
+
+        // 소비기한 OCR 확정을 위한 상수
+        const val DATE_BUFFER_SIZE = 10 // 버퍼 사이즈 (10개 프레임만 확인)
+        const val DATE_CONFIRM_COUNT = 7 // 확정 기준 (해당 날짜가 7번 이상 나오면 확정)
     }
 
     // 앱 설정 Permission 콜백 등록 (앱 설정에서의 사용자 이벤트 처리)
@@ -520,6 +524,44 @@ class CameraFragment : Fragment() {
         // 다음 프레임에는 반대 작업 수행 (지금 YOLO를 실행했다면, 다음 프레임은 ML-Kit 실행한다. 반대의 경우도 마찬가지)
         viewModel.runYOLO = !viewModel.runYOLO
     }
+
+    // 날짜 후보를 버퍼에 저장 -> 가장 많이 나온 날짜 선택
+    private fun voteExpirationDate(candidate: String): String? {
+
+        // 날짜 후보를 버퍼에 추가
+        viewModel.dateBuffer.add(candidate)
+
+        // 가장 최근 10개 프레임만 확인
+        if (viewModel.dateBuffer.size > DATE_BUFFER_SIZE) {
+            viewModel.dateBuffer.removeAt(0)
+        }
+
+        // 후보 날짜별 등장 횟수 계산
+        val countMap = mutableMapOf<String, Int>()
+        for (date in viewModel.dateBuffer) {
+            countMap[date] = (countMap[date] ?: 0) + 1
+        }
+
+        // (가장 많이 나온 날짜, 등장 횟수) 저장
+        var mostVotedDate: String? = null // 가장 많이 나온 날짜
+        var maxCount = 0 // 등장 횟수
+        for ((date, count) in countMap) {
+            if (count > maxCount) {
+                mostVotedDate = date
+                maxCount = count
+            }
+        }
+
+        // 등장 횟수가 7 이상이면 소비기한 확정
+        if (mostVotedDate != null && maxCount >= DATE_CONFIRM_COUNT) {
+            viewModel.dateBuffer.clear() // 소비기한 확정 후 버퍼 초기화
+            return mostVotedDate // 확정된 소비기한 String 반환
+        }
+
+        // 아직 7을 넘지 못했다면 null 반환
+        return null
+    }
+
 
     // 비트맵 이미지를 File 타입으로 바꿔서 저장
     private fun saveBitmapToFile(bitmap: Bitmap): File {

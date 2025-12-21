@@ -51,6 +51,9 @@ class CameraViewModel : ViewModel() {
     private val _yoloResults = MutableLiveData<ArrayList<YoloResult>>(arrayListOf())
     val yoloResults: LiveData<ArrayList<YoloResult>> = _yoloResults
 
+    // 최근 OCR 날짜 후보 버퍼
+    val dateBuffer = mutableListOf<String>()
+
     // YOLO 추론 결과 + 전체 화면 Bitmap 업데이트
     fun onYoloResult(
         results: ArrayList<YoloResult>,
