@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.DetailIngredientsDialog
@@ -17,6 +18,7 @@ import com.example.snapproject.databinding.FragmentDetailBinding
 import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.readText
+import com.example.snapproject.viewmodel.CameraViewModel
 
 class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDialogListener {
     private var _binding: FragmentDetailBinding? = null
@@ -26,6 +28,8 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
     // ArrayList 변수 (제품 기본 정보, 제품 요약 설명)
     private lateinit var basicInfoArrLst: ArrayList<String>
     private lateinit var summaryInfoArrLst: ArrayList<String>
+
+    private val viewModel by viewModels<CameraViewModel>() // 뷰모델 초기화
 
     companion object {
         fun newInstance() = DetailFragment()
@@ -63,7 +67,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
             // SafeArgs로 받은 서버 응답 결과를 각각 변수에 저장
             val itemName = String.format(resources.getString(R.string.detail_item_name), response?.data?.productName)
-            val itemDate = String.format(resources.getString(R.string.detail_item_date), response?.data?.expirationDate)
+            val itemDate = String.format(resources.getString(R.string.detail_item_date), viewModel.expirationDate)
 
             // 제품 기본 정보 ArrayList 초기화
             basicInfoArrLst = arrayListOf(itemName, itemDate)
