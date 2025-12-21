@@ -68,7 +68,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
 
             // SafeArgs로 받은 서버 응답 결과를 각각 변수에 저장
             val itemName = String.format(resources.getString(R.string.detail_item_name), response?.data?.productName)
-            val itemDate = String.format(resources.getString(R.string.detail_item_date), viewModel.expirationDate)
+            val itemDate = String.format(resources.getString(R.string.detail_item_date), viewModel.expirationDate.value)
 
             // 제품 기본 정보 ArrayList 초기화
             basicInfoArrLst = arrayListOf(itemName, itemDate)
