@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -31,7 +32,7 @@ class LoadingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var imgArrLst: ArrayList<File> = arrayListOf() // 이미지 파일 ArrayList
-    private val viewModel by viewModels<CameraViewModel>() // 뷰모델 초기화
+    private val viewModel: CameraViewModel by activityViewModels() // CameraViewModel 공유
 
     companion object {
         fun newInstance() = LoadingFragment()

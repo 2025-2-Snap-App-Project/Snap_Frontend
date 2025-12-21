@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -29,7 +30,7 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
     private lateinit var basicInfoArrLst: ArrayList<String>
     private lateinit var summaryInfoArrLst: ArrayList<String>
 
-    private val viewModel by viewModels<CameraViewModel>() // 뷰모델 초기화
+    private val viewModel: CameraViewModel by activityViewModels() // CameraViewModel 공유
 
     companion object {
         fun newInstance() = DetailFragment()
