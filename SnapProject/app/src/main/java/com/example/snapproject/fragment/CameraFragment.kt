@@ -496,29 +496,31 @@ class CameraFragment : Fragment() {
             val results = viewModel.dataProcess.outputsToNPMSPredictions(outputs) // YOLO 추론 최종 결과를 result에 저장
             viewModel.onYoloResult(results, yoloBitmap) // YOLO 추론 결과 업데이트
         } else { // 현재 프레임은 OCR만 실행하는 프레임이다
-            if (viewModel.isDateDetected.value == false) {
-                // 소비기한 OCR 수행
-                // Bitmap 객체에서 InputImage 객체 생성
-                val image = InputImage.fromBitmap(bitmap, imageProxy.imageInfo.rotationDegrees)
+                // 소비기한 OCR 시작
+                val image = InputImage.fromBitmap(bitmap, imageProxy.imageInfo.rotationDegrees) // Bitmap에서 InputImage 생성
 
                 // OCR 수행
                 txtRecognizer.process(image)
-                    .addOnSuccessListener { // OCR 성공 시, text를 로그로 출력
-                        Log.d("ocrRawTxt", "OCR raw text: '${it.text}'")
+                    .addOnSuccessListener { // OCR 성공
+                        if (viewModel.isDateDetected.value == true) return@addOnSuccessListener // 소비기한이 확정되었다면, 바로 리턴
                         val dates = extractValidDates(it.text) // 소비기한 조건 체크
-                        if (dates.isNotEmpty()) { // 소비기한이 인식된 경우
-                            val imgFile = saveBitmapToFile(bitmap)
-                            val ocrDate = dates.first()
-                            Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
-                            viewModel.onExpirationDateDetected(ocrDate, imgFile)
-                        } else { // 소비기한이 인식되지 않은 경우
-                            Log.d("ocrDateEmpty", "소비기한이 인식되지 않음")
-                        }
+                        if (dates.isEmpty()) return@addOnSuccessListener // 빈 리스트인 경우, 바로 리턴
+
+                        // 인식된 날짜 출력
+                        val ocrDate = dates.first()
+                        Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
+
+                        // 소비기한 날짜 확정하기 (투표 방식)
+                        val confirmedDate = voteExpirationDate(ocrDate) ?: return@addOnSuccessListener
+                        Log.d("ocrDateSuccess", "확정된 소비기한: $confirmedDate")
+
+                        // 이미지 파일 저장, 뷰모델 변수 업데이트
+                        val imgFile = saveBitmapToFile(bitmap)
+                        viewModel.onExpirationDateDetected(confirmedDate, imgFile)
                     }
-                    .addOnFailureListener { e ->
+                    .addOnFailureListener { e -> // OCR 실패
                         Log.e("ocrDateError", "${e.message}")
                     }
-            }
         }
 
         // 다음 프레임에는 반대 작업 수행 (지금 YOLO를 실행했다면, 다음 프레임은 ML-Kit 실행한다. 반대의 경우도 마찬가지)
