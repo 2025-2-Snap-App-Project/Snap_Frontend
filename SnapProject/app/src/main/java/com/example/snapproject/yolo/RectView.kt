@@ -50,7 +50,6 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
 
     // PreviewView에 맞춰서 RectF(YOLO 객체) 좌표 변환
     fun transformRect(results: ArrayList<YoloResult>) {
-
         val inputSize = DataProcess.INPUT_SIZE.toFloat()
 
         // 세로 모드로 카메라 사용.
@@ -62,7 +61,6 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
         val diffX = realX - width
 
         results.forEach {
-
             // 90도 회전 (x와 y를 서로 바꿔줌)
             val left = it.rectF.left
             val top = it.rectF.top
@@ -81,7 +79,6 @@ class RectView(context: Context, attributeSet: AttributeSet) : View(context, att
 
         this.results = results
     }
-
 
     // 화면에 그려진 RectF 리턴
     fun getDrawRect(): RectF? {
