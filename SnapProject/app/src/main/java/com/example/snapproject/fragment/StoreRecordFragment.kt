@@ -170,7 +170,6 @@ class StoreRecordFragment : Fragment() {
 
         // 음성 녹음 터치 이벤트 - 버튼을 누르기 시작했을 때, 버튼을 눌렀다가 떼었을 때
         binding.btnRecord.setOnClickListener {
-
             // RecognizerIntent 생성
             recogIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
             recogIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, mContext.packageName)
