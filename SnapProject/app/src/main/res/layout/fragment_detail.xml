@@ -44,9 +44,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="제품 기본 정보"
+                android:text="기본 정보"
                 android:textColor="@color/sub_white"
-                android:textSize="20sp" />
+                android:textSize="24sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -63,9 +63,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="제품 요약 설명"
+                android:text="요약 설명"
                 android:textColor="@color/sub_white"
-                android:textSize="20sp" />
+                android:textSize="24sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -82,9 +82,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="원재료명 정보"
+                android:text="원재료명"
                 android:textColor="@color/sub_white"
-                android:textSize="20sp" />
+                android:textSize="24sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -102,9 +102,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="제품 보관하기"
+                android:text="제품 보관"
                 android:textColor="@color/sub_white"
-                android:textSize="20sp" />
+                android:textSize="24sp" />
         </com.google.android.material.card.MaterialCardView>
     </GridLayout>
 
