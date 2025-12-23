@@ -27,7 +27,7 @@
         android:id="@+id/tabLayoutCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/main_white"
+        app:tabBackground="@drawable/bg_list_unselected_tab"
         app:tabIndicatorColor="@color/dark_gray"
         app:tabIndicatorFullWidth="true"
         app:tabIndicatorHeight="2dp"
