@@ -24,16 +24,16 @@
         android:id="@+id/btnCamera"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_gravity="center"
         android:layout_marginStart="27dp"
-        android:layout_marginEnd="27dp"
         android:layout_marginTop="45dp"
+        android:layout_marginEnd="27dp"
+        android:layout_weight="1"
         android:contentDescription="카메라 메뉴. 원하는 제품을 카메라로 비추면 제품 정보를 음성으로 안내합니다."
         app:cardBackgroundColor="@color/main_blue"
+        app:cardCornerRadius="20dp"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
-        app:cardCornerRadius="20dp"
         app:strokeColor="@android:color/transparent">
 
         <TextView
@@ -50,14 +50,14 @@
         android:id="@+id/btnDate"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_gravity="center"
         android:layout_marginStart="27dp"
         android:layout_marginEnd="27dp"
+        android:layout_weight="1"
         android:contentDescription="소비기한 메뉴. 저장해 둔 제품들을 소비기한 카테고리별로 확인할 수 있습니다."
         app:cardBackgroundColor="@color/black"
-        app:cardElevation="4dp"
         app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
         app:strokeColor="@android:color/transparent">
 
@@ -71,28 +71,28 @@
             android:textSize="48sp" />
     </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnAppInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="31dp"
-            android:layout_marginTop="33dp"
-            android:layout_marginEnd="31dp"
-            android:layout_marginBottom="33dp"
-            android:contentDescription="앱 정보 확인 버튼"
-            app:cardBackgroundColor="@color/main_white"
-            app:cardCornerRadius="10dp"
-            app:contentPadding="10dp"
-            app:strokeColor="@color/main_blue">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnAppInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="33dp"
+        android:layout_marginEnd="31dp"
+        android:layout_marginBottom="33dp"
+        android:contentDescription="앱 정보 확인 버튼"
+        app:cardBackgroundColor="@color/main_white"
+        app:cardCornerRadius="10dp"
+        app:contentPadding="10dp"
+        app:strokeColor="@color/main_blue">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/pretendard_bold"
-                android:text="앱 정보 확인"
-                android:textColor="@color/main_blue"
-                android:textSize="14sp" />
-        </com.google.android.material.card.MaterialCardView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/pretendard_bold"
+            android:text="앱 정보 확인"
+            android:textColor="@color/main_blue"
+            android:textSize="14sp" />
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

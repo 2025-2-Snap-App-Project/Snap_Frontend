@@ -25,16 +25,16 @@
         android:id="@+id/btnRecord"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_gravity="center"
         android:layout_marginStart="27dp"
-        android:layout_marginEnd="27dp"
         android:layout_marginTop="80dp"
+        android:layout_marginEnd="27dp"
+        android:layout_weight="1"
         android:contentDescription="마이크 버튼. 버튼을 누른 뒤, 보관 장소를 음성으로 입력합니다."
         app:cardBackgroundColor="@color/main_blue"
+        app:cardCornerRadius="20dp"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
-        app:cardCornerRadius="20dp"
         app:strokeColor="@android:color/transparent">
 
         <TextView
@@ -51,15 +51,15 @@
         android:id="@+id/btnNext"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_gravity="center"
         android:layout_marginStart="27dp"
         android:layout_marginEnd="27dp"
         android:layout_marginBottom="38dp"
+        android:layout_weight="1"
         android:contentDescription="저장 버튼. 입력한 내용을 저장하고 홈 화면으로 이동합니다."
         app:cardBackgroundColor="@color/black"
-        app:cardElevation="4dp"
         app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
         app:strokeColor="@android:color/transparent">
 
