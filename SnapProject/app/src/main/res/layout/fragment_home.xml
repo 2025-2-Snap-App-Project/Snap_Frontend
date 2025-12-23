@@ -24,145 +24,75 @@
         android:id="@+id/btnCamera"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_gravity="center"
         android:layout_marginStart="27dp"
-        android:layout_marginEnd="27dp"
         android:layout_marginTop="45dp"
+        android:layout_marginEnd="27dp"
+        android:layout_weight="1"
         android:contentDescription="카메라 메뉴. 원하는 제품을 카메라로 비추면 제품 정보를 음성으로 안내합니다."
         app:cardBackgroundColor="@color/main_blue"
+        app:cardCornerRadius="20dp"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
-        app:cardCornerRadius="20dp"
-        app:strokeColor="@color/main_blue">
+        app:strokeColor="@android:color/transparent">
 
-        <FrameLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingStart="27dp"
-            android:paddingEnd="27dp"
-            android:contentDescription="">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:fontFamily="@font/pretendard_black"
-                android:text="카메라"
-                android:textColor="@color/main_white"
-                android:textSize="32sp" />
-
-            <ImageView
-                android:layout_width="102dp"
-                android:layout_height="102dp"
-                android:layout_gravity="end"
-                app:srcCompat="@drawable/ic_camera" />
-        </FrameLayout>
+            android:fontFamily="@font/pretendard_black"
+            android:text="카메라"
+            android:textColor="@color/main_white"
+            android:textSize="48sp" />
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnDate"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_gravity="center"
         android:layout_marginStart="27dp"
         android:layout_marginEnd="27dp"
+        android:layout_weight="1"
         android:contentDescription="소비기한 메뉴. 저장해 둔 제품들을 소비기한 카테고리별로 확인할 수 있습니다."
-        app:cardBackgroundColor="@color/main_blue"
-        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/black"
         app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
-        app:strokeColor="@color/main_blue">
+        app:strokeColor="@android:color/transparent">
 
-        <FrameLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingStart="27dp"
-            android:paddingEnd="27dp"
-            android:contentDescription="">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:fontFamily="@font/pretendard_black"
-                android:text="소비기한"
-                android:textColor="@color/main_white"
-                android:textSize="32sp" />
-
-            <ImageView
-                android:layout_width="102dp"
-                android:layout_height="102dp"
-                android:layout_gravity="end"
-                app:srcCompat="@drawable/ic_date" />
-        </FrameLayout>
+            android:fontFamily="@font/pretendard_black"
+            android:text="소비기한"
+            android:textColor="@color/main_white"
+            android:textSize="48sp" />
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/btnAccess"
+        android:id="@+id/btnAppInfo"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:layout_marginStart="27dp"
-        android:layout_marginEnd="27dp"
-        android:contentDescription="접근성 메뉴. TalkBack과 관련된 설정을 변경할 수 있는 시스템 설정 화면으로 이동합니다."
-        app:cardBackgroundColor="@color/main_blue"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="20dp"
-        app:cardUseCompatPadding="true"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="33dp"
+        android:layout_marginEnd="31dp"
+        android:layout_marginBottom="33dp"
+        android:contentDescription="앱 정보 확인 버튼"
+        app:cardBackgroundColor="@color/main_white"
+        app:cardCornerRadius="10dp"
+        app:contentPadding="10dp"
         app:strokeColor="@color/main_blue">
 
-        <FrameLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingStart="27dp"
-            android:paddingEnd="27dp"
-            android:contentDescription="">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:fontFamily="@font/pretendard_black"
-                android:text="접근성"
-                android:textColor="@color/main_white"
-                android:textSize="32sp" />
-
-            <ImageView
-                android:layout_width="102dp"
-                android:layout_height="102dp"
-                android:layout_gravity="end"
-                app:srcCompat="@drawable/ic_access" />
-        </FrameLayout>
+            android:fontFamily="@font/pretendard_bold"
+            android:text="앱 정보 확인"
+            android:textColor="@color/main_blue"
+            android:textSize="14sp" />
     </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnAppInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="31dp"
-            android:layout_marginTop="33dp"
-            android:layout_marginEnd="31dp"
-            android:layout_marginBottom="33dp"
-            android:contentDescription="앱 정보 확인 버튼"
-            app:cardBackgroundColor="@color/main_white"
-            app:cardCornerRadius="10dp"
-            app:contentPadding="10dp"
-            app:strokeColor="@color/main_blue">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/pretendard_bold"
-                android:text="앱 정보 확인"
-                android:textColor="@color/main_blue"
-                android:textSize="14sp" />
-        </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
