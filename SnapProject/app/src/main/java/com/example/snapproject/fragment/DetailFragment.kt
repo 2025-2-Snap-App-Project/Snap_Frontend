@@ -169,11 +169,11 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
                 txtIngredients = detailData?.ingredients // 원재료명 정보
             }
 
-            // 원재료명 다이얼로그 show
-            if (txtIngredients != null) { // 원재료명 정보가 null이 아니라면
-                MainActivity.tts.readText("제품 원재료명 정보입니다. $txtIngredients", requireContext())
+            // 제품 상세 정보 TTS 출력
+            if (txtIngredients != null) { // 제품 상세 정보가 null이 아니라면
+                MainActivity.tts.readText("$txtIngredients", requireContext())
             } else {
-                MainActivity.tts.readText("원재료명 정보가 인식되지 않았습니다.", requireContext())
+                MainActivity.tts.readText("제품 상세 정보가 인식되지 않았습니다.", requireContext())
             }
         }
     }
