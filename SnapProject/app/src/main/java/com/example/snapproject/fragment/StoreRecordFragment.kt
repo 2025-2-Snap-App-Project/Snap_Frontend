@@ -168,17 +168,8 @@ class StoreRecordFragment : Fragment() {
             }
         }
 
-        // 키보드 바깥쪽 레이아웃 클릭 이벤트
-        binding.storeLayout.setOnTouchListener { _, _ ->
-            mActivity.hideKeyboard(binding.edtTxtStore) // 키보드 숨기기
-            binding.edtTxtStore.isEnabled = false // EditText 수정 및 클릭 불가
-            false
-        }
-
         // 음성 녹음 터치 이벤트 - 버튼을 누르기 시작했을 때, 버튼을 눌렀다가 떼었을 때
         binding.btnRecord.setOnClickListener {
-            binding.edtTxtStore.hint = "" // "키보드 입력 시도 -> 음성 인식 시도"하는 경우를 고려해서 추가한 코드
-            binding.edtTxtStore.setText("") // 기존에 입력해둔 내용 지우기
 
             // RecognizerIntent 생성
             recogIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -210,34 +201,36 @@ class StoreRecordFragment : Fragment() {
         object : RecognitionListener {
             // 말하기 준비 되었을 때 (위의 터치 리스너 ACTION_DOWN - 버튼을 누르기 시작한 이후에 동작)
             override fun onReadyForSpeech(params: Bundle?) {
-                binding.edtTxtStore.hint = "이제 말해주세요"
+                Log.d("STT_DEBUG", "onReadyForSpeech")
             }
 
             // 음성 녹음 시작 시
             override fun onBeginningOfSpeech() {
+                Log.d("STT_DEBUG", "onBeginningOfSpeech")
             }
 
             override fun onRmsChanged(rmsdB: Float) {
+                Log.d("STT_DEBUG", "onRmsChanged")
             }
 
             override fun onBufferReceived(buffer: ByteArray?) {
+                Log.d("STT_DEBUG", "onBufferReceived")
             }
 
             // 말하기를 끝냈을 때
             override fun onEndOfSpeech() {
+                Log.d("STT_DEBUG", "onEndOfSpeech")
             }
 
             // 에러 발생 시
             override fun onError(error: Int) {
-                binding.edtTxtStore.hint = "음성 인식 오류.\n다시 시도해주세요."
-                MainActivity.tts.readText("음성 인식 오류 발생. 다시 시도해주세요.", requireContext())
+                Log.e("STT_DEBUG", "onError")
             }
 
             // 음성 인식 종료
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                for (i in matches!!.indices) binding.edtTxtStore.setText('"' + matches[i] + '"') // TextView에 음성 인식 결과 반영
-                storageLocation = matches[0] // 입력한 보관 장소 -> 별도의 변수에 저장
+                storageLocation = matches?.get(0) ?: return // 입력한 보관 장소 -> 별도의 변수에 저장
                 MainActivity.tts.readText("음성 인식 결과는 ${storageLocation}입니다.", requireContext())
             }
 
@@ -257,7 +250,6 @@ class StoreRecordFragment : Fragment() {
             if (!hasPermissions(mContext)) {
                 requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
             }
-            edtTxtStore.isEnabled = false // EditText 수정 및 클릭 불가
         }
 
     override fun onDestroy() {
