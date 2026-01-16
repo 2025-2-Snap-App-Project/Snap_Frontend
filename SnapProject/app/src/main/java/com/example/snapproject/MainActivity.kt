@@ -14,18 +14,12 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.snapproject.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(), OnChildButtonClickListener {
+class MainActivity : AppCompatActivity() {
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var navController: NavController
 
     companion object {
         var tts: TextToSpeech? = null // TextToSpeech 변수
-    }
-
-    // 자식 프래그먼트의 버튼 클릭 리스너 구현
-    override fun onChildButtonClicked(destinationId: Int) {
-        // 자식 프래그먼트로부터 전달받은 이벤트 수행 (화면 전환)
-        findNavController(R.id.nav_host_fragment).navigate(destinationId)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
