@@ -14,25 +14,4 @@
     <string name="talkback_loading_description">이미지 분석 중. 잠시만 기다려주세요</string>
     <string name="talkback_loading_failure">이미지 분석에 실패했습니다. 다시 시도하시겠습니까?</string>
 
-    <string name="icon_asset_license_camera">
-    <![CDATA[
-    <a href="https://www.flaticon.com/free-icons/videocam" title="videocam icons">Videocam icons created by smashingstocks - Flaticon</a>
-    ]]>
-    </string>
-    <string name="icon_asset_license_calendar">
-    <![CDATA[
-    <a href="https://www.flaticon.com/free-icons/calendar" title="calendar icons">Calendar icons created by Freepik - Flaticon</a>
-    ]]>
-    </string>
-    <string name="icon_asset_license_message">
-    <![CDATA[
-    <a href="https://www.flaticon.com/free-icons/message" title="message icons">Message icons created by Freepik - Flaticon</a>
-    ]]>
-    </string>
-    <string name="icon_asset_license_microphone">
-    <![CDATA[
-    <a href="https://www.flaticon.com/free-icons/microphone" title="microphone icons">Microphone icons created by Freepik - Flaticon</a>
-    ]]>
-    </string>
-
 </resources>
