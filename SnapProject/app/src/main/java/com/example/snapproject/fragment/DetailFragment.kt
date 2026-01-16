@@ -12,9 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.snapproject.MainActivity
 import com.example.snapproject.R
-import com.example.snapproject.adapter.DetailRecyclerViewAdapter
 import com.example.snapproject.databinding.FragmentDetailBinding
-import com.example.snapproject.model.DetailItemData
 import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.readText
 import com.example.snapproject.viewmodel.CameraViewModel
@@ -22,7 +20,6 @@ import com.example.snapproject.viewmodel.CameraViewModel
 class DetailFragment : Fragment() {
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
-    private lateinit var recyclerViewAdapter: DetailRecyclerViewAdapter // RecyclerView 어댑터
 
     // ArrayList 변수 (제품 기본 정보, 제품 요약 설명)
     private lateinit var basicInfoArrLst: ArrayList<String>
@@ -48,9 +45,6 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-
-        // RecyclerView 아이템 ArrayList
-        val dataArrayList: ArrayList<DetailItemData> = arrayListOf()
 
         // Safe Args로 받은 데이터 가져오기
         val args: DetailFragmentArgs by navArgs()
@@ -107,8 +101,6 @@ class DetailFragment : Fragment() {
                 MainActivity.tts.readText("제품 상세 정보를 불러올 수 없습니다!", requireContext())
             }
         }
-
-        recyclerViewAdapter = DetailRecyclerViewAdapter(dataArrayList) // RecyclerView 어댑터 생성
 
         initView()
 
