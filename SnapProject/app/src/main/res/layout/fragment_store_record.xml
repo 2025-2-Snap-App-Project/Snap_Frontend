@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/pretendard_bold"
-            android:text="이전 화면으로 돌아가기"
+            android:text="이전 화면으로 이동"
             android:textColor="@color/sub_white"
             android:textSize="20sp" />
     </com.google.android.material.card.MaterialCardView>
