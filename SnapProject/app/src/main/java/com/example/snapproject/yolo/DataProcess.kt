@@ -20,8 +20,8 @@ class DataProcess(val context: Context) { // context 추가
         const val BATCH_SIZE = 1
         const val INPUT_SIZE = 640
         const val PIXEL_SIZE = 3
-        const val FILE_NAME = "yolov8n.onnx" // YOLO 모델 파일명
-        const val LABEL_NAME = "yolov8n.txt" // YOLO 모델 라벨링 txt 파일명
+        const val FILE_NAME = "yolo11n.onnx" // YOLO 모델 파일명
+        const val LABEL_NAME = "yolo11n.txt" // YOLO 모델 라벨링 txt 파일명
     }
 
     // 이미지를 FloatBuffer에 담는 함수
