@@ -8,15 +8,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.snapproject.R
-import com.example.snapproject.adapter.HomeViewPagerAdapter
 import com.example.snapproject.databinding.FragmentHomeBinding
 import com.example.snapproject.setTextColorAsLinearGradient
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var viewPagerAdapter: HomeViewPagerAdapter
 
     companion object {
         fun newInstance() = HomeFragment()
@@ -36,7 +33,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        viewPagerAdapter = HomeViewPagerAdapter(this)
 
         initView()
 
