@@ -1,5 +1,6 @@
 package com.example.snapproject.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.snapproject.R
 import com.example.snapproject.databinding.FragmentHomeBinding
 import com.example.snapproject.setTextColorAsLinearGradient
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -44,8 +46,7 @@ class HomeFragment : Fragment() {
         }
         binding.btnAppInfo.setOnClickListener { // 앱 정보 확인 버튼 클릭 시
             // 라이선스를 확인할 수 있는 화면으로 이동
-            val action = HomeFragmentDirections.actionHomeFragmentToLicenseFragment()
-            findNavController().navigate(action)
+            startActivity(Intent(context, OssLicensesMenuActivity::class.java)) // 오픈소스 라이선스 목록 액티비티 보여줌
         }
     }
 
