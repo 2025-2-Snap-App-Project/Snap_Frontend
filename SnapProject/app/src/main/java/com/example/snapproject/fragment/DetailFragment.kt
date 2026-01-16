@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.snapproject.DetailIngredientsDialog
 import com.example.snapproject.MainActivity
 import com.example.snapproject.R
 import com.example.snapproject.adapter.DetailRecyclerViewAdapter
@@ -20,7 +19,7 @@ import com.example.snapproject.model.db.ProductDatabase
 import com.example.snapproject.readText
 import com.example.snapproject.viewmodel.CameraViewModel
 
-class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDialogListener {
+class DetailFragment : Fragment() {
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerViewAdapter: DetailRecyclerViewAdapter // RecyclerView 어댑터
@@ -185,10 +184,5 @@ class DetailFragment : Fragment(), DetailIngredientsDialog.DetailIngredientsDial
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    // Dialog 내부의 "닫기" 버튼 클릭 시
-    override fun onDialogEditClick(dialog: DialogFragment) { // dialog 사라짐
-        dialog.dismiss()
     }
 }
