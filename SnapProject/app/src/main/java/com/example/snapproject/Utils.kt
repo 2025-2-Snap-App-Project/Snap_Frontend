@@ -1,17 +1,10 @@
 package com.example.snapproject
 
-import android.content.Context
 import android.graphics.LinearGradient
 import android.graphics.Shader
-import android.graphics.Typeface
 import android.os.Bundle
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.widget.TextView
 import androidx.annotation.IdRes
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.toColorInt
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
