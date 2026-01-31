@@ -490,11 +490,8 @@ class CameraFragment : Fragment() {
                     val ocrDate = dates.first()
                     Log.d("ocrDateSuccess", "인식된 날짜: $ocrDate")
 
-                    // 소비기한 날짜 확정하기 (투표 방식)
-                    val confirmedDate = voteExpirationDate(ocrDate) ?: return@addOnSuccessListener
-                    Log.d("ocrDateSuccess", "확정된 소비기한: $confirmedDate")
 
-                    viewModel.onExpirationDateDetected(confirmedDate)
+                    viewModel.onExpirationDateDetected(ocrDate)
                 }
                 .addOnFailureListener { e -> // OCR 실패
                     Log.e("ocrDateError", "${e.message}")
