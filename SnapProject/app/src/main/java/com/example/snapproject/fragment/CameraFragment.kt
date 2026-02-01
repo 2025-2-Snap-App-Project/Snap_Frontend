@@ -206,13 +206,13 @@ class CameraFragment : Fragment() {
             // "제품명 인식됨" -> 서버로 전송하여 OCR 요청 -> 응답 결과 TTS 출력
             if (firstResult.classIndex == 1 && !viewModel.isRequesting) {
                 viewModel.isRequesting = true
-                val imgFile = viewModel.saveBitmapToFile(croppedBitmap, "name", requireContext())
+                val imgFile = viewModel.saveBitmapToFile(viewModel.yoloBitmap, "name", requireContext())
 
                 lifecycleScope.launch {
                     when (val result = ApiRepository.postName(imgFile)) { // POST 요청
                         is ApiResult.Success -> { // 성공한 경우 -> Log로 인식된 제품명 출력
                             val productName = result.data.productName // 제품명 인식 결과 저장
-                            viewModel.onProductNameDetected(productName, croppedBitmap)
+                            viewModel.onProductNameDetected(productName, viewModel.yoloBitmap)
                         }
                         is ApiResult.Error -> {
                             Log.e("productNameTTS", "서버 요청 실패")
@@ -224,7 +224,7 @@ class CameraFragment : Fragment() {
 
             // "제품 라벨 인식됨" -> TTS 출력
             if (firstResult.classIndex == 0) {
-                viewModel.onProductLabelDetected(croppedBitmap)
+                viewModel.onProductLabelDetected(viewModel.yoloBitmap)
             }
         }
 
